@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "start-api": "cd WoWMarketWatcher.API && dotnet watch run",
+    "start-ui": "cd WoWMarketWatcher.UI && dotnet watch run",
+    "test": "dotnet test",
+    "update-dependencies": "dotnet outdated -u",
+    "outdated": "dotnet outdated",
+    "clean-dist-api": "rm -rf WoWMarketWatcher.API/dist",
+    "clean-dist-ui": "rm -rf WoWMarketWatcher.UI/dist",
+    "build-api": "npm run clean-dist-api && cd WoWMarketWatcher.API && dotnet publish -c=Debug -o dist",
+    "build-ui": "npm run clean-dist-ui && cd WoWMarketWatcher.UI && dotnet publish -c=Debug -o dist",
+    "build-api-prod": "npm run clean-dist-api && cd WoWMarketWatcher.API && dotnet publish -c=Release -o dist",
+    "build-ui-prod": "npm run clean-dist-ui && cd WoWMarketWatcher.UI && dotnet publish -c=Release -o dist",
+    "download-secrets": "scp root@rwherber.com:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json ./WoWMarketWatcher.API",
+    "upload-secrets": "scp ./WoWMarketWatcher.API/appsettings.Secrets.json root@rwherber.com:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API"
+  }
+}

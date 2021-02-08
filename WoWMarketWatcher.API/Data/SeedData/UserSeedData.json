@@ -1,0 +1,65 @@
+[
+  {
+    "Id": 1,
+    "UserName": "admin",
+    "Password": "password",
+    "FirstName": "admin",
+    "LastName": "admin",
+    "Email": "admin@fakemail.com",
+    "Created": "2017-08-02"
+  },
+  {
+    "Id": 2,
+    "UserName": "Roy",
+    "Password": "password",
+    "FirstName": "Roy",
+    "LastName": "Joy",
+    "Email": "rjoy@fakemail.com",
+    "Created": "2018-08-02"
+  },
+  {
+    "Id": 3,
+    "UserName": "Robert",
+    "Password": "password",
+    "FirstName": "Robert",
+    "LastName": "Herp",
+    "Email": "rherp@fakemail.com",
+    "Created": "2019-08-02"
+  },
+  {
+    "Id": 4,
+    "UserName": "Joe",
+    "Password": "password",
+    "FirstName": "Joe",
+    "LastName": "Schmoe",
+    "Email": "jschmoe@fakemail.com",
+    "Created": "2011-08-02"
+  },
+  {
+    "Id": 5,
+    "UserName": "Jack",
+    "Password": "password",
+    "FirstName": "Jack",
+    "LastName": "Lame",
+    "Email": "jlame@fakemail.com",
+    "Created": "2012-08-02"
+  },
+  {
+    "Id": 6,
+    "UserName": "Lola",
+    "Password": "password",
+    "FirstName": "Lola",
+    "LastName": "Smith",
+    "Email": "lsmith@fakemail.com",
+    "Created": "2017-08-02"
+  },
+  {
+    "Id": 7,
+    "UserName": "Celeste",
+    "Password": "password",
+    "FirstName": "Celeste",
+    "LastName": "McFace",
+    "Email": "test@fakemail.com",
+    "Created": "2020-02-18"
+  }
+]
