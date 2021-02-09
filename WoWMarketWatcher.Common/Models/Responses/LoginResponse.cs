@@ -1,3 +1,5 @@
+using WoWMarketWatcher.Common.Models.DTOs;
+
 namespace WoWMarketWatcher.Common.Models.Responses
 {
     public record LoginResponse

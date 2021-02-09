@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.API.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.Common.Models.QueryParameters;
+using WoWMarketWatcher.Common.Models.DTOs;
 using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.Common.Constants;
 using Microsoft.AspNetCore.JsonPatch;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.Common.Models.Requests;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -80,7 +81,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<UserDto>> UpdateUserAsync(int id, [FromBody] JsonPatchDocument<UpdateUserDto> dtoPatchDoc)
+        public async Task<ActionResult<UserDto>> UpdateUserAsync(int id, [FromBody] JsonPatchDocument<UpdateUserRequest> dtoPatchDoc)
         {
             if (dtoPatchDoc == null || dtoPatchDoc.Operations.Count == 0)
             {
@@ -131,7 +132,7 @@ namespace WoWMarketWatcher.API.Controllers
 
         [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
         [HttpPost("{id}/roles")]
-        public async Task<ActionResult<UserDto>> AddRolesAsync(int id, [FromBody] EditRoleDto roleEditDto)
+        public async Task<ActionResult<UserDto>> AddRolesAsync(int id, [FromBody] EditRoleRequest roleEditDto)
         {
             if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Length == 0)
             {
@@ -173,7 +174,7 @@ namespace WoWMarketWatcher.API.Controllers
 
         [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
         [HttpDelete("{id}/roles")]
-        public async Task<ActionResult<UserDto>> RemoveRolesAsync(int id, [FromBody] EditRoleDto roleEditDto)
+        public async Task<ActionResult<UserDto>> RemoveRolesAsync(int id, [FromBody] EditRoleRequest roleEditDto)
         {
             if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Length == 0)
             {

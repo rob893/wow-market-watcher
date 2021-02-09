@@ -5,9 +5,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
-using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.Common.Models.QueryParameters;
+using WoWMarketWatcher.Common.Models;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {

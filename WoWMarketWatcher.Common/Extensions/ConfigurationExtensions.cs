@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 
-namespace WoWMarketWatcher.API.Extensions
+namespace WoWMarketWatcher.Common.Extensions
 {
     public static class ConfigurationExtensions
     {

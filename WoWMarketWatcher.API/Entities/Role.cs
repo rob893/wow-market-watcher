@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
+using WoWMarketWatcher.Common.Models;
 
 namespace WoWMarketWatcher.API.Entities
 {

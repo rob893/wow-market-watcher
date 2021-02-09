@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using Microsoft.AspNetCore.JsonPatch;
-using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.Common.Constants;
 
 namespace WoWMarketWatcher.API.Extensions
 {

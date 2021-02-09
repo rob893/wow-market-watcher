@@ -11,11 +11,14 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using System.Linq;
-using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.Common.Models.DTOs;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Data.Repositories;
 using Google.Apis.Auth;
+using WoWMarketWatcher.Common.Models.Requests;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.Common.Models;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -37,7 +40,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserLoginDto>> RegisterAsync([FromBody] RegisterUserDto userForRegisterDto)
+        public async Task<ActionResult<LoginResponse>> RegisterAsync([FromBody] RegisterUserRequest userForRegisterDto)
         {
             var user = mapper.Map<User>(userForRegisterDto);
 
@@ -62,7 +65,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             var userToReturn = mapper.Map<UserDto>(user);
 
-            return CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new UserLoginDto
+            return CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
             {
                 Token = token,
                 RefreshToken = refreshToken,
@@ -71,7 +74,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("register/google")]
-        public async Task<ActionResult<UserLoginDto>> RegisterWithGoogleAccountAsync([FromBody] RegisterUserUsingGoolgleDto userForRegisterDto)
+        public async Task<ActionResult<LoginResponse>> RegisterWithGoogleAccountAsync([FromBody] RegisterUserUsingGoolgleRequest userForRegisterDto)
         {
             try
             {
@@ -115,7 +118,7 @@ namespace WoWMarketWatcher.API.Controllers
 
                 var userToReturn = mapper.Map<UserDto>(user);
 
-                return CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new UserLoginDto
+                return CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
                 {
                     Token = token,
                     RefreshToken = refreshToken,
@@ -138,7 +141,7 @@ namespace WoWMarketWatcher.API.Controllers
         /// <param name="userForLoginDto"></param>
         /// <returns>200 with user object on success. 401 on failure.</returns>
         [HttpPost("login")]
-        public async Task<ActionResult<UserLoginDto>> LoginAsync([FromBody] LoginUserDto userForLoginDto)
+        public async Task<ActionResult<LoginResponse>> LoginAsync([FromBody] LoginRequest userForLoginDto)
         {
             var user = await userRepository.GetByUsernameAsync(userForLoginDto.Username, user => user.RefreshTokens);
 
@@ -170,7 +173,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             var userToReturn = mapper.Map<UserDto>(user);
 
-            return Ok(new UserLoginDto
+            return Ok(new LoginResponse
             {
                 Token = token,
                 RefreshToken = refreshToken,
@@ -179,7 +182,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("login/google")]
-        public async Task<ActionResult<UserLoginDto>> LoginGoogleAsync([FromBody] LoginGoogleUserDto userForLoginDto)
+        public async Task<ActionResult<LoginResponse>> LoginGoogleAsync([FromBody] GoogleLoginRequest userForLoginDto)
         {
             try
             {
@@ -208,7 +211,7 @@ namespace WoWMarketWatcher.API.Controllers
 
                 var userToReturn = mapper.Map<UserDto>(user);
 
-                return Ok(new UserLoginDto
+                return Ok(new LoginResponse
                 {
                     Token = token,
                     RefreshToken = refreshToken,
@@ -226,7 +229,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("refreshToken")]
-        public async Task<ActionResult> RefreshTokenAsync([FromBody] RefreshTokenDto refreshTokenDto)
+        public async Task<ActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest refreshTokenDto)
         {
             // Still validate the passed in token, but ignore its expiration date by setting validate lifetime to false
             var validationParameters = new TokenValidationParameters

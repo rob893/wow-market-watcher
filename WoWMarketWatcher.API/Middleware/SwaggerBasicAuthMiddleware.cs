@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using WoWMarketWatcher.API.Extensions;
-using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.Common.Extensions;
+using WoWMarketWatcher.Common.Constants;
 using WoWMarketWatcher.API.Models.Settings;
 
 namespace WoWMarketWatcher.API.Middleware

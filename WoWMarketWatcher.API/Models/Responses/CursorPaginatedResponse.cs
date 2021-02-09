@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.API.Models.QueryParameters;
 using Newtonsoft.Json;
+using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.Common.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Models.Responses
 {

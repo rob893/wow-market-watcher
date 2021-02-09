@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.API.Models.QueryParameters;
+using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.Common.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Core
 {

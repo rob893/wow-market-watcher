@@ -1,4 +1,4 @@
-namespace WoWMarketWatcher.API.Constants
+namespace WoWMarketWatcher.Common.Constants
 {
     public static class AuthorizationPolicyName
     {

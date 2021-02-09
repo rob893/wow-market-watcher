@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.API.Models.QueryParameters;
+using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.Common.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
