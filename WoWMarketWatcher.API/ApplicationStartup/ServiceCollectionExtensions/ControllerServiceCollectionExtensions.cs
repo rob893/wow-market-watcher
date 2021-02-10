@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using WoWMarketWatcher.API.Core;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {
@@ -24,6 +25,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
             return services;

@@ -7,8 +7,8 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using WoWMarketWatcher.API.Constants;
-using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.Common.Constants;
+using WoWMarketWatcher.Common.Extensions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 {
