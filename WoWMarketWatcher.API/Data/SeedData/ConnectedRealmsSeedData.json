@@ -1,0 +1,3615 @@
+[
+  {
+    "Id": 3207,
+    "Realms": [
+      {
+        "Id": 3207,
+        "Name": "Goldrinn",
+        "ConnectedRealmId": 3207,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "ptBR",
+        "Timezone": "America/Sao_Paulo",
+        "Slug": "goldrinn",
+        "Region": "North America",
+        "Category": "Brazil",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 64,
+    "Realms": [
+      {
+        "Id": 64,
+        "Name": "Bloodhoof",
+        "ConnectedRealmId": 64,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "bloodhoof",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1258,
+        "Name": "Duskwood",
+        "ConnectedRealmId": 64,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "duskwood",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 127,
+    "Realms": [
+      {
+        "Id": 127,
+        "Name": "Firetree",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "firetree",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 7,
+        "Name": "Frostwolf",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "frostwolf",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 110,
+        "Name": "Stormscale",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "stormscale",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 124,
+        "Name": "Spirestone",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "spirestone",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1148,
+        "Name": "Malorne",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "malorne",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1348,
+        "Name": "Vashj",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "vashj",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1358,
+        "Name": "Rivendare",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "rivendare",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1362,
+        "Name": "Drak'Tharon",
+        "ConnectedRealmId": 127,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "draktharon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 58,
+    "Realms": [
+      {
+        "Id": 58,
+        "Name": "Stormreaver",
+        "ConnectedRealmId": 58,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "stormreaver",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1175,
+    "Realms": [
+      {
+        "Id": 1175,
+        "Name": "Trollbane",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "trollbane",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 68,
+        "Name": "Lothar",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "lothar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 153,
+        "Name": "Moonrunner",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "moonrunner",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1069,
+        "Name": "Kael'thas",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "kaelthas",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1132,
+        "Name": "Malfurion",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "malfurion",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1287,
+        "Name": "Gnomeregan",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "gnomeregan",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1578,
+        "Name": "Ghostlands",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "ghostlands",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1579,
+        "Name": "Grizzly Hills",
+        "ConnectedRealmId": 1175,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "grizzly-hills",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 60,
+    "Realms": [
+      {
+        "Id": 60,
+        "Name": "Stormrage",
+        "ConnectedRealmId": 60,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "stormrage",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3683,
+    "Realms": [
+      {
+        "Id": 66,
+        "Name": "Dalaran",
+        "ConnectedRealmId": 3683,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "dalaran",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1185,
+    "Realms": [
+      {
+        "Id": 1185,
+        "Name": "Sen'jin",
+        "ConnectedRealmId": 1185,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "senjin",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 108,
+        "Name": "Stonemaul",
+        "ConnectedRealmId": 1185,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "stonemaul",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 111,
+        "Name": "Dunemaul",
+        "ConnectedRealmId": 1185,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "dunemaul",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 112,
+        "Name": "Boulderfist",
+        "ConnectedRealmId": 1185,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "boulderfist",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 119,
+        "Name": "Bloodscalp",
+        "ConnectedRealmId": 1185,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "bloodscalp",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1357,
+        "Name": "Maiev",
+        "ConnectedRealmId": 1185,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "maiev",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1372,
+        "Name": "Quel'dorei",
+        "ConnectedRealmId": 1185,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "queldorei",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 84,
+    "Realms": [
+      {
+        "Id": 84,
+        "Name": "Dragonmaw",
+        "ConnectedRealmId": 84,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "dragonmaw",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 116,
+        "Name": "Uldum",
+        "ConnectedRealmId": 84,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "uldum",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 123,
+        "Name": "Eldre'Thalas",
+        "ConnectedRealmId": 84,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "eldrethalas",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1137,
+        "Name": "Akama",
+        "ConnectedRealmId": 84,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "akama",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1145,
+        "Name": "Mug'thol",
+        "ConnectedRealmId": 84,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "mugthol",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1349,
+        "Name": "Korialstrasz",
+        "ConnectedRealmId": 84,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "korialstrasz",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1363,
+        "Name": "Antonidas",
+        "ConnectedRealmId": 84,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "antonidas",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1072,
+    "Realms": [
+      {
+        "Id": 1072,
+        "Name": "Ravencrest",
+        "ConnectedRealmId": 1072,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "ravencrest",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1283,
+        "Name": "Uldaman",
+        "ConnectedRealmId": 1072,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "uldaman",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1171,
+    "Realms": [
+      {
+        "Id": 1369,
+        "Name": "Wyrmrest Accord",
+        "ConnectedRealmId": 1171,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "wyrmrest-accord",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 3685,
+    "Realms": [
+      {
+        "Id": 1265,
+        "Name": "Turalyon",
+        "ConnectedRealmId": 3685,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "turalyon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 121,
+    "Realms": [
+      {
+        "Id": 121,
+        "Name": "Azjol-Nerub",
+        "ConnectedRealmId": 121,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "azjolnerub",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 10,
+        "Name": "Blackrock",
+        "ConnectedRealmId": 121,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "blackrock",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1143,
+        "Name": "Khaz Modan",
+        "ConnectedRealmId": 121,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "khaz-modan",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1182,
+        "Name": "Muradin",
+        "ConnectedRealmId": 121,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "muradin",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1359,
+        "Name": "Nordrassil",
+        "ConnectedRealmId": 121,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "nordrassil",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1138,
+    "Realms": [
+      {
+        "Id": 1138,
+        "Name": "Chromaggus",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "chromaggus",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 89,
+        "Name": "Nathrezim",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "nathrezim",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 107,
+        "Name": "Crushridge",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "crushridge",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 130,
+        "Name": "Smolderthorn",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "smolderthorn",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1141,
+        "Name": "Garithos",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "garithos",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1165,
+        "Name": "Arathor",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "arathor",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1346,
+        "Name": "Anub'arak",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "anubarak",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1377,
+        "Name": "Drenden",
+        "ConnectedRealmId": 1138,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "drenden",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1151,
+    "Realms": [
+      {
+        "Id": 1151,
+        "Name": "Rexxar",
+        "ConnectedRealmId": 1151,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "rexxar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1350,
+        "Name": "Misha",
+        "ConnectedRealmId": 1151,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "misha",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 118,
+    "Realms": [
+      {
+        "Id": 118,
+        "Name": "Feathermoon",
+        "ConnectedRealmId": 118,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "feathermoon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 126,
+        "Name": "Scarlet Crusade",
+        "ConnectedRealmId": 118,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "scarlet-crusade",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 1426,
+    "Realms": [
+      {
+        "Id": 1284,
+        "Name": "Aerie Peak",
+        "ConnectedRealmId": 1426,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "aerie-peak",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 160,
+    "Realms": [
+      {
+        "Id": 160,
+        "Name": "Staghelm",
+        "ConnectedRealmId": 160,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "staghelm",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1173,
+        "Name": "Madoran",
+        "ConnectedRealmId": 160,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "madoran",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1549,
+        "Name": "Azuremyst",
+        "ConnectedRealmId": 160,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "azuremyst",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1582,
+        "Name": "Dawnbringer",
+        "ConnectedRealmId": 160,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "dawnbringer",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 106,
+    "Realms": [
+      {
+        "Id": 106,
+        "Name": "Aggramar",
+        "ConnectedRealmId": 106,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "aggramar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1576,
+        "Name": "Fizzcrank",
+        "ConnectedRealmId": 106,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "fizzcrank",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1427,
+    "Realms": [
+      {
+        "Id": 1427,
+        "Name": "Ragnaros",
+        "ConnectedRealmId": 1427,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "esMX",
+        "Timezone": "America/Chicago",
+        "Slug": "ragnaros",
+        "Region": "North America",
+        "Category": "Latin America",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1425,
+    "Realms": [
+      {
+        "Id": 1425,
+        "Name": "Drakkari",
+        "ConnectedRealmId": 1425,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "esMX",
+        "Timezone": "America/Chicago",
+        "Slug": "drakkari",
+        "Region": "North America",
+        "Category": "Latin America",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3234,
+    "Realms": [
+      {
+        "Id": 3234,
+        "Name": "Gallywix",
+        "ConnectedRealmId": 3234,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "ptBR",
+        "Timezone": "America/Sao_Paulo",
+        "Slug": "gallywix",
+        "Region": "North America",
+        "Category": "Brazil",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3676,
+    "Realms": [
+      {
+        "Id": 1566,
+        "Name": "Area 52",
+        "ConnectedRealmId": 3676,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "area-52",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 104,
+    "Realms": [
+      {
+        "Id": 104,
+        "Name": "Malygos",
+        "ConnectedRealmId": 104,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "malygos",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 14,
+        "Name": "Icecrown",
+        "ConnectedRealmId": 104,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "icecrown",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 51,
+        "Name": "Garona",
+        "ConnectedRealmId": 104,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "garona",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 91,
+        "Name": "Burning Blade",
+        "ConnectedRealmId": 104,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "burning-blade",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 95,
+        "Name": "Lightning's Blade",
+        "ConnectedRealmId": 104,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "lightnings-blade",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1285,
+        "Name": "Onyxia",
+        "ConnectedRealmId": 104,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "onyxia",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3723,
+    "Realms": [
+      {
+        "Id": 3723,
+        "Name": "Barthilas",
+        "ConnectedRealmId": 3723,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "barthilas",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 61,
+    "Realms": [
+      {
+        "Id": 61,
+        "Name": "Zul'jin",
+        "ConnectedRealmId": 61,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "zuljin",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3726,
+    "Realms": [
+      {
+        "Id": 3726,
+        "Name": "Khaz'goroth",
+        "ConnectedRealmId": 3726,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "khazgoroth",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3722,
+        "Name": "Aman'Thul",
+        "ConnectedRealmId": 3726,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "amanthul",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3735,
+        "Name": "Dath'Remar",
+        "ConnectedRealmId": 3726,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "dathremar",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1129,
+    "Realms": [
+      {
+        "Id": 1129,
+        "Name": "Agamaggan",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "agamaggan",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 56,
+        "Name": "Archimonde",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "archimonde",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 98,
+        "Name": "Kargath",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "kargath",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 102,
+        "Name": "Burning Legion",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "burning-legion",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 105,
+        "Name": "Thunderhorn",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "thunderhorn",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1262,
+        "Name": "Norgannon",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "norgannon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1291,
+        "Name": "Jaedenar",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "jaedenar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1559,
+        "Name": "The Underbog",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "the-underbog",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1564,
+        "Name": "Blade's Edge",
+        "ConnectedRealmId": 1129,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "blades-edge",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3721,
+    "Realms": [
+      {
+        "Id": 3721,
+        "Name": "Caelestrasz",
+        "ConnectedRealmId": 3721,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "caelestrasz",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3734,
+        "Name": "Nagrand",
+        "ConnectedRealmId": 3721,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "nagrand",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3738,
+        "Name": "Saurfang",
+        "ConnectedRealmId": 3721,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "saurfang",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 57,
+    "Realms": [
+      {
+        "Id": 57,
+        "Name": "Illidan",
+        "ConnectedRealmId": 57,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "illidan",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3725,
+    "Realms": [
+      {
+        "Id": 3725,
+        "Name": "Frostmourne",
+        "ConnectedRealmId": 3725,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "frostmourne",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3724,
+        "Name": "Thaurissan",
+        "ConnectedRealmId": 3725,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "thaurissan",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3733,
+        "Name": "Dreadmaul",
+        "ConnectedRealmId": 3725,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "dreadmaul",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3736,
+        "Name": "Jubei'Thos",
+        "ConnectedRealmId": 3725,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "jubeithos",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3737,
+        "Name": "Gundrak",
+        "ConnectedRealmId": 3725,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "Australia/Melbourne",
+        "Slug": "gundrak",
+        "Region": "North America",
+        "Category": "Oceanic",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1070,
+    "Realms": [
+      {
+        "Id": 1070,
+        "Name": "Alexstrasza",
+        "ConnectedRealmId": 1070,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "alexstrasza",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1563,
+        "Name": "Terokkar",
+        "ConnectedRealmId": 1070,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "terokkar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 155,
+    "Realms": [
+      {
+        "Id": 155,
+        "Name": "Kalecgos",
+        "ConnectedRealmId": 155,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "kalecgos",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 15,
+        "Name": "Deathwing",
+        "ConnectedRealmId": 155,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "deathwing",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1277,
+        "Name": "Executus",
+        "ConnectedRealmId": 155,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "executus",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1557,
+        "Name": "Shattered Halls",
+        "ConnectedRealmId": 155,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "shattered-halls",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3693,
+    "Realms": [
+      {
+        "Id": 16,
+        "Name": "Kel'Thuzad",
+        "ConnectedRealmId": 3693,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "kelthuzad",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 47,
+    "Realms": [
+      {
+        "Id": 47,
+        "Name": "Eitrigg",
+        "ConnectedRealmId": 47,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "eitrigg",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1354,
+        "Name": "Shu'halo",
+        "ConnectedRealmId": 47,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "shuhalo",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 99,
+    "Realms": [
+      {
+        "Id": 99,
+        "Name": "Llane",
+        "ConnectedRealmId": 99,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "llane",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1297,
+        "Name": "Arygos",
+        "ConnectedRealmId": 99,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "arygos",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3208,
+    "Realms": [
+      {
+        "Id": 3208,
+        "Name": "Nemesis",
+        "ConnectedRealmId": 3208,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "ptBR",
+        "Timezone": "America/Sao_Paulo",
+        "Slug": "nemesis",
+        "Region": "North America",
+        "Category": "Brazil",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3210,
+        "Name": "Tol Barad",
+        "ConnectedRealmId": 3208,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "ptBR",
+        "Timezone": "America/Sao_Paulo",
+        "Slug": "tol-barad",
+        "Region": "North America",
+        "Category": "Brazil",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 71,
+    "Realms": [
+      {
+        "Id": 71,
+        "Name": "Warsong",
+        "ConnectedRealmId": 71,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "warsong",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 80,
+        "Name": "Gorgonnash",
+        "ConnectedRealmId": 71,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "gorgonnash",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1075,
+        "Name": "Balnazzar",
+        "ConnectedRealmId": 71,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "balnazzar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1288,
+        "Name": "Anvilmar",
+        "ConnectedRealmId": 71,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "anvilmar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1293,
+        "Name": "Alterac Mountains",
+        "ConnectedRealmId": 71,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "alterac-mountains",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1294,
+        "Name": "Undermine",
+        "ConnectedRealmId": 71,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "undermine",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1344,
+        "Name": "The Forgotten Coast",
+        "ConnectedRealmId": 71,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "the-forgotten-coast",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 11,
+    "Realms": [
+      {
+        "Id": 11,
+        "Name": "Tichondrius",
+        "ConnectedRealmId": 11,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "tichondrius",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "Realms": [
+      {
+        "Id": 5,
+        "Name": "Proudmoore",
+        "ConnectedRealmId": 5,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "proudmoore",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1184,
+    "Realms": [
+      {
+        "Id": 1184,
+        "Name": "Vek'nilash",
+        "ConnectedRealmId": 1184,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "veknilash",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1367,
+        "Name": "Nazgrel",
+        "ConnectedRealmId": 1184,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "nazgrel",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1375,
+        "Name": "Nesingwary",
+        "ConnectedRealmId": 1184,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "nesingwary",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 9,
+    "Realms": [
+      {
+        "Id": 9,
+        "Name": "Kil'jaeden",
+        "ConnectedRealmId": 9,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "kiljaeden",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 117,
+    "Realms": [
+      {
+        "Id": 117,
+        "Name": "Bronzebeard",
+        "ConnectedRealmId": 117,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "bronzebeard",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1364,
+        "Name": "Shandris",
+        "ConnectedRealmId": 117,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "shandris",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3675,
+    "Realms": [
+      {
+        "Id": 1365,
+        "Name": "Moon Guard",
+        "ConnectedRealmId": 3675,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "moon-guard",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 125,
+    "Realms": [
+      {
+        "Id": 125,
+        "Name": "Shadow Council",
+        "ConnectedRealmId": 125,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "shadow-council",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 88,
+        "Name": "Cenarion Circle",
+        "ConnectedRealmId": 125,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "cenarion-circle",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1347,
+        "Name": "Blackwater Raiders",
+        "ConnectedRealmId": 125,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "blackwater-raiders",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1356,
+        "Name": "Sisters of Elune",
+        "ConnectedRealmId": 125,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "sisters-of-elune",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 1168,
+    "Realms": [
+      {
+        "Id": 2,
+        "Name": "Cenarius",
+        "ConnectedRealmId": 1168,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "cenarius",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 8,
+        "Name": "Ner'zhul",
+        "ConnectedRealmId": 1168,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "nerzhul",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 122,
+        "Name": "Perenolde",
+        "ConnectedRealmId": 1168,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "perenolde",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 128,
+        "Name": "Frostmane",
+        "ConnectedRealmId": 1168,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "frostmane",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1146,
+        "Name": "Korgath",
+        "ConnectedRealmId": 1168,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "korgath",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1360,
+        "Name": "Tortheldrin",
+        "ConnectedRealmId": 1168,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "tortheldrin",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1361,
+        "Name": "Cairne",
+        "ConnectedRealmId": 1168,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "cairne",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 115,
+    "Realms": [
+      {
+        "Id": 115,
+        "Name": "Draenor",
+        "ConnectedRealmId": 115,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "draenor",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1342,
+        "Name": "Echo Isles",
+        "ConnectedRealmId": 115,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "echo-isles",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 113,
+    "Realms": [
+      {
+        "Id": 113,
+        "Name": "Suramar",
+        "ConnectedRealmId": 113,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "suramar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 87,
+        "Name": "Windrunner",
+        "ConnectedRealmId": 113,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "windrunner",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1139,
+        "Name": "Draka",
+        "ConnectedRealmId": 113,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "draka",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1351,
+        "Name": "Darrowmere",
+        "ConnectedRealmId": 113,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "darrowmere",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1136,
+    "Realms": [
+      {
+        "Id": 1136,
+        "Name": "Aegwynn",
+        "ConnectedRealmId": 1136,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "aegwynn",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 83,
+        "Name": "Bonechewer",
+        "ConnectedRealmId": 1136,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "bonechewer",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 109,
+        "Name": "Daggerspine",
+        "ConnectedRealmId": 1136,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "daggerspine",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 129,
+        "Name": "Gurubashi",
+        "ConnectedRealmId": 1136,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "gurubashi",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1142,
+        "Name": "Hakkar",
+        "ConnectedRealmId": 1136,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "hakkar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1373,
+        "Name": "Garrosh",
+        "ConnectedRealmId": 1136,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "garrosh",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 54,
+    "Realms": [
+      {
+        "Id": 54,
+        "Name": "Blackhand",
+        "ConnectedRealmId": 54,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "blackhand",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1581,
+        "Name": "Galakrond",
+        "ConnectedRealmId": 54,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "galakrond",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 52,
+    "Realms": [
+      {
+        "Id": 52,
+        "Name": "Alleria",
+        "ConnectedRealmId": 52,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "alleria",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 62,
+        "Name": "Medivh",
+        "ConnectedRealmId": 52,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "medivh",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 65,
+        "Name": "Khadgar",
+        "ConnectedRealmId": 52,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "khadgar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1565,
+        "Name": "Exodar",
+        "ConnectedRealmId": 52,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "exodar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 12,
+    "Realms": [
+      {
+        "Id": 12,
+        "Name": "Silver Hand",
+        "ConnectedRealmId": 12,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "silver-hand",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1154,
+        "Name": "Thorium Brotherhood",
+        "ConnectedRealmId": 12,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "thorium-brotherhood",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1370,
+        "Name": "Farstriders",
+        "ConnectedRealmId": 12,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "farstriders",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 1071,
+    "Realms": [
+      {
+        "Id": 1071,
+        "Name": "Kirin Tor",
+        "ConnectedRealmId": 1071,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "kirin-tor",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1260,
+        "Name": "Steamwheedle Cartel",
+        "ConnectedRealmId": 1071,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "steamwheedle-cartel",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1290,
+        "Name": "Sentinels",
+        "ConnectedRealmId": 1071,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "sentinels",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "Realms": [
+      {
+        "Id": 4,
+        "Name": "Kilrogg",
+        "ConnectedRealmId": 4,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "kilrogg",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1355,
+        "Name": "Winterhoof",
+        "ConnectedRealmId": 4,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "winterhoof",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 86,
+    "Realms": [
+      {
+        "Id": 86,
+        "Name": "Silvermoon",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "silvermoon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 85,
+        "Name": "Shadowsong",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "shadowsong",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 90,
+        "Name": "Terenas",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "terenas",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 131,
+        "Name": "Skywall",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "skywall",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1140,
+        "Name": "Drak'thul",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "drakthul",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1368,
+        "Name": "Hydraxis",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "hydraxis",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1371,
+        "Name": "Borean Tundra",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "borean-tundra",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1374,
+        "Name": "Mok'Nathal",
+        "ConnectedRealmId": 86,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "moknathal",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 77,
+    "Realms": [
+      {
+        "Id": 77,
+        "Name": "Azgalor",
+        "ConnectedRealmId": 77,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "azgalor",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 70,
+        "Name": "Mannoroth",
+        "ConnectedRealmId": 77,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "mannoroth",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 79,
+        "Name": "Destromath",
+        "ConnectedRealmId": 77,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "destromath",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 103,
+        "Name": "Thunderlord",
+        "ConnectedRealmId": 77,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "thunderlord",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1128,
+        "Name": "Azshara",
+        "ConnectedRealmId": 77,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "azshara",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1131,
+        "Name": "Nazjatar",
+        "ConnectedRealmId": 77,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "nazjatar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1558,
+        "Name": "Blood Furnace",
+        "ConnectedRealmId": 77,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "blood-furnace",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1147,
+    "Realms": [
+      {
+        "Id": 1147,
+        "Name": "Kul Tiras",
+        "ConnectedRealmId": 1147,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "kul-tiras",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1353,
+        "Name": "Bladefist",
+        "ConnectedRealmId": 1147,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "bladefist",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 78,
+    "Realms": [
+      {
+        "Id": 78,
+        "Name": "Magtheridon",
+        "ConnectedRealmId": 78,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "magtheridon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1264,
+        "Name": "Anetheron",
+        "ConnectedRealmId": 78,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "anetheron",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1268,
+        "Name": "Ysondre",
+        "ConnectedRealmId": 78,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "ysondre",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1282,
+        "Name": "Altar of Storms",
+        "ConnectedRealmId": 78,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "altar-of-storms",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3661,
+    "Realms": [
+      {
+        "Id": 6,
+        "Name": "Hyjal",
+        "ConnectedRealmId": 3661,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "hyjal",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 151,
+    "Realms": [
+      {
+        "Id": 151,
+        "Name": "Runetotem",
+        "ConnectedRealmId": 151,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "runetotem",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 3,
+        "Name": "Uther",
+        "ConnectedRealmId": 151,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "uther",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 114,
+    "Realms": [
+      {
+        "Id": 114,
+        "Name": "Dragonblight",
+        "ConnectedRealmId": 114,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "dragonblight",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1345,
+        "Name": "Fenris",
+        "ConnectedRealmId": 114,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "fenris",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 63,
+    "Realms": [
+      {
+        "Id": 63,
+        "Name": "Durotan",
+        "ConnectedRealmId": 63,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "durotan",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1270,
+        "Name": "Ysera",
+        "ConnectedRealmId": 63,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "ysera",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 69,
+    "Realms": [
+      {
+        "Id": 69,
+        "Name": "Arthas",
+        "ConnectedRealmId": 69,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "arthas",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 158,
+    "Realms": [
+      {
+        "Id": 158,
+        "Name": "Greymane",
+        "ConnectedRealmId": 158,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "greymane",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1292,
+        "Name": "Tanaris",
+        "ConnectedRealmId": 158,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "tanaris",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 73,
+    "Realms": [
+      {
+        "Id": 73,
+        "Name": "Bleeding Hollow",
+        "ConnectedRealmId": 73,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "bleeding-hollow",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 157,
+    "Realms": [
+      {
+        "Id": 157,
+        "Name": "Dark Iron",
+        "ConnectedRealmId": 157,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "dark-iron",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 72,
+        "Name": "Shattered Hand",
+        "ConnectedRealmId": 157,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "shattered-hand",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1278,
+        "Name": "Dalvengyr",
+        "ConnectedRealmId": 157,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "dalvengyr",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1286,
+        "Name": "Demon Soul",
+        "ConnectedRealmId": 157,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "demon-soul",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1556,
+        "Name": "Coilfang",
+        "ConnectedRealmId": 157,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "coilfang",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 76,
+    "Realms": [
+      {
+        "Id": 76,
+        "Name": "Sargeras",
+        "ConnectedRealmId": 76,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "sargeras",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3694,
+    "Realms": [
+      {
+        "Id": 1,
+        "Name": "Lightbringer",
+        "ConnectedRealmId": 3694,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "lightbringer",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3209,
+    "Realms": [
+      {
+        "Id": 3209,
+        "Name": "Azralon",
+        "ConnectedRealmId": 3209,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "ptBR",
+        "Timezone": "America/Sao_Paulo",
+        "Slug": "azralon",
+        "Region": "North America",
+        "Category": "Brazil",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 75,
+    "Realms": [
+      {
+        "Id": 75,
+        "Name": "Argent Dawn",
+        "ConnectedRealmId": 75,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "argent-dawn",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1570,
+        "Name": "The Scryers",
+        "ConnectedRealmId": 75,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "the-scryers",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 120,
+    "Realms": [
+      {
+        "Id": 120,
+        "Name": "Darkspear",
+        "ConnectedRealmId": 120,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Denver",
+        "Slug": "darkspear",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 1190,
+    "Realms": [
+      {
+        "Id": 1190,
+        "Name": "Baelgun",
+        "ConnectedRealmId": 1190,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "baelgun",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 13,
+        "Name": "Doomhammer",
+        "ConnectedRealmId": 1190,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Los_Angeles",
+        "Slug": "doomhammer",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 162,
+    "Realms": [
+      {
+        "Id": 162,
+        "Name": "Emerald Dream",
+        "ConnectedRealmId": 162,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "emerald-dream",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 67,
+    "Realms": [
+      {
+        "Id": 67,
+        "Name": "Elune",
+        "ConnectedRealmId": 67,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "elune",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 97,
+        "Name": "Gilneas",
+        "ConnectedRealmId": 67,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "gilneas",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 101,
+        "Name": "Laughing Skull",
+        "ConnectedRealmId": 67,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "laughing-skull",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1067,
+        "Name": "Cho'gall",
+        "ConnectedRealmId": 67,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "chogall",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1555,
+        "Name": "Auchindoun",
+        "ConnectedRealmId": 67,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "auchindoun",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 163,
+    "Realms": [
+      {
+        "Id": 163,
+        "Name": "Maelstrom",
+        "ConnectedRealmId": 163,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "maelstrom",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 164,
+        "Name": "Twisting Nether",
+        "ConnectedRealmId": 163,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "twisting-nether",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1130,
+        "Name": "Lightninghoof",
+        "ConnectedRealmId": 163,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "lightninghoof",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1289,
+        "Name": "The Venture Co",
+        "ConnectedRealmId": 163,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "the-venture-co",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      },
+      {
+        "Id": 1352,
+        "Name": "Ravenholdt",
+        "ConnectedRealmId": 163,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "ravenholdt",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 3678,
+    "Realms": [
+      {
+        "Id": 1263,
+        "Name": "Thrall",
+        "ConnectedRealmId": 3678,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "thrall",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 100,
+    "Realms": [
+      {
+        "Id": 100,
+        "Name": "Earthen Ring",
+        "ConnectedRealmId": 100,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "earthen-ring",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Roleplaying"
+      }
+    ]
+  },
+  {
+    "Id": 1428,
+    "Realms": [
+      {
+        "Id": 1428,
+        "Name": "Quel'Thalas",
+        "ConnectedRealmId": 1428,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "esMX",
+        "Timezone": "America/Chicago",
+        "Slug": "quelthalas",
+        "Region": "North America",
+        "Category": "Latin America",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 53,
+    "Realms": [
+      {
+        "Id": 53,
+        "Name": "Hellscream",
+        "ConnectedRealmId": 53,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "hellscream",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 82,
+        "Name": "Spinebreaker",
+        "ConnectedRealmId": 53,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "spinebreaker",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 92,
+        "Name": "Gorefiend",
+        "ConnectedRealmId": 53,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "gorefiend",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 93,
+        "Name": "Eredar",
+        "ConnectedRealmId": 53,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "eredar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 159,
+        "Name": "Wildhammer",
+        "ConnectedRealmId": 53,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "wildhammer",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1572,
+        "Name": "Zangarmarsh",
+        "ConnectedRealmId": 53,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "zangarmarsh",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 3684,
+    "Realms": [
+      {
+        "Id": 59,
+        "Name": "Mal'Ganis",
+        "ConnectedRealmId": 3684,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "malganis",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 55,
+    "Realms": [
+      {
+        "Id": 55,
+        "Name": "Whisperwind",
+        "ConnectedRealmId": 55,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "whisperwind",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1271,
+        "Name": "Dentarg",
+        "ConnectedRealmId": 55,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "dentarg",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 96,
+    "Realms": [
+      {
+        "Id": 96,
+        "Name": "Eonar",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "eonar",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 74,
+        "Name": "Skullcrusher",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "skullcrusher",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 156,
+        "Name": "Ursin",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "ursin",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1068,
+        "Name": "Gul'dan",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "guldan",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1259,
+        "Name": "Zuluhed",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "zuluhed",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1267,
+        "Name": "Scilla",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "scilla",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1276,
+        "Name": "Andorhal",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "andorhal",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1280,
+        "Name": "Black Dragonflight",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "black-dragonflight",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1567,
+        "Name": "Velen",
+        "ConnectedRealmId": 96,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/New_York",
+        "Slug": "velen",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  },
+  {
+    "Id": 154,
+    "Realms": [
+      {
+        "Id": 154,
+        "Name": "Detheroc",
+        "ConnectedRealmId": 154,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "detheroc",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 81,
+        "Name": "Dethecus",
+        "ConnectedRealmId": 154,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "dethecus",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 94,
+        "Name": "Shadowmoon",
+        "ConnectedRealmId": 154,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "shadowmoon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1266,
+        "Name": "Haomarush",
+        "ConnectedRealmId": 154,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "haomarush",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1295,
+        "Name": "Lethon",
+        "ConnectedRealmId": 154,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "lethon",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      },
+      {
+        "Id": 1296,
+        "Name": "Blackwing Lair",
+        "ConnectedRealmId": 154,
+        "ConnectedRealm": null,
+        "IsTournament": false,
+        "Locale": "enUS",
+        "Timezone": "America/Chicago",
+        "Slug": "blackwing-lair",
+        "Region": "North America",
+        "Category": "United States",
+        "Type": "Normal"
+      }
+    ]
+  }
+]

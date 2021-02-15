@@ -33,10 +33,11 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .AddIdentityServices()
                 .AddRepositoryServices()
                 .AddSingleton<Counter>()
-                // .AddHangfireServices(Configuration)
+                .AddHangfireServices(Configuration)
                 .AddSwaggerServices(Configuration)
                 .AddAutoMapper(typeof(Startup))
                 .AddHealthCheckServices()
+                .AddBlizzardServices(Configuration)
                 .AddCors();
         }
 
@@ -65,7 +66,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseAndConfigureSwagger(env)
-                // .UseAndConfigureHangfire(Configuration)
+                .UseAndConfigureHangfire(Configuration)
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapHealthChecks("/health", new HealthCheckOptions()

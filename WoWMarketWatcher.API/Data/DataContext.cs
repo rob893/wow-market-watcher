@@ -11,6 +11,10 @@ namespace WoWMarketWatcher.API.Data
     {
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<LinkedAccount> LinkedAccounts => Set<LinkedAccount>();
+        public DbSet<ConnectedRealm> ConnectedRealms => Set<ConnectedRealm>();
+        public DbSet<Realm> Realms => Set<Realm>();
+        public DbSet<WoWItem> WoWItems => Set<WoWItem>();
+        public DbSet<AuctionTimeSeriesEntry> AuctionTimeSeries => Set<AuctionTimeSeriesEntry>();
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
@@ -43,6 +47,8 @@ namespace WoWMarketWatcher.API.Data
                 linkedAccount.HasKey(account => new { account.Id, account.LinkedAccountType });
                 linkedAccount.Property(account => account.LinkedAccountType).HasConversion<string>();
             });
+
+            modelBuilder.Entity<AuctionTimeSeriesEntry>().HasIndex(entry => entry.Timestamp);
         }
     }
 }

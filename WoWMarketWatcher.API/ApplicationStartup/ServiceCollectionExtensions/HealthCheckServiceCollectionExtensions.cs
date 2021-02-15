@@ -13,15 +13,15 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 .AddDbContextCheck<DataContext>(
                     name: "Database",
                     failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { "db" });
-            // .AddHangfire(
-            //     options =>
-            //     {
-            //         options.MinimumAvailableServers = 1;
-            //     },
-            //     name: "Hangfire",
-            //     failureStatus: HealthStatus.Unhealthy,
-            //     tags: new[] { "hangfire" });
+                    tags: new[] { "db" })
+                .AddHangfire(
+                    options =>
+                    {
+                        options.MinimumAvailableServers = 1;
+                    },
+                    name: "Hangfire",
+                    failureStatus: HealthStatus.Unhealthy,
+                    tags: new[] { "hangfire" });
 
             return services;
         }

@@ -25,12 +25,12 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                     {
                         Version = "v1",
                         Title = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName,
-                        Description = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName} - {config.GetEnvironment()} ({Assembly.GetExecutingAssembly().GetName().Version})"
-                        // License = new OpenApiLicense
-                        // {
-                        //     Name = "Hangfire Dashboard",
-                        //     Url = new Uri("http://localhost:5000/hangfire")
-                        // }
+                        Description = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName} - {config.GetEnvironment()} ({Assembly.GetExecutingAssembly().GetName().Version})",
+                        License = new OpenApiLicense
+                        {
+                            Name = "Hangfire Dashboard",
+                            Url = new Uri("http://localhost:5000/hangfire")
+                        }
                     });
 
                 // Add the security token option to swagger

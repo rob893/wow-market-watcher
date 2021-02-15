@@ -44,6 +44,11 @@ namespace WoWMarketWatcher.API.Data
             {
                 SeedRoles();
                 SeedUsers();
+                SeedWoWItems();
+                SeedRealms();
+                SeedAuctionTimeSeries();
+
+                context.SaveChanges();
             }
         }
 
@@ -52,6 +57,10 @@ namespace WoWMarketWatcher.API.Data
             context.RefreshTokens.Clear();
             context.Users.Clear();
             context.Roles.Clear();
+            context.AuctionTimeSeries.Clear();
+            context.WoWItems.Clear();
+            context.Realms.Clear();
+            context.ConnectedRealms.Clear();
 
             context.SaveChanges();
         }
@@ -63,7 +72,7 @@ namespace WoWMarketWatcher.API.Data
                 return;
             }
 
-            string data = File.ReadAllText("Data/SeedData/RoleSeedData.json");
+            var data = File.ReadAllText("Data/SeedData/RoleSeedData.json");
             var roles = JsonConvert.DeserializeObject<List<Role>>(data);
 
             foreach (var role in roles)
@@ -79,10 +88,10 @@ namespace WoWMarketWatcher.API.Data
                 return;
             }
 
-            string data = File.ReadAllText("Data/SeedData/UserSeedData.json");
-            List<User> users = JsonConvert.DeserializeObject<List<User>>(data);
+            var data = File.ReadAllText("Data/SeedData/UserSeedData.json");
+            var users = JsonConvert.DeserializeObject<List<User>>(data);
 
-            foreach (User user in users)
+            foreach (var user in users)
             {
                 userManager.CreateAsync(user, "password").Wait();
 
@@ -96,6 +105,45 @@ namespace WoWMarketWatcher.API.Data
                     userManager.AddToRoleAsync(user, "User").Wait();
                 }
             }
+        }
+
+        private void SeedWoWItems()
+        {
+            if (context.WoWItems.Any())
+            {
+                return;
+            }
+
+            var data = File.ReadAllText("Data/SeedData/WoWItemsSeedData.json");
+            var items = JsonConvert.DeserializeObject<List<WoWItem>>(data);
+
+            context.WoWItems.AddRange(items);
+        }
+
+        private void SeedRealms()
+        {
+            if (context.WoWItems.Any())
+            {
+                return;
+            }
+
+            var data = File.ReadAllText("Data/SeedData/ConnectedRealmsSeedData.json");
+            var items = JsonConvert.DeserializeObject<List<ConnectedRealm>>(data);
+
+            context.ConnectedRealms.AddRange(items);
+        }
+
+        private void SeedAuctionTimeSeries()
+        {
+            if (context.WoWItems.Any())
+            {
+                return;
+            }
+
+            var data = File.ReadAllText("Data/SeedData/AuctionTimeSeriesSeedData.json");
+            var items = JsonConvert.DeserializeObject<List<AuctionTimeSeriesEntry>>(data);
+
+            context.AuctionTimeSeries.AddRange(items);
         }
     }
 }
