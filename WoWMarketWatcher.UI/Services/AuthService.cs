@@ -1,9 +1,8 @@
-﻿using WoWMarketWatcher.UI.Models;
-using System;
-
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using WoWMarketWatcher.Common.Models.Responses;
 
 namespace WoWMarketWatcher.UI.Services
 {
@@ -22,6 +21,11 @@ namespace WoWMarketWatcher.UI.Services
             var response = await this.httpClient.PostAsJsonAsync("auth/login", new { username, password, deviceId = "123" });
 
             var asJson = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+            if (asJson == null)
+            {
+                throw new HttpRequestException("Login failed");
+            }
 
             return asJson;
         }

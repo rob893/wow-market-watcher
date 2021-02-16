@@ -12,16 +12,19 @@
         </MudCardHeader>
         <MudCardContent>
             <MudTextField @bind-Value="Username" Label="Username" Variant="Variant.Text"></MudTextField>
-            <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Text" InputType="InputType.Password"></MudTextField>
+            <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Text" InputType="InputType.Password">
+            </MudTextField>
         </MudCardContent>
         <MudCardActions>
             <MudGrid Spacing="2" Justify="Justify.Center">
                 <MudItem>
-                    <MudButton Variant="Variant.Filled" Color="Color.Success" @onclick="() => LoginAsync()">Login</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" @onclick="() => LoginAsync()">Login
+                    </MudButton>
                 </MudItem>
 
                 <MudItem>
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" @onclick="() => ClearLoginForm()">Clear</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" @onclick="() => ClearLoginForm()">Clear
+                    </MudButton>
                 </MudItem>
             </MudGrid>
         </MudCardActions>
@@ -55,4 +58,3 @@
         this.Password = "";
     }
 }
-
