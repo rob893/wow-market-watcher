@@ -49,7 +49,7 @@
 
         var res = await this.authService.Login(this.Username, this.Password);
 
-        Console.WriteLine(res.User.Username);
+        Console.WriteLine(res.User.UserName);
     }
 
     public void ClearLoginForm()

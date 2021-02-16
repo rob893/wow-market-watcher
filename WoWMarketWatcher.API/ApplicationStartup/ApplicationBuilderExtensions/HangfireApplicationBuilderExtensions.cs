@@ -7,6 +7,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using WoWMarketWatcher.API.BackgroundJobs;
 using WoWMarketWatcher.Common.Constants;
 using WoWMarketWatcher.Common.Extensions;
 
@@ -14,7 +15,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 {
     public static class HangfireApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseAndConfigureHangfire(this IApplicationBuilder app, IConfiguration config)
+        public static IApplicationBuilder UseAndConfigureHangfire(this IApplicationBuilder app, IRecurringJobManager recurringJobs, IConfiguration config)
         {
             app.UseHangfireDashboard(
                 "/hangfire",
@@ -25,7 +26,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                 }
             );
 
-            BackgroundJob.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
+            recurringJobs.AddOrUpdate<PullAuctionDataBackgroundJob>(nameof(PullAuctionDataBackgroundJob), job => job.PullAuctionData(null!), Cron.Minutely());
 
             return app;
         }

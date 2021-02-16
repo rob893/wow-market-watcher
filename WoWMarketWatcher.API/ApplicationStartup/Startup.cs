@@ -11,6 +11,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.HttpOverrides;
 using WoWMarketWatcher.API.Middleware;
 using WoWMarketWatcher.API.Core;
+using Hangfire;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {
@@ -20,7 +21,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -28,22 +29,22 @@ namespace WoWMarketWatcher.API.ApplicationStartup
         {
             services.AddControllerServices()
                 .AddLogging()
-                .AddDatabaseServices(Configuration)
-                .AddAuthenticationServices(Configuration)
+                .AddDatabaseServices(this.Configuration)
+                .AddAuthenticationServices(this.Configuration)
                 .AddIdentityServices()
                 .AddRepositoryServices()
                 .AddSingleton<Counter>()
-                .AddHangfireServices(Configuration)
-                .AddSwaggerServices(Configuration)
+                .AddHangfireServices(this.Configuration)
+                .AddSwaggerServices(this.Configuration)
                 .AddAutoMapper(typeof(Startup))
                 .AddHealthCheckServices()
-                .AddBlizzardServices(Configuration)
+                .AddBlizzardServices(this.Configuration)
                 .AddMemoryCache()
                 .AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IRecurringJobManager recurringJobs, IWebHostEnvironment env)
         {
             if (!env.IsProduction())
             {
@@ -58,16 +59,16 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                     ForwardedHeaders = ForwardedHeaders.All
                 })
                 .UseCors(header =>
-                    header.WithOrigins(Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "*" })
+                    header.WithOrigins(this.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "*" })
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .WithExposedHeaders(Configuration.GetSection("Cors:ExposedHeaders").Get<string[]>() ?? new[] { "X-Token-Expired", "X-Correlation-Id" })
+                        .WithExposedHeaders(this.Configuration.GetSection("Cors:ExposedHeaders").Get<string[]>() ?? new[] { "X-Token-Expired", "X-Correlation-Id" })
                 )
                 .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseAndConfigureSwagger(env)
-                .UseAndConfigureHangfire(Configuration)
+                .UseAndConfigureHangfire(recurringJobs, this.Configuration)
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapHealthChecks("/health", new HealthCheckOptions()
