@@ -10,6 +10,7 @@ using WoWMarketWatcher.Common.Models.Requests;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Linq;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -18,12 +19,14 @@ namespace WoWMarketWatcher.API.Controllers
     public class UserWatchListsController : ServiceControllerBase
     {
         private readonly WatchListRepository watchListRepository;
+        private readonly WoWItemRepository itemRepository;
         private readonly IMapper mapper;
 
 
-        public UserWatchListsController(WatchListRepository watchListRepository, IMapper mapper)
+        public UserWatchListsController(WatchListRepository watchListRepository, WoWItemRepository itemRepository, IMapper mapper)
         {
             this.watchListRepository = watchListRepository;
+            this.itemRepository = itemRepository;
             this.mapper = mapper;
         }
 
@@ -76,6 +79,47 @@ namespace WoWMarketWatcher.API.Controllers
             return this.CreatedAtRoute("GetWatchListForUserAsync", (id: mapped.Id, userId), mapped);
         }
 
+        [HttpPost("{id}/items")]
+        public async Task<ActionResult<WatchListDto>> AddItemToWatchListForUserAsync([FromRoute] int id, [FromBody] AddItemToWatchListRequest request)
+        {
+            if (request.Id == null)
+            {
+                return this.BadRequest($"Id is required.");
+            }
+
+            var watchList = await this.watchListRepository.GetByIdAsync(id);
+
+            if (watchList == null)
+            {
+                return this.NotFound($"No watch list with Id {id} found.");
+            }
+
+            if (!this.IsUserAuthorizedForResource(watchList))
+            {
+                return this.Forbidden("You are not authorized to change this resource.");
+            }
+
+            var itemToAdd = await this.itemRepository.GetByIdAsync(request.Id.Value);
+
+            if (watchList == null)
+            {
+                return this.NotFound($"No item with Id {request.Id.Value} found.");
+            }
+
+            watchList.WatchedItems.Add(itemToAdd);
+
+            var saveResults = await this.watchListRepository.SaveAllAsync();
+
+            if (!saveResults)
+            {
+                return this.BadRequest("Failed to delete the resource.");
+            }
+
+            var mapped = this.mapper.Map<WatchListDto>(watchList);
+
+            return this.Ok(mapped);
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteWatchListForUserAsync([FromRoute] int id)
         {
@@ -94,7 +138,43 @@ namespace WoWMarketWatcher.API.Controllers
             this.watchListRepository.Delete(watchList);
             var saveResults = await this.watchListRepository.SaveAllAsync();
 
-            return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the income.");
+            return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
+        }
+
+        [HttpDelete("{id}/items/{itemId}")]
+        public async Task<ActionResult<WatchListDto>> RemoveItemFromWatchListForUserAsync([FromRoute] int id, [FromRoute] int itemId)
+        {
+            var watchList = await this.watchListRepository.GetByIdAsync(id);
+
+            if (watchList == null)
+            {
+                return this.NotFound($"No resource with Id {id} found.");
+            }
+
+            if (!this.IsUserAuthorizedForResource(watchList))
+            {
+                return this.Forbidden("You are not authorized to delete this resource.");
+            }
+
+            var itemToRemove = watchList.WatchedItems.FirstOrDefault(item => item.Id == itemId);
+
+            if (itemToRemove == null)
+            {
+                return this.BadRequest($"Watch list {id} does not have item {itemId}.");
+            }
+
+            watchList.WatchedItems.Remove(itemToRemove);
+
+            var saveResults = await this.watchListRepository.SaveAllAsync();
+
+            if (!saveResults)
+            {
+                return this.BadRequest("Failed to delete the resource.");
+            }
+
+            var mapped = this.mapper.Map<WatchListDto>(watchList);
+
+            return this.Ok(mapped);
         }
 
         [HttpPatch("{id}")]
