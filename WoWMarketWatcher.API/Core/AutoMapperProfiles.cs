@@ -12,19 +12,38 @@ namespace WoWMarketWatcher.API.Core
     {
         public AutoMapperProfiles()
         {
-            CreateUserMaps();
+            this.CreateUserMaps();
+            this.CreateWoWItemMaps();
+            this.CreateRealmMaps();
+            this.CreateWatchListMaps();
         }
 
         private void CreateUserMaps()
         {
-            CreateMap<User, UserDto>()
+            this.CreateMap<User, UserDto>()
                 .ForMember(dto => dto.Roles, opt =>
                     opt.MapFrom(u => u.UserRoles.Select(ur => ur.Role.Name)));
-            CreateMap<RegisterUserRequest, User>();
-            CreateMap<Role, RoleDto>();
-            CreateMap<LinkedAccount, LinkedAccountDto>();
-            CreateMap<JsonPatchDocument<UpdateUserRequest>, JsonPatchDocument<User>>();
-            CreateMap<Operation<UpdateUserRequest>, Operation<User>>();
+            this.CreateMap<RegisterUserRequest, User>();
+            this.CreateMap<Role, RoleDto>();
+            this.CreateMap<LinkedAccount, LinkedAccountDto>();
+            this.CreateMap<JsonPatchDocument<UpdateUserRequest>, JsonPatchDocument<User>>();
+            this.CreateMap<Operation<UpdateUserRequest>, Operation<User>>();
+        }
+
+        private void CreateWoWItemMaps()
+        {
+            this.CreateMap<WoWItem, WoWItemDto>();
+        }
+
+        private void CreateRealmMaps()
+        {
+            this.CreateMap<Realm, RealmDto>();
+            this.CreateMap<ConnectedRealm, ConnectedRealmDto>();
+        }
+
+        private void CreateWatchListMaps()
+        {
+            this.CreateMap<WatchList, WatchListDto>();
         }
     }
 }

@@ -73,6 +73,12 @@ namespace WoWMarketWatcher.API.Models.Responses
             return CursorPaginatedResponse<TDestination, int>.CreateFrom(items, mappingFunction, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
+        public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPagedList<TSource, int> items, CursorPaginationParameters searchParams)
+            where TSource : class, IIdentifiable<int>
+        {
+            return CursorPaginatedResponse<TSource, int>.CreateFrom(items, searchParams.IncludeNodes, searchParams.IncludeEdges);
+        }
+
         public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPagedList<TSource, int> items, bool includeNodes = true, bool includeEdges = true)
             where TSource : class, IIdentifiable<int>
         {

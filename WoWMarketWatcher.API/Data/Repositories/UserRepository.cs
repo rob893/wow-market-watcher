@@ -27,8 +27,8 @@ namespace WoWMarketWatcher.API.Data.Repositories
         public async Task<IdentityResult> CreateUserWithAsync(User user)
         {
             user.Created = DateTime.UtcNow;
-            var created = await userManager.CreateAsync(user);
-            await userManager.AddToRoleAsync(user, "User");
+            var created = await this.userManager.CreateAsync(user);
+            await this.userManager.AddToRoleAsync(user, "User");
 
             return created;
         }
@@ -36,31 +36,31 @@ namespace WoWMarketWatcher.API.Data.Repositories
         public async Task<IdentityResult> CreateUserWithPasswordAsync(User user, string password)
         {
             user.Created = DateTime.UtcNow;
-            var created = await userManager.CreateAsync(user, password);
-            await userManager.AddToRoleAsync(user, "User");
+            var created = await this.userManager.CreateAsync(user, password);
+            await this.userManager.AddToRoleAsync(user, "User");
 
             return created;
         }
 
         public Task<User> GetByUsernameAsync(string username)
         {
-            IQueryable<User> query = context.Users;
-            query = AddIncludes(query);
+            IQueryable<User> query = this.Context.Users;
+            query = this.AddIncludes(query);
 
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(user => user.UserName == username);
         }
 
         public async Task<User?> GetByLinkedAccountAsync(string id, LinkedAccountType accountType, params Expression<Func<User, object>>[] includes)
         {
-            var linkedAccount = await context.LinkedAccounts.FirstOrDefaultAsync(account => account.Id == id && account.LinkedAccountType == accountType);
+            var linkedAccount = await this.Context.LinkedAccounts.FirstOrDefaultAsync(account => account.Id == id && account.LinkedAccountType == accountType);
 
             if (linkedAccount == null)
             {
                 return null;
             }
 
-            IQueryable<User> query = context.Users;
-            query = AddIncludes(query);
+            IQueryable<User> query = this.Context.Users;
+            query = this.AddIncludes(query);
             query = includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
             return await query.OrderBy(e => e.Id).FirstOrDefaultAsync(user => user.Id == linkedAccount.UserId);
@@ -68,9 +68,9 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         public Task<User> GetByUsernameAsync(string username, params Expression<Func<User, object>>[] includes)
         {
-            IQueryable<User> query = context.Users;
+            IQueryable<User> query = this.Context.Users;
 
-            query = AddIncludes(query);
+            query = this.AddIncludes(query);
             query = includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(user => user.UserName == username);
@@ -78,21 +78,21 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         public async Task<bool> CheckPasswordAsync(User user, string password)
         {
-            var result = await signInManager.CheckPasswordSignInAsync(user, password, false);
+            var result = await this.signInManager.CheckPasswordSignInAsync(user, password, false);
 
             return result.Succeeded;
         }
 
         public Task<CursorPagedList<Role, int>> GetRolesAsync(CursorPaginationParameters searchParams)
         {
-            IQueryable<Role> query = context.Roles;
+            IQueryable<Role> query = this.Context.Roles;
 
             return CursorPagedList<Role, int>.CreateAsync(query, searchParams);
         }
 
         public Task<List<Role>> GetRolesAsync()
         {
-            return context.Roles.ToListAsync();
+            return this.Context.Roles.ToListAsync();
         }
 
         protected override IQueryable<User> AddIncludes(IQueryable<User> query)

@@ -38,6 +38,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .AddAutoMapper(typeof(Startup))
                 .AddHealthCheckServices()
                 .AddBlizzardServices(Configuration)
+                .AddMemoryCache()
                 .AddCors();
         }
 

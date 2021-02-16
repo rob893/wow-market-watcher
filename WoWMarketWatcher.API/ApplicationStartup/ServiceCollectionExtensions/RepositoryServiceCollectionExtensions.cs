@@ -8,7 +8,11 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
         public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
         {
             // Interface => concrete implementation
-            services.AddScoped<UserRepository>();
+            services.AddScoped<UserRepository>()
+                .AddScoped<WoWItemRepository>()
+                .AddScoped<RealmRepository>()
+                .AddScoped<WatchListRepository>()
+                .AddScoped<ConnectedRealmRepository>();
 
             return services;
         }

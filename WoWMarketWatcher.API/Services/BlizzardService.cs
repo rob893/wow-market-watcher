@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -8,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Models.Settings;
 
@@ -17,20 +19,20 @@ namespace WoWMarketWatcher.API.Services
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly BlizzardSettings settings;
+        private readonly IMemoryCache cache;
 
-        private BlizzardTokenResponse? cachedTokenResponse;
-
-        public BlizzardService(IHttpClientFactory httpClientFactory, IOptions<BlizzardSettings> settings)
+        public BlizzardService(IHttpClientFactory httpClientFactory, IOptions<BlizzardSettings> settings, IMemoryCache cache)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
+            this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
-        public async Task<BlizzardTokenResponse> GetTokenAsync()
+        public async Task<string> GetAccessTokenAsync()
         {
-            if (this.cachedTokenResponse != null && !this.cachedTokenResponse.IsExpired)
+            if (this.cache.TryGetValue<string>(CacheKeys.BlizzardAPIAccessTokenKey, out var cachedToken))
             {
-                return cachedTokenResponse;
+                return cachedToken;
             }
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
@@ -60,20 +62,20 @@ namespace WoWMarketWatcher.API.Services
                 throw new HttpRequestException("Unable to deserialize JSON");
             }
 
-            this.cachedTokenResponse = content;
+            this.cache.Set(CacheKeys.BlizzardAPIAccessTokenKey, content.AccessToken, TimeSpan.FromSeconds(content.ExpiresIn - 10));
 
-            return content;
+            return content.AccessToken;
         }
 
         public async Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId)
         {
-            var accessToken = await this.GetTokenAsync();
+            var accessToken = await this.GetAccessTokenAsync();
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/connected-realm/{realmId}/auctions?namespace=dynamic-us&locale=en_US");
 
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken.AccessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
 
             using var response = await httpClient.SendAsync(request);
 
@@ -91,13 +93,13 @@ namespace WoWMarketWatcher.API.Services
 
         public async Task<BlizzardWoWItem> GetWoWItemAsync(int itemId)
         {
-            var accessToken = await this.GetTokenAsync();
+            var accessToken = await this.GetAccessTokenAsync();
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/item/{itemId}?namespace=static-us&locale=en_US");
 
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken.AccessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
 
             using var response = await httpClient.SendAsync(request);
 
@@ -125,7 +127,7 @@ namespace WoWMarketWatcher.API.Services
                 throw new ArgumentException("itemIds max count is 100");
             }
 
-            var accessToken = await this.GetTokenAsync();
+            var accessToken = await this.GetAccessTokenAsync();
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
@@ -133,7 +135,7 @@ namespace WoWMarketWatcher.API.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/search/item?namespace=static-us&locale=en_US&{itemIdsQuery}");
 
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken.AccessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
 
             using var response = await httpClient.SendAsync(request);
 
@@ -156,13 +158,13 @@ namespace WoWMarketWatcher.API.Services
 
         public async Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync()
         {
-            var accessToken = await this.GetTokenAsync();
+            var accessToken = await this.GetAccessTokenAsync();
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/search/connected-realm?namespace=dynamic-us&locale=en_US");
 
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken.AccessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
 
             using var response = await httpClient.SendAsync(request);
 

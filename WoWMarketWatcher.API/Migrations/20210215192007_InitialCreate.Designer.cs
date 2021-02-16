@@ -9,7 +9,7 @@ using WoWMarketWatcher.API.Data;
 namespace WoWMarketWatcher.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210215072413_InitialCreate")]
+    [Migration("20210215192007_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,6 +103,21 @@ namespace WoWMarketWatcher.API.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("WatchListWoWItem", b =>
+                {
+                    b.Property<int>("WatchedInId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WatchedItemsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("WatchedInId", "WatchedItemsId");
+
+                    b.HasIndex("WatchedItemsId");
+
+                    b.ToTable("WatchListWoWItem");
+                });
+
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.AuctionTimeSeriesEntry", b =>
                 {
                     b.Property<long>("Id")
@@ -147,7 +162,11 @@ namespace WoWMarketWatcher.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConnectedRealmId");
+
                     b.HasIndex("Timestamp");
+
+                    b.HasIndex("WoWItemId");
 
                     b.ToTable("AuctionTimeSeries");
                 });
@@ -369,6 +388,34 @@ namespace WoWMarketWatcher.API.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.WatchList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConnectedRealmId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConnectedRealmId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("WatchLists");
+                });
+
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.WoWItem", b =>
                 {
                     b.Property<int>("Id")
@@ -460,6 +507,40 @@ namespace WoWMarketWatcher.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WatchListWoWItem", b =>
+                {
+                    b.HasOne("WoWMarketWatcher.API.Entities.WatchList", null)
+                        .WithMany()
+                        .HasForeignKey("WatchedInId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WoWMarketWatcher.API.Entities.WoWItem", null)
+                        .WithMany()
+                        .HasForeignKey("WatchedItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.AuctionTimeSeriesEntry", b =>
+                {
+                    b.HasOne("WoWMarketWatcher.API.Entities.ConnectedRealm", "ConnectedRealm")
+                        .WithMany("AuctionTimeSeries")
+                        .HasForeignKey("ConnectedRealmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WoWMarketWatcher.API.Entities.WoWItem", "WoWItem")
+                        .WithMany("AuctionTimeSeries")
+                        .HasForeignKey("WoWItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ConnectedRealm");
+
+                    b.Navigation("WoWItem");
+                });
+
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.LinkedAccount", b =>
                 {
                     b.HasOne("WoWMarketWatcher.API.Entities.User", "User")
@@ -512,8 +593,29 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.WatchList", b =>
+                {
+                    b.HasOne("WoWMarketWatcher.API.Entities.ConnectedRealm", "ConnectedRealm")
+                        .WithMany()
+                        .HasForeignKey("ConnectedRealmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WoWMarketWatcher.API.Entities.User", "User")
+                        .WithMany("WatchLists")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ConnectedRealm");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.ConnectedRealm", b =>
                 {
+                    b.Navigation("AuctionTimeSeries");
+
                     b.Navigation("Realms");
                 });
 
@@ -529,6 +631,13 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("UserRoles");
+
+                    b.Navigation("WatchLists");
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.WoWItem", b =>
+                {
+                    b.Navigation("AuctionTimeSeries");
                 });
 #pragma warning restore 612, 618
         }

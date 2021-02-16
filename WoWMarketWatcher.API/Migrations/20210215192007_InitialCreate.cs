@@ -53,30 +53,6 @@ namespace WoWMarketWatcher.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AuctionTimeSeries",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    WoWItemId = table.Column<int>(type: "int", nullable: false),
-                    ConnectedRealmId = table.Column<int>(type: "int", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    TotalAvailableForAuction = table.Column<long>(type: "bigint", nullable: false),
-                    AveragePrice = table.Column<long>(type: "bigint", nullable: false),
-                    MinPrice = table.Column<long>(type: "bigint", nullable: false),
-                    MaxPrice = table.Column<long>(type: "bigint", nullable: false),
-                    Price25Percentile = table.Column<long>(type: "bigint", nullable: false),
-                    Price50Percentile = table.Column<long>(type: "bigint", nullable: false),
-                    Price75Percentile = table.Column<long>(type: "bigint", nullable: false),
-                    Price95Percentile = table.Column<long>(type: "bigint", nullable: false),
-                    Price99Percentile = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AuctionTimeSeries", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ConnectedRealms",
                 columns: table => new
                 {
@@ -285,6 +261,94 @@ namespace WoWMarketWatcher.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "WatchLists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ConnectedRealmId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
+                    Description = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WatchLists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WatchLists_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WatchLists_ConnectedRealms_ConnectedRealmId",
+                        column: x => x.ConnectedRealmId,
+                        principalTable: "ConnectedRealms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuctionTimeSeries",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    WoWItemId = table.Column<int>(type: "int", nullable: false),
+                    ConnectedRealmId = table.Column<int>(type: "int", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    TotalAvailableForAuction = table.Column<long>(type: "bigint", nullable: false),
+                    AveragePrice = table.Column<long>(type: "bigint", nullable: false),
+                    MinPrice = table.Column<long>(type: "bigint", nullable: false),
+                    MaxPrice = table.Column<long>(type: "bigint", nullable: false),
+                    Price25Percentile = table.Column<long>(type: "bigint", nullable: false),
+                    Price50Percentile = table.Column<long>(type: "bigint", nullable: false),
+                    Price75Percentile = table.Column<long>(type: "bigint", nullable: false),
+                    Price95Percentile = table.Column<long>(type: "bigint", nullable: false),
+                    Price99Percentile = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuctionTimeSeries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AuctionTimeSeries_ConnectedRealms_ConnectedRealmId",
+                        column: x => x.ConnectedRealmId,
+                        principalTable: "ConnectedRealms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AuctionTimeSeries_WoWItems_WoWItemId",
+                        column: x => x.WoWItemId,
+                        principalTable: "WoWItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WatchListWoWItem",
+                columns: table => new
+                {
+                    WatchedInId = table.Column<int>(type: "int", nullable: false),
+                    WatchedItemsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WatchListWoWItem", x => new { x.WatchedInId, x.WatchedItemsId });
+                    table.ForeignKey(
+                        name: "FK_WatchListWoWItem_WatchLists_WatchedInId",
+                        column: x => x.WatchedInId,
+                        principalTable: "WatchLists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WatchListWoWItem_WoWItems_WatchedItemsId",
+                        column: x => x.WatchedItemsId,
+                        principalTable: "WoWItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -323,9 +387,19 @@ namespace WoWMarketWatcher.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuctionTimeSeries_ConnectedRealmId",
+                table: "AuctionTimeSeries",
+                column: "ConnectedRealmId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AuctionTimeSeries_Timestamp",
                 table: "AuctionTimeSeries",
                 column: "Timestamp");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuctionTimeSeries_WoWItemId",
+                table: "AuctionTimeSeries",
+                column: "WoWItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LinkedAccounts_UserId",
@@ -336,6 +410,21 @@ namespace WoWMarketWatcher.API.Migrations
                 name: "IX_Realms_ConnectedRealmId",
                 table: "Realms",
                 column: "ConnectedRealmId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WatchLists_ConnectedRealmId",
+                table: "WatchLists",
+                column: "ConnectedRealmId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WatchLists_UserId",
+                table: "WatchLists",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WatchListWoWItem_WatchedItemsId",
+                table: "WatchListWoWItem",
+                column: "WatchedItemsId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -368,16 +457,22 @@ namespace WoWMarketWatcher.API.Migrations
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "WoWItems");
+                name: "WatchListWoWItem");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "ConnectedRealms");
+                name: "WatchLists");
+
+            migrationBuilder.DropTable(
+                name: "WoWItems");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "ConnectedRealms");
         }
     }
 }

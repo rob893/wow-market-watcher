@@ -14,6 +14,7 @@ using System;
 using WoWMarketWatcher.API.Extensions;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -38,7 +39,10 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("blizz/auctions")]
         public async Task<ActionResult> TestBlizzardAuctionsInsertAsync()
         {
+            var currentItemsTask = db.WoWItems.Select(i => i.Id).ToListAsync();
             var res = await this.blizzardService.GetAuctionsAsync(3694);
+
+            var currentItems = (await currentItemsTask).ToHashSet();
 
             var dict = new Dictionary<int, AuctionTimeSeriesEntry>();
             var seen = new Dictionary<int, List<(long amount, long price)>>();
@@ -103,36 +107,40 @@ namespace WoWMarketWatcher.API.Controllers
                 value.Price99Percentile = Percentile(sortedPrices, 0.99, true);
             }
 
-            db.AuctionTimeSeries.AddRange(dict.Values);
+            var newItems = dict.Keys.Where(k => !currentItems.Contains(k));
 
-            var jsonString = JsonConvert.SerializeObject(dict.Values.Take(100));
+            var chunks = newItems.ChunkBy(100);
 
-            await System.IO.File.WriteAllTextAsync("AuctionTimeSeriesSeedData.json", jsonString);
+            var chunkedChunks = chunks.ChunkBy(5);
+
+            var tasks = new List<Task<IEnumerable<WoWItem>>>();
+
+            foreach (var chunkedChunk in chunkedChunks)
+            {
+                tasks.Add(this.HandleChunkAsync(chunkedChunk));
+            }
+
+            var items = (await Task.WhenAll(tasks)).SelectMany(x => x);
+
+            currentItems.UnionWith(items.Select(i => i.Id));
+
+            db.WoWItems.AddRange(items);
+
+            db.AuctionTimeSeries.AddRange(dict.Values.Where(e => currentItems.Contains(e.WoWItemId)));
 
             await db.SaveChangesAsync();
 
-            // var chunks = dict.Keys.ChunkBy(100);
-
-            // var chunkedChunks = chunks.ChunkBy(5);
-
-            // var tasks = new List<Task<IEnumerable<WoWItem>>>();
-
-            // foreach (var chunkedChunk in chunkedChunks)
-            // {
-            //     tasks.Add(this.HandleChunkAsync(chunkedChunk));
-            // }
-
-            // var items = (await Task.WhenAll(tasks)).SelectMany(x => x);
+            var notAdded = dict.Values.Where(e => !currentItems.Contains(e.WoWItemId));
 
             // var jsonString = JsonConvert.SerializeObject(items);
 
             // await System.IO.File.WriteAllTextAsync("wowItems.json", jsonString);
 
-            // db.WoWItems.AddRange(items);
+            // var jsonString = JsonConvert.SerializeObject(dict.Values.Take(100));
 
-            // await db.SaveChangesAsync();
+            // await System.IO.File.WriteAllTextAsync("AuctionTimeSeriesSeedData.json", jsonString);
 
-            return Ok();
+            return Ok(notAdded);
         }
 
         private static long Percentile(long[] source, double percentile, bool isSourceSorted = false)
@@ -187,9 +195,9 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet("blizz/token")]
         public async Task<ActionResult<BlizzardTokenResponse>> TestBlizzardTokenAsync()
         {
-            var res = await this.blizzardService.GetTokenAsync();
+            var res = await this.blizzardService.GetAccessTokenAsync();
 
-            return Ok(res);
+            return Ok(new { accessToken = res });
         }
 
         [HttpGet("blizz/auctions")]

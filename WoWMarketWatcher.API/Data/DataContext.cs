@@ -15,6 +15,7 @@ namespace WoWMarketWatcher.API.Data
         public DbSet<Realm> Realms => Set<Realm>();
         public DbSet<WoWItem> WoWItems => Set<WoWItem>();
         public DbSet<AuctionTimeSeriesEntry> AuctionTimeSeries => Set<AuctionTimeSeriesEntry>();
+        public DbSet<WatchList> WatchLists => Set<WatchList>();
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 

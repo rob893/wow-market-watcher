@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using WoWMarketWatcher.Common.Models;
-
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.Common.Models.DTOs
 {
-    public class WoWItem : IIdentifiable<int>
+    public record WoWItemDto : IIdentifiable<int>
     {
         public int Id { get; init; }
         public string Name { get; init; } = default!;
@@ -19,7 +16,5 @@ namespace WoWMarketWatcher.API.Entities
         public string Quality { get; init; } = default!;
         public string InventoryType { get; init; } = default!;
         public int MaxCount { get; init; }
-        public List<AuctionTimeSeriesEntry> AuctionTimeSeries { get; init; } = new List<AuctionTimeSeriesEntry>();
-        public List<WatchList> WatchedIn { get; init; } = new List<WatchList>();
     }
 }

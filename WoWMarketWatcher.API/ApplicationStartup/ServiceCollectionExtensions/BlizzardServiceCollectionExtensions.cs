@@ -21,7 +21,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             }).AddTransientHttpErrorPolicy(p =>
                 p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(300)));
 
-            services.AddSingleton<BlizzardService>();
+            services.AddScoped<BlizzardService>();
 
             return services;
         }

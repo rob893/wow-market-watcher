@@ -24,7 +24,19 @@
     "FirstName": "Robert",
     "LastName": "Herp",
     "Email": "rherp@fakemail.com",
-    "Created": "2019-08-02"
+    "Created": "2019-08-02",
+    "WatchLists": [
+      {
+        "Name": "Herb Mats",
+        "Description": "My list of herbs to watch",
+        "ConnectedRealmId": 3694,
+        "WatchedItems": [
+          {
+            "Id": 168589
+          }
+        ]
+      }
+    ]
   },
   {
     "Id": 4,

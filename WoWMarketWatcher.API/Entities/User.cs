@@ -18,5 +18,6 @@ namespace WoWMarketWatcher.API.Entities
         public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
         public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public List<LinkedAccount> LinkedAccounts { get; set; } = new List<LinkedAccount>();
+        public List<WatchList> WatchLists { get; set; } = new List<WatchList>();
     }
 }
