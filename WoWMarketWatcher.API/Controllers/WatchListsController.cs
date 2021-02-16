@@ -8,6 +8,10 @@ using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.Common.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using WoWMarketWatcher.Common.Constants;
+using WoWMarketWatcher.Common.Models.Requests;
+using WoWMarketWatcher.API.Entities;
+using Microsoft.AspNetCore.JsonPatch;
+using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -46,6 +50,71 @@ namespace WoWMarketWatcher.API.Controllers
             }
 
             var mapped = this.mapper.Map<WatchListDto>(list);
+
+            return this.Ok(mapped);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<WatchListDto>> CreateWatchListAsync([FromBody] CreateWatchListRequest request)
+        {
+            var newWatchList = this.mapper.Map<WatchList>(request);
+            this.watchListRepository.Add(newWatchList);
+
+            var saveResult = await this.watchListRepository.SaveAllAsync();
+
+            if (!saveResult)
+            {
+                return this.BadRequest("Unable to create watch list.");
+            }
+
+            var mapped = this.mapper.Map<WatchListDto>(newWatchList);
+
+            return this.CreatedAtRoute("GetWatchListAsync", new { id = mapped.Id }, mapped);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteWatchListAsync([FromRoute] int id)
+        {
+            var watchList = await this.watchListRepository.GetByIdAsync(id);
+
+            if (watchList == null)
+            {
+                return this.NotFound($"No resource with Id {id} found.");
+            }
+
+            this.watchListRepository.Delete(watchList);
+            var saveResults = await this.watchListRepository.SaveAllAsync();
+
+            return !saveResults ? this.BadRequest("Failed to delete the income.") : this.NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<WatchListDto>> UpdateWatchListAsync([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateWatchListRequest> requestPatchDoc)
+        {
+            if (requestPatchDoc == null || requestPatchDoc.Operations.Count == 0)
+            {
+                return this.BadRequest("A JSON patch document with at least 1 operation is required.");
+            }
+
+            var watchList = await this.watchListRepository.GetByIdAsync(id);
+
+            if (watchList == null)
+            {
+                return this.NotFound($"No expense with Id {id} found.");
+            }
+
+            if (!requestPatchDoc.IsValid(out var errors))
+            {
+                return this.BadRequest(errors);
+            }
+
+            var patchDoc = this.mapper.Map<JsonPatchDocument<WatchList>>(requestPatchDoc);
+
+            patchDoc.ApplyTo(watchList);
+
+            await this.watchListRepository.SaveAllAsync();
+
+            var mapped = this.mapper.Map<WatchListDto>(watchList);
 
             return this.Ok(mapped);
         }

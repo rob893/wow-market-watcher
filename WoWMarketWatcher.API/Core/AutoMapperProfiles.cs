@@ -44,6 +44,10 @@ namespace WoWMarketWatcher.API.Core
         private void CreateWatchListMaps()
         {
             this.CreateMap<WatchList, WatchListDto>();
+            this.CreateMap<CreateWatchListRequest, WatchList>();
+            this.CreateMap<CreateWatchListForUserRequest, WatchList>();
+            this.CreateMap<JsonPatchDocument<UpdateWatchListRequest>, JsonPatchDocument<WatchList>>();
+            this.CreateMap<Operation<UpdateWatchListRequest>, Operation<WatchList>>();
         }
     }
 }
