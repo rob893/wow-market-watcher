@@ -12,6 +12,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 .AddScoped<WoWItemRepository>()
                 .AddScoped<RealmRepository>()
                 .AddScoped<WatchListRepository>()
+                .AddScoped<AuctionTimeSeriesRepository>()
                 .AddScoped<ConnectedRealmRepository>();
 
             return services;

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Responses;
-using WoWMarketWatcher.API.Entities;
 using Microsoft.Extensions.Caching.Memory;
 using WoWMarketWatcher.API.Constants;
 using System;
@@ -51,19 +50,6 @@ namespace WoWMarketWatcher.API.Controllers
             var mapped = this.mapper.Map<WoWItemDto>(item);
 
             return this.Ok(mapped);
-        }
-
-        [HttpGet("{id}/auctionTimeSeries")]
-        public async Task<ActionResult<IEnumerable<AuctionTimeSeriesEntry>>> GetWoWItemAuctionTimeSeriesAsync([FromRoute] int id)
-        {
-            var item = await this.itemRepository.GetByIdAsync(id, item => item.AuctionTimeSeries);
-
-            if (item == null)
-            {
-                return this.NotFound($"Item with id {id} does not exist.");
-            }
-
-            return this.Ok(item.AuctionTimeSeries);
         }
 
         [HttpGet("classes")]

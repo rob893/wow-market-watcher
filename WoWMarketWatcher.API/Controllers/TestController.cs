@@ -13,7 +13,6 @@ using WoWMarketWatcher.API.Entities;
 using System;
 using WoWMarketWatcher.API.Extensions;
 using Newtonsoft.Json;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace WoWMarketWatcher.API.Controllers

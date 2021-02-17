@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Google.Apis.Logging;
 using Hangfire.JobsLogger;
 using Hangfire.Server;
 using Microsoft.Extensions.Logging;

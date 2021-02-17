@@ -35,22 +35,22 @@ namespace WoWMarketWatcher.API.Models.Responses
 
             if (includeEdges)
             {
-                SetEdges(items);
+                this.SetEdges(items);
             }
 
             if (includeNodes)
             {
-                Nodes = items.ToList();
+                this.Nodes = items.ToList();
             }
 
-            PageInfo = new PageInfo
+            this.PageInfo = new PageInfo
             {
                 StartCursor = startCursor,
                 EndCursor = endCursor,
                 HasNextPage = hasNextPage,
                 HasPreviousPage = hasPreviousPage
             };
-            TotalCount = totalCount;
+            this.TotalCount = totalCount;
         }
 
         public CursorPaginatedResponse(CursorPagedList<TEntity, TEntityKey> items, Func<TEntityKey, string> ConvertIdToBase64, bool includeNodes = true, bool includeEdges = true) :
@@ -85,11 +85,39 @@ namespace WoWMarketWatcher.API.Models.Responses
             return new CursorPaginatedResponse<TSource, int>(items, items.StartCursor, items.EndCursor, items.HasNextPage, items.HasPreviousPage, items.TotalCount, Id => Convert.ToBase64String(BitConverter.GetBytes(Id)), includeNodes, includeEdges);
         }
 
+        public static CursorPaginatedResponse<TDestination, long> CreateFrom<TSource, TDestination>(CursorPagedList<TSource, long> items, Func<IEnumerable<TSource>, IEnumerable<TDestination>> mappingFunction, CursorPaginationParameters searchParams)
+            where TSource : class, IIdentifiable<long>
+            where TDestination : class, IIdentifiable<long>
+        {
+            return CursorPaginatedResponse<TDestination, long>.CreateFrom(items, mappingFunction, searchParams.IncludeNodes, searchParams.IncludeEdges);
+        }
+
+        public static CursorPaginatedResponse<TDestination, long> CreateFrom<TSource, TDestination>(CursorPagedList<TSource, long> items, Func<IEnumerable<TSource>, IEnumerable<TDestination>> mappingFunction, bool includeNodes = true, bool includeEdges = true)
+            where TSource : class, IIdentifiable<long>
+            where TDestination : class, IIdentifiable<long>
+        {
+            var mappedItems = mappingFunction(items);
+
+            return new CursorPaginatedResponse<TDestination, long>(mappedItems, items.StartCursor, items.EndCursor, items.HasNextPage, items.HasPreviousPage, items.TotalCount, Id => Convert.ToBase64String(BitConverter.GetBytes(Id)), includeNodes, includeEdges);
+        }
+
+        public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPagedList<TSource, long> items, CursorPaginationParameters searchParams)
+            where TSource : class, IIdentifiable<long>
+        {
+            return CursorPaginatedResponse<TSource, long>.CreateFrom(items, searchParams.IncludeNodes, searchParams.IncludeEdges);
+        }
+
+        public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPagedList<TSource, long> items, bool includeNodes = true, bool includeEdges = true)
+            where TSource : class, IIdentifiable<long>
+        {
+            return new CursorPaginatedResponse<TSource, long>(items, items.StartCursor, items.EndCursor, items.HasNextPage, items.HasPreviousPage, items.TotalCount, Id => Convert.ToBase64String(BitConverter.GetBytes(Id)), includeNodes, includeEdges);
+        }
+
         private void SetEdges(IEnumerable<TEntity> items)
         {
-            Edges = items.Select(item => new Edge<TEntity>
+            this.Edges = items.Select(item => new Edge<TEntity>
             {
-                Cursor = ConvertIdToBase64(item.Id),
+                Cursor = this.ConvertIdToBase64(item.Id),
                 Node = item
             });
         }

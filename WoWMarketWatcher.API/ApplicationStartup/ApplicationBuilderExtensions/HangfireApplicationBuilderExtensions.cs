@@ -42,7 +42,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 
             public bool Authorize(DashboardContext context)
             {
-                if (!configuration.GetEnvironment().Equals(ServiceEnvironment.Production, StringComparison.OrdinalIgnoreCase))
+                if (!this.configuration.GetEnvironment().Equals(ServiceEnvironment.Production, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -50,7 +50,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                 var httpContext = context.GetHttpContext();
 
                 string authHeader = httpContext.Request.Headers["Authorization"];
-                if (authHeader != null && authHeader.StartsWith("Basic "))
+                if (authHeader != null && authHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
                 {
                     // Get the encoded username and password
                     var encodedUsernamePassword = authHeader.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries)[1]?.Trim();
@@ -63,7 +63,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                     var password = decodedUsernamePassword.Split(':', 2)[1];
 
                     // Check if login is correct
-                    if (username == configuration["Hangfire:DashboardUsername"] && password == configuration["Hangfire:DashboardPassword"])
+                    if (username == this.configuration["Hangfire:DashboardUsername"] && password == this.configuration["Hangfire:DashboardPassword"])
                     {
                         return true;
                     }

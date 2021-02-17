@@ -16,6 +16,7 @@ namespace WoWMarketWatcher.API.Core
             this.CreateWoWItemMaps();
             this.CreateRealmMaps();
             this.CreateWatchListMaps();
+            this.CreateAuctionTimeSeriesMaps();
         }
 
         private void CreateUserMaps()
@@ -48,6 +49,11 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap<CreateWatchListForUserRequest, WatchList>();
             this.CreateMap<JsonPatchDocument<UpdateWatchListRequest>, JsonPatchDocument<WatchList>>();
             this.CreateMap<Operation<UpdateWatchListRequest>, Operation<WatchList>>();
+        }
+
+        private void CreateAuctionTimeSeriesMaps()
+        {
+            this.CreateMap<AuctionTimeSeriesEntry, AuctionTimeSeriesEntryDto>();
         }
     }
 }

@@ -83,6 +83,13 @@ namespace WoWMarketWatcher.API.Extensions
             return dictionary;
         }
 
+        public static bool IsBetween(this DateTime input, DateTime startDate, DateTime endDate)
+        {
+            return endDate < startDate
+                ? throw new ArgumentException($"{nameof(startDate)} must be less than {nameof(endDate)}.")
+                : input >= startDate && input <= endDate;
+        }
+
         private static void AddPropertyToDictionary<T>(PropertyDescriptor property, object source, Dictionary<string, T> dictionary)
         {
             object value = property.GetValue(source);
