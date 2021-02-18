@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 using WoWMarketWatcher.Common.Constants;
 
-namespace WoWMarketWatcher.API.Extensions
+namespace WoWMarketWatcher.Common.Extensions
 {
     public static class UtilityExtensions
     {
@@ -21,7 +23,7 @@ namespace WoWMarketWatcher.API.Extensions
                 return false;
             }
 
-            if (int.TryParse(nameIdClaim.Value, out int value))
+            if (int.TryParse(nameIdClaim.Value, out var value))
             {
                 userId = value;
                 return true;
@@ -37,12 +39,7 @@ namespace WoWMarketWatcher.API.Extensions
 
         public static bool HasProperty(this object obj, string property)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            return obj.GetType().GetProperty(property) != null;
+            return obj != null && obj.GetType().GetProperty(property) != null;
         }
 
         public static int ConvertToInt32FromBase64(this string str)
@@ -90,9 +87,25 @@ namespace WoWMarketWatcher.API.Extensions
                 : input >= startDate && input <= endDate;
         }
 
+        public static string GetSourceName(
+            this object _,
+            [CallerFilePath]
+            string sourceFilePath = "",
+            [CallerMemberName]
+            string memberName = "")
+        {
+            var sourceName = string.Empty;
+            if (!string.IsNullOrWhiteSpace(sourceFilePath))
+            {
+                sourceName = sourceFilePath.Split('\\').Last().Split('.').First();
+            }
+
+            return $"{sourceName}.{memberName}";
+        }
+
         private static void AddPropertyToDictionary<T>(PropertyDescriptor property, object source, Dictionary<string, T> dictionary)
         {
-            object value = property.GetValue(source);
+            var value = property.GetValue(source);
             if (IsOfType<T>(value))
             {
                 dictionary.Add(property.Name, (T)value);

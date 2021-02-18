@@ -26,7 +26,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                 }
             );
 
-            recurringJobs.AddOrUpdate<PullAuctionDataBackgroundJob>(nameof(PullAuctionDataBackgroundJob), job => job.PullAuctionData(null!), Cron.Minutely());
+            recurringJobs.AddOrUpdate<PullAuctionDataBackgroundJob>(nameof(PullAuctionDataBackgroundJob), job => job.PullAuctionData(null!), Cron.MinuteInterval(5));
 
             return app;
         }

@@ -11,8 +11,9 @@ using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.Common.Constants;
 using Microsoft.AspNetCore.JsonPatch;
-using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.Common.Extensions;
 using WoWMarketWatcher.Common.Models.Requests;
+using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Controllers
 {

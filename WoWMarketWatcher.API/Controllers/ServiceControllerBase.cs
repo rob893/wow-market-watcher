@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.Common.Extensions;
 using System.Net;
 using WoWMarketWatcher.Common.Models;
 
@@ -12,33 +12,13 @@ namespace WoWMarketWatcher.API.Controllers
         [NonAction]
         public bool IsUserAuthorizedForResource(IOwnedByUser<int> resource, bool isAdminAuthorized = true)
         {
-            if (isAdminAuthorized && User.IsAdmin())
-            {
-                return true;
-            }
-
-            if (User.TryGetUserId(out int? userId) && userId == resource.UserId)
-            {
-                return true;
-            }
-
-            return false;
+            return (isAdminAuthorized && this.User.IsAdmin()) || (this.User.TryGetUserId(out var userId) && userId == resource.UserId);
         }
 
         [NonAction]
         public bool IsUserAuthorizedForResource(int userIdInQuestion, bool isAdminAuthorized = true)
         {
-            if (isAdminAuthorized && User.IsAdmin())
-            {
-                return true;
-            }
-
-            if (User.TryGetUserId(out int? userId) && userId == userIdInQuestion)
-            {
-                return true;
-            }
-
-            return false;
+            return (isAdminAuthorized && this.User.IsAdmin()) || (this.User.TryGetUserId(out var userId) && userId == userIdInQuestion);
         }
 
         [NonAction]
