@@ -8,6 +8,7 @@ using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using WoWMarketWatcher.API.BackgroundJobs;
+using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.Common.Constants;
 using WoWMarketWatcher.Common.Extensions;
 
@@ -26,7 +27,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                 }
             );
 
-            recurringJobs.AddOrUpdate<PullAuctionDataBackgroundJob>(nameof(PullAuctionDataBackgroundJob), job => job.PullAuctionData(null!), Cron.MinuteInterval(5));
+            recurringJobs.AddOrUpdate<PullAuctionDataBackgroundJob>(nameof(PullAuctionDataBackgroundJob), job => job.PullAuctionData(null!), CronBuilder.AtEveryXHour(2));
 
             return app;
         }

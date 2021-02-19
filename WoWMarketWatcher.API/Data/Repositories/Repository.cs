@@ -58,9 +58,19 @@ namespace WoWMarketWatcher.API.Data.Repositories
             this.Context.Set<TEntity>().RemoveRange(entities);
         }
 
+        public IQueryable<TEntity> EntitySetAsNoTracking()
+        {
+            return this.Context.Set<TEntity>().AsNoTracking();
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await this.Context.SaveChangesAsync() > 0;
+        }
+
+        public Task<int> SaveChangesAsync()
+        {
+            return this.Context.SaveChangesAsync();
         }
 
         public Task<TEntity> GetByIdAsync(TEntityKey id)

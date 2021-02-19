@@ -12,19 +12,30 @@ using Hangfire;
 using System.Collections.Generic;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
+using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs
 {
     public class PullAuctionDataBackgroundJob
     {
         private readonly BlizzardService blizzardService;
+        private readonly WoWItemRepository itemRepository;
+        private readonly WatchListRepository watchListRepository;
+        private readonly AuctionTimeSeriesRepository timeSeriesRepository;
         private readonly ILogger<PullAuctionDataBackgroundJob> logger;
-        private readonly DataContext dbContext;
 
-        public PullAuctionDataBackgroundJob(BlizzardService blizzardService, DataContext dbContext, ILogger<PullAuctionDataBackgroundJob> logger)
+        public PullAuctionDataBackgroundJob(
+            BlizzardService blizzardService,
+            WoWItemRepository itemRepository,
+            WatchListRepository watchListRepository,
+            AuctionTimeSeriesRepository timeSeriesRepository,
+            ILogger<PullAuctionDataBackgroundJob> logger)
         {
             this.blizzardService = blizzardService;
-            this.dbContext = dbContext;
+            this.itemRepository = itemRepository;
+            this.watchListRepository = watchListRepository;
+            this.timeSeriesRepository = timeSeriesRepository;
             this.logger = logger;
         }
 
@@ -43,18 +54,20 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             try
             {
-                var realmsToUpdate = await this.dbContext.WatchLists.Select(list => list.ConnectedRealmId).Distinct().ToListAsync();
-                var currentItems = (await this.dbContext.WoWItems.Select(i => i.Id).ToListAsync()).ToHashSet();
+                var realmsToUpdate = await this.watchListRepository.EntitySetAsNoTracking().Select(list => list.ConnectedRealmId).Distinct().ToListAsync();
+                var currentItems = (await this.itemRepository.EntitySetAsNoTracking().Select(i => i.Id).ToListAsync()).ToHashSet();
+                var newItemIds = new HashSet<int>();
+                var newAuctionTimeSeriesEntries = new List<AuctionTimeSeriesEntry>();
 
                 context.LogDebug($"{sourceName} ({correlationId}). Fetched {realmsToUpdate.Count} connected realms to update auction data from.");
                 this.logger.LogDebug(sourceName, correlationId, $"Fetched {realmsToUpdate.Count} connected realms to update auction data from.");
 
                 foreach (var realmId in realmsToUpdate)
                 {
-                    context.LogInformation($"{sourceName} ({correlationId}). Updating auction data for connected realm {realmId}.");
-                    this.logger.LogInformation(sourceName, correlationId, $"Updating auction data for connected realm {realmId}.");
+                    context.LogInformation($"{sourceName} ({correlationId}). Processing auction data for connected realm {realmId}.");
+                    this.logger.LogInformation(sourceName, correlationId, $"Processing auction data for connected realm {realmId}.");
 
-                    var itemsToUpdate = (await this.dbContext.WatchLists
+                    var itemsToUpdate = (await this.watchListRepository.EntitySetAsNoTracking()
                         .Where(list => list.ConnectedRealmId == realmId)
                         .SelectMany(list => list.WatchedItems
                         .Select(item => item.Id))
@@ -62,22 +75,70 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                         .ToListAsync())
                         .ToHashSet();
 
+                    context.LogDebug($"{sourceName} ({correlationId}). Determined auction data for {itemsToUpdate.Count} items need to be processed based on watch lists for connected realm {realmId}.");
+                    this.logger.LogDebug(sourceName, correlationId, $"Determined auction data for {itemsToUpdate.Count} items need to be processed based on watch lists for connected realm {realmId}.");
+
                     var auctionData = await this.blizzardService.GetAuctionsAsync(realmId);
 
-                    var mapped = MapAuctionData(auctionData.Auctions);
+                    var mappedAuctions = MapAuctionData(auctionData.Auctions);
 
-                    var dataToAdd = mapped.Where(entry => itemsToUpdate.Contains(entry.WoWItemId) && currentItems.Contains(entry.WoWItemId));
+                    var newAuctionsToAdd = mappedAuctions.Where(entry => itemsToUpdate.Contains(entry.WoWItemId));
 
-                    this.dbContext.AuctionTimeSeries.AddRange(dataToAdd);
+                    newAuctionTimeSeriesEntries.AddRange(newAuctionsToAdd);
 
-                    context.LogInformation($"{sourceName} ({correlationId}). Updating auction data for connected realm {realmId} complete.");
-                    this.logger.LogInformation(sourceName, correlationId, $"Updating auction data for connected realm {realmId} complete.");
+                    var newItemIdsFromRealm = mappedAuctions.Select(auc => auc.WoWItemId).Where(id => !currentItems.Contains(id)).ToHashSet();
+
+                    context.LogDebug($"{sourceName} ({correlationId}). Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
+                    this.logger.LogDebug(sourceName, correlationId, $"Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
+
+                    newItemIds.UnionWith(newItemIdsFromRealm);
+
+                    context.LogInformation($"{sourceName} ({correlationId}). Processing auction data for connected realm {realmId} complete.");
+                    this.logger.LogInformation(sourceName, correlationId, $"Processing auction data for connected realm {realmId} complete.");
                 }
 
-                await this.dbContext.SaveChangesAsync();
+                try
+                {
+                    context.LogInformation($"{sourceName} ({correlationId}). Starting to obtain and save data for {newItemIds.Count} newly discovered items.");
+                    this.logger.LogInformation(sourceName, correlationId, $"Starting to obtain and save data for {newItemIds.Count} newly discovered items.");
 
-                context.LogInformation($"{sourceName} ({correlationId}). {nameof(PullAuctionDataBackgroundJob)} complete.");
-                this.logger.LogInformation(sourceName, correlationId, $"{nameof(PullAuctionDataBackgroundJob)} complete.");
+                    var newItemChunks = newItemIds.ChunkBy(100);
+
+                    var newItemChunkedChunks = newItemChunks.ChunkBy(3);
+
+                    var tasks = new List<Task<IEnumerable<WoWItem>>>();
+
+                    context.LogDebug($"{sourceName} ({correlationId}). Processing {newItemChunkedChunks.Count()} chunks of 3 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
+                    this.logger.LogDebug(sourceName, correlationId, $"Processing {newItemChunkedChunks.Count()} chunks of 3 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
+
+                    foreach (var chunkedChunk in newItemChunkedChunks)
+                    {
+                        tasks.Add(this.HandleChunkAsync(chunkedChunk));
+                    }
+
+                    var itemsFromBlizzard = (await Task.WhenAll(tasks)).SelectMany(item => item);
+
+                    this.itemRepository.AddRange(itemsFromBlizzard);
+
+                    var itemsSaved = await this.itemRepository.SaveChangesAsync();
+
+                    currentItems.UnionWith(itemsFromBlizzard.Select(i => i.Id));
+
+                    context.LogInformation($"{sourceName} ({correlationId}). Obtaining and saving data for {newItemIds.Count} newly discovered items. {itemsSaved} database records created/updated.");
+                    this.logger.LogInformation(sourceName, correlationId, $"Obtainint and saving data for {newItemIds.Count} newly discovered items. {itemsSaved} database records created/updated.");
+                }
+                catch (Exception ex)
+                {
+                    context.LogWarning($"{sourceName} ({correlationId}). Error while processing data for new items. Auction data will still be processed for all items currently tracked. Reason: {ex.Message}");
+                    this.logger.LogWarning(sourceName, correlationId, $"Error while processing data for new items. Auction data will still be processed for all items currently tracked.", ex.Message);
+                }
+
+                this.timeSeriesRepository.AddRange(newAuctionTimeSeriesEntries.Where(newAuction => currentItems.Contains(newAuction.WoWItemId)));
+
+                var numberOfEntriesUpdated = await this.timeSeriesRepository.SaveChangesAsync();
+
+                context.LogInformation($"{sourceName} ({correlationId}). {nameof(PullAuctionDataBackgroundJob)} complete. {numberOfEntriesUpdated} auction entries were created/updated.");
+                this.logger.LogInformation(sourceName, correlationId, $"{nameof(PullAuctionDataBackgroundJob)} complete. {numberOfEntriesUpdated} auction entries were created/updated.");
             }
             catch (OperationCanceledException ex)
             {
@@ -158,6 +219,35 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             }
 
             return dict.Values.ToList();
+        }
+
+        private async Task<IEnumerable<WoWItem>> HandleChunkAsync(IEnumerable<IEnumerable<int>> chunkedItemIds)
+        {
+            var result = new List<WoWItem>();
+
+            foreach (var chunk in chunkedItemIds)
+            {
+                var res = await this.blizzardService.GetWoWItemsAsync(chunk);
+                result.AddRange(res.Results.Select(r => new WoWItem
+                {
+                    Id = r.Data.Id,
+                    Name = r.Data.Name.EnUS,
+                    IsEquippable = r.Data.IsEquippable,
+                    IsStackable = r.Data.IsStackable,
+                    Level = r.Data.Level,
+                    RequiredLevel = r.Data.RequiredLevel,
+                    SellPrice = r.Data.SellPrice,
+                    PurchaseQuantity = r.Data.PurchaseQuantity,
+                    PurchasePrice = r.Data.PurchasePrice,
+                    ItemClass = r.Data.ItemClass.Name.EnUS,
+                    ItemSubclass = r.Data.ItemSubclass.Name.EnUS,
+                    Quality = r.Data.Quality.Name.EnUS,
+                    InventoryType = r.Data.InventoryType.Name.EnUS,
+                    MaxCount = r.Data.MaxCount
+                }));
+            }
+
+            return result;
         }
 
         private static long Percentile(long[] source, double percentile, bool isSourceSorted = false)

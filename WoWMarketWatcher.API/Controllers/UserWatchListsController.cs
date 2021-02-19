@@ -76,7 +76,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             var mapped = this.mapper.Map<WatchListDto>(newWatchList);
 
-            return this.CreatedAtRoute("GetWatchListForUserAsync", (id: mapped.Id, userId), mapped);
+            return this.CreatedAtRoute("GetWatchListForUserAsync", new { id = mapped.Id, userId }, mapped);
         }
 
         [HttpPost("{id}/items")]
