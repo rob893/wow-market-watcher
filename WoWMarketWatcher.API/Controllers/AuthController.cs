@@ -27,12 +27,12 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class AuthController : ServiceControllerBase
     {
-        private readonly UserRepository userRepository;
+        private readonly IUserRepository userRepository;
         private readonly AuthenticationSettings authSettings;
         private readonly IMapper mapper;
 
 
-        public AuthController(UserRepository userRepository, IOptions<AuthenticationSettings> authSettings, IMapper mapper)
+        public AuthController(IUserRepository userRepository, IOptions<AuthenticationSettings> authSettings, IMapper mapper)
         {
             this.userRepository = userRepository;
             this.authSettings = authSettings.Value;

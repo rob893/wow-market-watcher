@@ -4,13 +4,14 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.Common.Models.DTOs;
 using WoWMarketWatcher.Common.Models.Requests;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using System.Linq;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -18,12 +19,12 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class UserWatchListsController : ServiceControllerBase
     {
-        private readonly WatchListRepository watchListRepository;
-        private readonly WoWItemRepository itemRepository;
+        private readonly IWatchListRepository watchListRepository;
+        private readonly IWoWItemRepository itemRepository;
         private readonly IMapper mapper;
 
 
-        public UserWatchListsController(WatchListRepository watchListRepository, WoWItemRepository itemRepository, IMapper mapper)
+        public UserWatchListsController(IWatchListRepository watchListRepository, IWoWItemRepository itemRepository, IMapper mapper)
         {
             this.watchListRepository = watchListRepository;
             this.itemRepository = itemRepository;
@@ -33,8 +34,13 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet]
         public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsForUserAsync([FromRoute] int userId, [FromQuery] RealmQueryParameters searchParams)
         {
+            if (!this.IsUserAuthorizedForResource(userId))
+            {
+                return this.Forbidden("You are not authorized to access this resource.");
+            }
+
             var lists = await this.watchListRepository.GetWatchListsForUserAsync(userId, searchParams);
-            var paginatedResponse = CursorPaginatedResponse<WatchListDto>.CreateFrom(lists, this.mapper.Map<IEnumerable<WatchListDto>>, searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(lists, this.mapper.Map<IEnumerable<WatchListDto>>, searchParams);
 
             return this.Ok(paginatedResponse);
         }

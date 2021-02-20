@@ -4,11 +4,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
 using Microsoft.Extensions.Caching.Memory;
 using WoWMarketWatcher.API.Constants;
 using System;
 using WoWMarketWatcher.Common.Models.DTOs;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -16,12 +17,12 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class WoWItemsController : ServiceControllerBase
     {
-        private readonly WoWItemRepository itemRepository;
+        private readonly IWoWItemRepository itemRepository;
         private readonly IMapper mapper;
         private readonly IMemoryCache cache;
 
 
-        public WoWItemsController(WoWItemRepository itemRepository, IMapper mapper, IMemoryCache cache)
+        public WoWItemsController(IWoWItemRepository itemRepository, IMapper mapper, IMemoryCache cache)
         {
             this.itemRepository = itemRepository;
             this.mapper = mapper;
@@ -32,7 +33,7 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult<CursorPaginatedResponse<WoWItemDto>>> GetWoWItemsAsync([FromQuery] WoWItemQueryParameters searchParams)
         {
             var items = await this.itemRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponse<WoWItemDto>.CreateFrom(items, this.mapper.Map<IEnumerable<WoWItemDto>>, searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(items, this.mapper.Map<IEnumerable<WoWItemDto>>, searchParams);
 
             return this.Ok(paginatedResponse);
         }

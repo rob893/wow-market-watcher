@@ -7,13 +7,14 @@ using System.Linq;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
 using WoWMarketWatcher.Common.Models.DTOs;
-using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.Common.Constants;
 using Microsoft.AspNetCore.JsonPatch;
 using WoWMarketWatcher.Common.Extensions;
 using WoWMarketWatcher.Common.Models.Requests;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -21,11 +22,11 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class UsersController : ServiceControllerBase
     {
-        private readonly UserRepository userRepository;
+        private readonly IUserRepository userRepository;
         private readonly IMapper mapper;
 
 
-        public UsersController(UserRepository userRepository, IMapper mapper)
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
             this.userRepository = userRepository;
             this.mapper = mapper;
@@ -34,51 +35,51 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet]
         public async Task<ActionResult<CursorPaginatedResponse<UserDto>>> GetUsersAsync([FromQuery] CursorPaginationParameters searchParams)
         {
-            var users = await userRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponse<UserDto>.CreateFrom(users, mapper.Map<IEnumerable<UserDto>>, searchParams);
+            var users = await this.userRepository.SearchAsync(searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(users, this.mapper.Map<IEnumerable<UserDto>>, searchParams);
 
-            return Ok(paginatedResponse);
+            return this.Ok(paginatedResponse);
         }
 
         [HttpGet("{id}", Name = "GetUserAsync")]
         public async Task<ActionResult<UserDto>> GetUserAsync(int id)
         {
-            var user = await userRepository.GetByIdAsync(id);
+            var user = await this.userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
-                return NotFound($"User with id {id} does not exist.");
+                return this.NotFound($"User with id {id} does not exist.");
             }
 
-            var userToReturn = mapper.Map<UserDto>(user);
+            var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return Ok(userToReturn);
+            return this.Ok(userToReturn);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUserAsync(int id)
         {
-            var user = await userRepository.GetByIdAsync(id);
+            var user = await this.userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
-                return NotFound($"No User with Id {id} found.");
+                return this.NotFound($"No User with Id {id} found.");
             }
 
-            if (!IsUserAuthorizedForResource(user.Id))
+            if (!this.IsUserAuthorizedForResource(user.Id))
             {
-                return Unauthorized("You can only delete your own user.");
+                return this.Unauthorized("You can only delete your own user.");
             }
 
-            userRepository.Delete(user);
-            var saveResults = await userRepository.SaveAllAsync();
+            this.userRepository.Delete(user);
+            var saveResults = await this.userRepository.SaveAllAsync();
 
             if (!saveResults)
             {
-                return BadRequest("Failed to delete the user.");
+                return this.BadRequest("Failed to delete the user.");
             }
 
-            return NoContent();
+            return this.NoContent();
         }
 
         [HttpPatch("{id}")]
@@ -86,49 +87,49 @@ namespace WoWMarketWatcher.API.Controllers
         {
             if (dtoPatchDoc == null || dtoPatchDoc.Operations.Count == 0)
             {
-                return BadRequest("A JSON patch document with at least 1 operation is required.");
+                return this.BadRequest("A JSON patch document with at least 1 operation is required.");
             }
 
             if (!dtoPatchDoc.IsValid(out var errors))
             {
-                return BadRequest(errors);
+                return this.BadRequest(errors);
             }
 
-            var user = await userRepository.GetByIdAsync(id);
+            var user = await this.userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
-                return NotFound($"No user with Id {id} found.");
+                return this.NotFound($"No user with Id {id} found.");
             }
 
-            if (!User.TryGetUserId(out var userId))
+            if (!this.User.TryGetUserId(out var userId))
             {
-                return Unauthorized("You cannot do this.");
+                return this.Unauthorized("You cannot do this.");
             }
 
-            if (!User.IsAdmin() && userId != user.Id)
+            if (!this.User.IsAdmin() && userId != user.Id)
             {
-                return Unauthorized("You cannot do this.");
+                return this.Unauthorized("You cannot do this.");
             }
 
-            var patchDoc = mapper.Map<JsonPatchDocument<User>>(dtoPatchDoc);
+            var patchDoc = this.mapper.Map<JsonPatchDocument<User>>(dtoPatchDoc);
 
             patchDoc.ApplyTo(user);
 
-            await userRepository.SaveAllAsync();
+            await this.userRepository.SaveAllAsync();
 
-            var userToReturn = mapper.Map<UserDto>(user);
+            var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return Ok(userToReturn);
+            return this.Ok(userToReturn);
         }
 
         [HttpGet("roles")]
         public async Task<ActionResult<CursorPaginatedResponse<RoleDto>>> GetRolesAsync([FromQuery] CursorPaginationParameters searchParams)
         {
-            var roles = await userRepository.GetRolesAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponse<RoleDto>.CreateFrom(roles, mapper.Map<IEnumerable<RoleDto>>, searchParams);
+            var roles = await this.userRepository.GetRolesAsync(searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(roles, this.mapper.Map<IEnumerable<RoleDto>>, searchParams);
 
-            return Ok(paginatedResponse);
+            return this.Ok(paginatedResponse);
         }
 
         [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
@@ -137,23 +138,23 @@ namespace WoWMarketWatcher.API.Controllers
         {
             if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Length == 0)
             {
-                return BadRequest("At least one role must be specified.");
+                return this.BadRequest("At least one role must be specified.");
             }
 
-            var user = await userRepository.GetByIdAsync(id);
-            var roles = await userRepository.GetRolesAsync();
-            var userRoles = user.UserRoles.Select(ur => ur.Role.Name.ToUpper()).ToHashSet();
-            var selectedRoles = roleEditDto.RoleNames.Select(role => role.ToUpper()).ToHashSet();
+            var user = await this.userRepository.GetByIdAsync(id);
+            var roles = await this.userRepository.GetRolesAsync();
+            var userRoles = user.UserRoles.Select(ur => ur.Role.Name.ToUpperInvariant()).ToHashSet();
+            var selectedRoles = roleEditDto.RoleNames.Select(role => role.ToUpperInvariant()).ToHashSet();
 
             var rolesToAdd = roles.Where(role =>
             {
-                var upperName = role.Name.ToUpper();
+                var upperName = role.Name.ToUpperInvariant();
                 return selectedRoles.Contains(upperName) && !userRoles.Contains(upperName);
             });
 
             if (!rolesToAdd.Any())
             {
-                return Ok(mapper.Map<UserDto>(user));
+                return this.Ok(this.mapper.Map<UserDto>(user));
             }
 
             user.UserRoles.AddRange(rolesToAdd.Select(role => new UserRole
@@ -161,16 +162,16 @@ namespace WoWMarketWatcher.API.Controllers
                 Role = role
             }));
 
-            var success = await userRepository.SaveAllAsync();
+            var success = await this.userRepository.SaveAllAsync();
 
             if (!success)
             {
-                return BadRequest("Failed to add roles.");
+                return this.BadRequest("Failed to add roles.");
             }
 
-            var userToReturn = mapper.Map<UserDto>(user);
+            var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return Ok(userToReturn);
+            return this.Ok(userToReturn);
         }
 
         [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
@@ -179,36 +180,36 @@ namespace WoWMarketWatcher.API.Controllers
         {
             if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Length == 0)
             {
-                return BadRequest("At least one role must be specified.");
+                return this.BadRequest("At least one role must be specified.");
             }
 
-            var user = await userRepository.GetByIdAsync(id);
-            var roles = await userRepository.GetRolesAsync();
-            var userRoles = user.UserRoles.Select(ur => ur.Role.Name.ToUpper()).ToHashSet();
-            var selectedRoles = roleEditDto.RoleNames.Select(role => role.ToUpper()).ToHashSet();
+            var user = await this.userRepository.GetByIdAsync(id);
+            var roles = await this.userRepository.GetRolesAsync();
+            var userRoles = user.UserRoles.Select(ur => ur.Role.Name.ToUpperInvariant()).ToHashSet();
+            var selectedRoles = roleEditDto.RoleNames.Select(role => role.ToUpperInvariant()).ToHashSet();
 
             var roleIdsToRemove = roles.Where(role =>
             {
-                var upperName = role.Name.ToUpper();
+                var upperName = role.Name.ToUpperInvariant();
                 return selectedRoles.Contains(upperName) && userRoles.Contains(upperName);
             }).Select(role => role.Id).ToHashSet();
 
             if (roleIdsToRemove.Count == 0)
             {
-                return Ok(mapper.Map<UserDto>(user));
+                return this.Ok(this.mapper.Map<UserDto>(user));
             }
 
             user.UserRoles.RemoveAll(ur => roleIdsToRemove.Contains(ur.RoleId));
-            var success = await userRepository.SaveAllAsync();
+            var success = await this.userRepository.SaveAllAsync();
 
             if (!success)
             {
-                return BadRequest("Failed to remove roles.");
+                return this.BadRequest("Failed to remove roles.");
             }
 
-            var userToReturn = mapper.Map<UserDto>(user);
+            var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return Ok(userToReturn);
+            return this.Ok(userToReturn);
         }
     }
 }

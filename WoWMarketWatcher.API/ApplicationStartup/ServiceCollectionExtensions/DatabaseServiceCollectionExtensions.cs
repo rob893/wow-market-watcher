@@ -36,7 +36,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 }
             );
 
-            services.AddTransient<Seeder>();
+            services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 
             return services;
         }

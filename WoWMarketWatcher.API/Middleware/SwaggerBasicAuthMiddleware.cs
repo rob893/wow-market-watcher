@@ -37,12 +37,12 @@ namespace WoWMarketWatcher.API.Middleware
 
                 if (!authSettings.RequireAuth)
                 {
-                    await next.Invoke(context);
+                    await this.next.Invoke(context);
                     return;
                 }
 
                 string authHeader = context.Request.Headers["Authorization"];
-                if (authHeader != null && authHeader.StartsWith("Basic "))
+                if (authHeader != null && authHeader.StartsWith("Basic ", StringComparison.Ordinal))
                 {
                     // Get the encoded username and password
                     var encodedUsernamePassword = authHeader.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries)[1]?.Trim();
@@ -57,7 +57,7 @@ namespace WoWMarketWatcher.API.Middleware
                     // Check if login is correct
                     if (IsAuthorized(username, password, authSettings))
                     {
-                        await next.Invoke(context);
+                        await this.next.Invoke(context);
                         return;
                     }
                 }
@@ -70,14 +70,14 @@ namespace WoWMarketWatcher.API.Middleware
             }
             else
             {
-                await next.Invoke(context);
+                await this.next.Invoke(context);
             }
         }
 
         public static bool IsAuthorized(string username, string password, SwaggerAuthSettings authSettings)
         {
             // Check that username and password are correct
-            return username.Equals(authSettings.Username, StringComparison.InvariantCultureIgnoreCase) && password.Equals(authSettings.Password);
+            return username.Equals(authSettings.Username, StringComparison.OrdinalIgnoreCase) && password.Equals(authSettings.Password);
         }
     }
 }

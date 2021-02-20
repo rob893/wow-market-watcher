@@ -11,7 +11,7 @@ using WoWMarketWatcher.Common.Models;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public abstract class Repository<TEntity, TEntityKey, TSearchParams>
+    public abstract class Repository<TEntity, TEntityKey, TSearchParams> : IRepository<TEntity, TEntityKey, TSearchParams>
         where TEntity : class, IIdentifiable<TEntityKey>
         where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         where TSearchParams : CursorPaginationParameters
@@ -55,6 +55,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         public void DeleteRange(IEnumerable<TEntity> entities)
         {
+            foreach (var entity in entities)
+            {
+                this.BeforeDelete(entity);
+            }
+
             this.Context.Set<TEntity>().RemoveRange(entities);
         }
 
@@ -134,7 +139,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
         }
     }
 
-    public abstract class Repository<TEntity, TSearchParams> : Repository<TEntity, int, TSearchParams>
+    public abstract class Repository<TEntity, TSearchParams> : Repository<TEntity, int, TSearchParams>, IRepository<TEntity, int, TSearchParams>
         where TEntity : class, IIdentifiable<int>
         where TSearchParams : CursorPaginationParameters
     {

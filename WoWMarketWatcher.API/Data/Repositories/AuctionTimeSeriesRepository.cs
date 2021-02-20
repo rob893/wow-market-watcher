@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
 using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.Common.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class AuctionTimeSeriesRepository : Repository<AuctionTimeSeriesEntry, long, AuctionTimeSeriesQueryParameters>
+    public class AuctionTimeSeriesRepository : Repository<AuctionTimeSeriesEntry, long, AuctionTimeSeriesQueryParameters>, IAuctionTimeSeriesRepository
     {
         public AuctionTimeSeriesRepository(DataContext context) : base(
             context,

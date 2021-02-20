@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
-using AutoMapper;
 using Microsoft.AspNetCore.HttpOverrides;
 using WoWMarketWatcher.API.Middleware;
 using WoWMarketWatcher.API.Core;

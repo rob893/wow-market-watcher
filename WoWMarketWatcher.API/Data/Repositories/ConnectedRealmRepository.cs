@@ -7,7 +7,7 @@ using WoWMarketWatcher.Common.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class ConnectedRealmRepository : Repository<ConnectedRealm, CursorPaginationParameters>
+    public class ConnectedRealmRepository : Repository<ConnectedRealm, CursorPaginationParameters>, IConnectedRealmRepository
     {
         public ConnectedRealmRepository(DataContext context) : base(context) { }
 

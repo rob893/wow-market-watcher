@@ -12,23 +12,22 @@ using System.Collections.Generic;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs
 {
     public class PullAuctionDataBackgroundJob
     {
-        private readonly BlizzardService blizzardService;
-        private readonly WoWItemRepository itemRepository;
-        private readonly WatchListRepository watchListRepository;
-        private readonly AuctionTimeSeriesRepository timeSeriesRepository;
+        private readonly IBlizzardService blizzardService;
+        private readonly IWoWItemRepository itemRepository;
+        private readonly IWatchListRepository watchListRepository;
+        private readonly IAuctionTimeSeriesRepository timeSeriesRepository;
         private readonly ILogger<PullAuctionDataBackgroundJob> logger;
 
         public PullAuctionDataBackgroundJob(
-            BlizzardService blizzardService,
-            WoWItemRepository itemRepository,
-            WatchListRepository watchListRepository,
-            AuctionTimeSeriesRepository timeSeriesRepository,
+            IBlizzardService blizzardService,
+            IWoWItemRepository itemRepository,
+            IWatchListRepository watchListRepository,
+            IAuctionTimeSeriesRepository timeSeriesRepository,
             ILogger<PullAuctionDataBackgroundJob> logger)
         {
             this.blizzardService = blizzardService;
@@ -79,13 +78,11 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                     var auctionData = await this.blizzardService.GetAuctionsAsync(realmId);
 
-                    var mappedAuctions = MapAuctionData(auctionData.Auctions, realmId);
-
-                    var newAuctionsToAdd = mappedAuctions.Where(entry => itemsToUpdate.Contains(entry.WoWItemId));
+                    var newAuctionsToAdd = MapAuctionData(auctionData.Auctions, realmId, itemsToUpdate);
 
                     newAuctionTimeSeriesEntries.AddRange(newAuctionsToAdd);
 
-                    var newItemIdsFromRealm = mappedAuctions.Select(auc => auc.WoWItemId).Where(id => !currentItems.Contains(id)).ToHashSet();
+                    var newItemIdsFromRealm = auctionData.Auctions.Select(auc => auc.Item.Id).Where(id => !currentItems.Contains(id)).ToHashSet();
 
                     context.LogDebug($"{sourceName} ({correlationId}). Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
                     this.logger.LogDebug(sourceName, correlationId, $"Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
@@ -152,15 +149,20 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             }
         }
 
-        private static List<AuctionTimeSeriesEntry> MapAuctionData(List<BlizzardAuction> auctions, int connectedRealmId)
+        private static List<AuctionTimeSeriesEntry> MapAuctionData(List<BlizzardAuction> auctions, int connectedRealmId, HashSet<int> itemIdsToProcess)
         {
-            var dict = new Dictionary<int, AuctionTimeSeriesEntry>();
+            var itemIdAuctionMap = new Dictionary<int, AuctionTimeSeriesEntry>();
             var seen = new Dictionary<int, List<(long amount, long price)>>();
 
             var utcNow = DateTime.UtcNow;
 
             foreach (var auction in auctions)
             {
+                if (!itemIdsToProcess.Contains(auction.Item.Id))
+                {
+                    continue;
+                }
+
                 var price = auction.Buyout ?? auction.UnitPrice ?? auction.Bid;
 
                 if (price == null)
@@ -168,12 +170,12 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                     throw new Exception($"auction {auction.Id} does not have a buyout or unit price");
                 }
 
-                if (dict.ContainsKey(auction.Item.Id))
+                if (itemIdAuctionMap.ContainsKey(auction.Item.Id))
                 {
                     var prices = seen[auction.Item.Id];
                     prices.Add((amount: auction.Quantity, price: price.Value));
 
-                    var timeSeries = dict[auction.Item.Id];
+                    var timeSeries = itemIdAuctionMap[auction.Item.Id];
 
                     timeSeries.TotalAvailableForAuction += auction.Quantity;
                     timeSeries.MinPrice = timeSeries.MinPrice > price.Value ? price.Value : timeSeries.MinPrice;
@@ -181,7 +183,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 }
                 else
                 {
-                    dict[auction.Item.Id] = new AuctionTimeSeriesEntry
+                    itemIdAuctionMap[auction.Item.Id] = new AuctionTimeSeriesEntry
                     {
                         WoWItemId = auction.Item.Id,
                         ConnectedRealmId = connectedRealmId,
@@ -196,7 +198,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 }
             }
 
-            foreach (var value in dict.Values)
+            foreach (var value in itemIdAuctionMap.Values)
             {
                 var seenPrices = seen[value.WoWItemId];
                 var prices = seenPrices.Aggregate(new List<long>(), (prev, curr) =>
@@ -210,14 +212,14 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 var sortedPrices = prices.ToArray();
                 Array.Sort(sortedPrices);
 
-                value.Price25Percentile = Percentile(sortedPrices, 0.25, true);
-                value.Price50Percentile = Percentile(sortedPrices, 0.50, true);
-                value.Price75Percentile = Percentile(sortedPrices, 0.75, true);
-                value.Price95Percentile = Percentile(sortedPrices, 0.95, true);
-                value.Price99Percentile = Percentile(sortedPrices, 0.99, true);
+                value.Price25Percentile = sortedPrices.Percentile(0.25, true);
+                value.Price50Percentile = sortedPrices.Percentile(0.50, true);
+                value.Price75Percentile = sortedPrices.Percentile(0.75, true);
+                value.Price95Percentile = sortedPrices.Percentile(0.95, true);
+                value.Price99Percentile = sortedPrices.Percentile(0.99, true);
             }
 
-            return dict.Values.ToList();
+            return itemIdAuctionMap.Values.ToList();
         }
 
         private async Task<IEnumerable<WoWItem>> HandleChunkAsync(IEnumerable<IEnumerable<int>> chunkedItemIds)
@@ -247,26 +249,6 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             }
 
             return result;
-        }
-
-        private static long Percentile(long[] source, double percentile, bool isSourceSorted = false)
-        {
-            if (percentile < 0 || percentile > 1)
-            {
-                throw new ArgumentException($"{nameof(percentile)} must be >= 0 and <= 1");
-            }
-
-            var index = (int)Math.Floor(percentile * (source.Length - 1));
-
-            if (isSourceSorted)
-            {
-                return source[index];
-            }
-
-            var copy = source.ToArray();
-            Array.Sort(copy);
-
-            return copy[index];
         }
     }
 }

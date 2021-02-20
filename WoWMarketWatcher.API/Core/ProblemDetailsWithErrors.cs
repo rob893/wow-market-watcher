@@ -34,7 +34,7 @@ namespace WoWMarketWatcher.API.Core
 
         public ProblemDetailsWithErrors(IList<string> errors, int statusCode, HttpRequest? request = null)
         {
-            SetProblemDetails(errors, statusCode, request);
+            this.SetProblemDetails(errors, statusCode, request);
         }
 
         public ProblemDetailsWithErrors(string error, int statusCode, HttpRequest? request = null) :
@@ -43,7 +43,7 @@ namespace WoWMarketWatcher.API.Core
 
         public ProblemDetailsWithErrors(IList<string> errors, HttpStatusCode statusCode, HttpRequest? request = null)
         {
-            SetProblemDetails(errors, (int)statusCode, request);
+            this.SetProblemDetails(errors, (int)statusCode, request);
         }
 
         public ProblemDetailsWithErrors(string error, HttpStatusCode statusCode, HttpRequest? request = null) :
@@ -56,7 +56,7 @@ namespace WoWMarketWatcher.API.Core
 
             if (error is AggregateException)
             {
-                AggregateException aggEx = error as AggregateException ?? throw new ArgumentException(null, nameof(error));
+                var aggEx = error as AggregateException ?? throw new ArgumentException(null, nameof(error));
                 foreach (var innerException in aggEx.InnerExceptions)
                 {
                     errors.Add(innerException.Message);
@@ -72,7 +72,7 @@ namespace WoWMarketWatcher.API.Core
                 }
             }
 
-            SetProblemDetails(errors, statusCode, request);
+            this.SetProblemDetails(errors, statusCode, request);
         }
 
         public ProblemDetailsWithErrors(IList<string> errors, HttpRequest? request = null) : this(errors, 500, request) { }
@@ -83,12 +83,12 @@ namespace WoWMarketWatcher.API.Core
 
         private void SetProblemDetails(IList<string> errors, int statusCode, HttpRequest? request)
         {
-            Errors = errors;
-            Detail = errors.Count > 0 ? errors[0] : "Unknown error.";
-            Status = statusCode;
-            Title = errorTitles.ContainsKey(statusCode) ? errorTitles[statusCode] : "There was an error.";
-            Instance = request != null ? $"{request.Method}: {request.GetDisplayUrl()}" : "";
-            Type = errorTypes.ContainsKey(statusCode) ? errorTypes[statusCode] : "https://tools.ietf.org/html/rfc7231";
+            this.Errors = errors;
+            this.Detail = errors.Count > 0 ? errors[0] : "Unknown error.";
+            this.Status = statusCode;
+            this.Title = this.errorTitles.ContainsKey(statusCode) ? this.errorTitles[statusCode] : "There was an error.";
+            this.Instance = request != null ? $"{request.Method}: {request.GetDisplayUrl()}" : "";
+            this.Type = this.errorTypes.ContainsKey(statusCode) ? this.errorTypes[statusCode] : "https://tools.ietf.org/html/rfc7231";
         }
     }
 }

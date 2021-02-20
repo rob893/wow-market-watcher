@@ -35,7 +35,7 @@ namespace WoWMarketWatcher.API
                             var seedData = args.Contains(CommandLineOptions.seedDataArgument, StringComparer.OrdinalIgnoreCase);
                             var dropDatabase = args.Contains(CommandLineOptions.dropArgument, StringComparer.OrdinalIgnoreCase);
 
-                            var seeder = serviceProvider.GetRequiredService<Seeder>();
+                            var seeder = serviceProvider.GetRequiredService<IDatabaseSeeder>();
 
                             logger.LogInformation($"Seeding database:\nDrop database: {dropDatabase}\nApply Migrations: {migrate}\nClear old data: {clearData}\nSeed new data: {seedData}");
                             logger.LogWarning("Are you sure you want to apply these actions to the database in that order? Only 'yes' will continue.");

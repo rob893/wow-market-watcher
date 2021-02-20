@@ -9,14 +9,14 @@ using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Data
 {
-    public class Seeder
+    public class DatabaseSeeder : IDatabaseSeeder
     {
         private readonly DataContext context;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<Role> roleManager;
 
 
-        public Seeder(DataContext context, UserManager<User> userManager, RoleManager<Role> roleManager)
+        public DatabaseSeeder(DataContext context, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
             this.context = context;
             this.userManager = userManager;
@@ -27,47 +27,47 @@ namespace WoWMarketWatcher.API.Data
         {
             if (dropDatabase)
             {
-                context.Database.EnsureDeleted();
+                this.context.Database.EnsureDeleted();
             }
 
             if (applyMigrations)
             {
-                context.Database.Migrate();
+                this.context.Database.Migrate();
             }
 
             if (clearCurrentData)
             {
-                ClearAllData();
+                this.ClearAllData();
             }
 
             if (seedData)
             {
-                SeedWoWItems();
-                SeedRealms();
-                SeedRoles();
-                SeedUsers();
-                SeedAuctionTimeSeries();
+                this.SeedWoWItems();
+                this.SeedRealms();
+                this.SeedRoles();
+                this.SeedUsers();
+                this.SeedAuctionTimeSeries();
 
-                context.SaveChanges();
+                this.context.SaveChanges();
             }
         }
 
         private void ClearAllData()
         {
-            context.RefreshTokens.Clear();
-            context.Users.Clear();
-            context.Roles.Clear();
-            context.AuctionTimeSeries.Clear();
-            context.WoWItems.Clear();
-            context.Realms.Clear();
-            context.ConnectedRealms.Clear();
+            this.context.RefreshTokens.Clear();
+            this.context.Users.Clear();
+            this.context.Roles.Clear();
+            this.context.AuctionTimeSeries.Clear();
+            this.context.WoWItems.Clear();
+            this.context.Realms.Clear();
+            this.context.ConnectedRealms.Clear();
 
-            context.SaveChanges();
+            this.context.SaveChanges();
         }
 
         private void SeedRoles()
         {
-            if (context.Roles.Any())
+            if (this.context.Roles.Any())
             {
                 return;
             }
@@ -77,13 +77,13 @@ namespace WoWMarketWatcher.API.Data
 
             foreach (var role in roles)
             {
-                roleManager.CreateAsync(role).Wait();
+                this.roleManager.CreateAsync(role).Wait();
             }
         }
 
         private void SeedUsers()
         {
-            if (userManager.Users.Any())
+            if (this.userManager.Users.Any())
             {
                 return;
             }
@@ -100,23 +100,23 @@ namespace WoWMarketWatcher.API.Data
                     watchList.WatchedItems.AddRange(context.WoWItems.Where(i => itemIds.Contains(i.Id)));
                 }
 
-                userManager.CreateAsync(user, "password").Wait();
+                this.userManager.CreateAsync(user, "password").Wait();
 
-                if (user.UserName.ToUpper() == "ADMIN")
+                if (user.UserName.ToUpperInvariant() == "ADMIN")
                 {
-                    userManager.AddToRoleAsync(user, "Admin").Wait();
-                    userManager.AddToRoleAsync(user, "User").Wait();
+                    this.userManager.AddToRoleAsync(user, "Admin").Wait();
+                    this.userManager.AddToRoleAsync(user, "User").Wait();
                 }
                 else
                 {
-                    userManager.AddToRoleAsync(user, "User").Wait();
+                    this.userManager.AddToRoleAsync(user, "User").Wait();
                 }
             }
         }
 
         private void SeedWoWItems()
         {
-            if (context.WoWItems.Any())
+            if (this.context.WoWItems.Any())
             {
                 return;
             }
@@ -124,12 +124,12 @@ namespace WoWMarketWatcher.API.Data
             var data = File.ReadAllText("Data/SeedData/WoWItemsSeedData.json");
             var items = JsonConvert.DeserializeObject<List<WoWItem>>(data);
 
-            context.WoWItems.AddRange(items);
+            this.context.WoWItems.AddRange(items);
         }
 
         private void SeedRealms()
         {
-            if (context.WoWItems.Any())
+            if (this.context.WoWItems.Any())
             {
                 return;
             }
@@ -137,12 +137,12 @@ namespace WoWMarketWatcher.API.Data
             var data = File.ReadAllText("Data/SeedData/ConnectedRealmsSeedData.json");
             var items = JsonConvert.DeserializeObject<List<ConnectedRealm>>(data);
 
-            context.ConnectedRealms.AddRange(items);
+            this.context.ConnectedRealms.AddRange(items);
         }
 
         private void SeedAuctionTimeSeries()
         {
-            if (context.WoWItems.Any())
+            if (this.context.WoWItems.Any())
             {
                 return;
             }
@@ -150,7 +150,7 @@ namespace WoWMarketWatcher.API.Data
             var data = File.ReadAllText("Data/SeedData/AuctionTimeSeriesSeedData.json");
             var items = JsonConvert.DeserializeObject<List<AuctionTimeSeriesEntry>>(data);
 
-            context.AuctionTimeSeries.AddRange(items);
+            this.context.AuctionTimeSeries.AddRange(items);
         }
     }
 }

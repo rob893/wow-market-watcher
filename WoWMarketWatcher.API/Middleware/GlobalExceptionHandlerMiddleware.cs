@@ -25,7 +25,7 @@ namespace WoWMarketWatcher.API.Middleware
 
             if (error != null)
             {
-                Exception thrownException = error.Error;
+                var thrownException = error.Error;
 
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -37,7 +37,7 @@ namespace WoWMarketWatcher.API.Middleware
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
 
-                logger.LogError(thrownException.Message);
+                this.logger.LogError(thrownException.Message);
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, jsonOptions));
             }

@@ -4,8 +4,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.Common.Models.DTOs;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -13,11 +14,11 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class ConnectedRealmsController : ServiceControllerBase
     {
-        private readonly ConnectedRealmRepository connectedRealmRepository;
+        private readonly IConnectedRealmRepository connectedRealmRepository;
         private readonly IMapper mapper;
 
 
-        public ConnectedRealmsController(ConnectedRealmRepository connectedRealmRepository, IMapper mapper)
+        public ConnectedRealmsController(IConnectedRealmRepository connectedRealmRepository, IMapper mapper)
         {
             this.connectedRealmRepository = connectedRealmRepository;
             this.mapper = mapper;
@@ -27,7 +28,7 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult<CursorPaginatedResponse<ConnectedRealmDto>>> GetConnectedRealmsAsync([FromQuery] CursorPaginationParameters searchParams)
         {
             var realms = await this.connectedRealmRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponse<ConnectedRealmDto>.CreateFrom(realms, this.mapper.Map<IEnumerable<ConnectedRealmDto>>, searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(realms, this.mapper.Map<IEnumerable<ConnectedRealmDto>>, searchParams);
 
             return this.Ok(paginatedResponse);
         }
@@ -58,7 +59,7 @@ namespace WoWMarketWatcher.API.Controllers
             }
 
             var realms = await this.connectedRealmRepository.GetRealmsForConnectedRealmAsync(connectedRealm.Id, searchParams);
-            var paginatedResponse = CursorPaginatedResponse<RealmDto>.CreateFrom(realms, this.mapper.Map<IEnumerable<RealmDto>>, searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(realms, this.mapper.Map<IEnumerable<RealmDto>>, searchParams);
 
             return this.Ok(paginatedResponse);
         }

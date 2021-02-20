@@ -9,21 +9,21 @@ namespace WoWMarketWatcher.API.Data
         IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>,
         IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
-        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-        public DbSet<LinkedAccount> LinkedAccounts => Set<LinkedAccount>();
-        public DbSet<ConnectedRealm> ConnectedRealms => Set<ConnectedRealm>();
-        public DbSet<Realm> Realms => Set<Realm>();
-        public DbSet<WoWItem> WoWItems => Set<WoWItem>();
-        public DbSet<AuctionTimeSeriesEntry> AuctionTimeSeries => Set<AuctionTimeSeriesEntry>();
-        public DbSet<WatchList> WatchLists => Set<WatchList>();
+        public DbSet<RefreshToken> RefreshTokens => this.Set<RefreshToken>();
+        public DbSet<LinkedAccount> LinkedAccounts => this.Set<LinkedAccount>();
+        public DbSet<ConnectedRealm> ConnectedRealms => this.Set<ConnectedRealm>();
+        public DbSet<Realm> Realms => this.Set<Realm>();
+        public DbSet<WoWItem> WoWItems => this.Set<WoWItem>();
+        public DbSet<AuctionTimeSeriesEntry> AuctionTimeSeries => this.Set<AuctionTimeSeriesEntry>();
+        public DbSet<WatchList> WatchLists => this.Set<WatchList>();
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<UserRole>(userRole =>
+            builder.Entity<UserRole>(userRole =>
             {
                 userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
 
@@ -38,18 +38,18 @@ namespace WoWMarketWatcher.API.Data
                     .IsRequired();
             });
 
-            modelBuilder.Entity<RefreshToken>(rToken =>
+            builder.Entity<RefreshToken>(rToken =>
             {
                 rToken.HasKey(k => new { k.UserId, k.DeviceId });
             });
 
-            modelBuilder.Entity<LinkedAccount>(linkedAccount =>
+            builder.Entity<LinkedAccount>(linkedAccount =>
             {
                 linkedAccount.HasKey(account => new { account.Id, account.LinkedAccountType });
                 linkedAccount.Property(account => account.LinkedAccountType).HasConversion<string>();
             });
 
-            modelBuilder.Entity<AuctionTimeSeriesEntry>().HasIndex(entry => entry.Timestamp);
+            builder.Entity<AuctionTimeSeriesEntry>().HasIndex(entry => entry.Timestamp);
         }
     }
 }

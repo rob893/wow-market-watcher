@@ -15,7 +15,7 @@ using WoWMarketWatcher.API.Models.Settings;
 
 namespace WoWMarketWatcher.API.Services
 {
-    public class BlizzardService
+    public class BlizzardService : IBlizzardService
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly BlizzardSettings settings;

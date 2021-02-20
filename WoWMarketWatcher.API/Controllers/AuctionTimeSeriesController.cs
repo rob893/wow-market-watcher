@@ -4,8 +4,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.Common.Models.DTOs;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -13,11 +14,11 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class AuctionTimeSeriesController : ServiceControllerBase
     {
-        private readonly AuctionTimeSeriesRepository timeSeriesRepository;
+        private readonly IAuctionTimeSeriesRepository timeSeriesRepository;
         private readonly IMapper mapper;
 
 
-        public AuctionTimeSeriesController(AuctionTimeSeriesRepository timeSeriesRepository, IMapper mapper)
+        public AuctionTimeSeriesController(IAuctionTimeSeriesRepository timeSeriesRepository, IMapper mapper)
         {
             this.timeSeriesRepository = timeSeriesRepository;
             this.mapper = mapper;
@@ -27,7 +28,7 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult<CursorPaginatedResponse<AuctionTimeSeriesEntryDto, long>>> GetAuctionTimeSeriesAsync([FromQuery] AuctionTimeSeriesQueryParameters searchParams)
         {
             var realms = await this.timeSeriesRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponse<AuctionTimeSeriesEntryDto, long>.CreateFrom(realms, this.mapper.Map<IEnumerable<AuctionTimeSeriesEntryDto>>, searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(realms, this.mapper.Map<IEnumerable<AuctionTimeSeriesEntryDto>>, searchParams);
 
             return this.Ok(paginatedResponse);
         }

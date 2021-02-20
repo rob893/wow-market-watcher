@@ -4,7 +4,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.Common.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using WoWMarketWatcher.Common.Constants;
@@ -12,6 +11,8 @@ using WoWMarketWatcher.Common.Models.Requests;
 using WoWMarketWatcher.API.Entities;
 using Microsoft.AspNetCore.JsonPatch;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -20,11 +21,11 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class WatchListsController : ServiceControllerBase
     {
-        private readonly WatchListRepository watchListRepository;
+        private readonly IWatchListRepository watchListRepository;
         private readonly IMapper mapper;
 
 
-        public WatchListsController(WatchListRepository watchListRepository, IMapper mapper)
+        public WatchListsController(IWatchListRepository watchListRepository, IMapper mapper)
         {
             this.watchListRepository = watchListRepository;
             this.mapper = mapper;
@@ -34,7 +35,7 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsAsync([FromQuery] RealmQueryParameters searchParams)
         {
             var lists = await this.watchListRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponse<WatchListDto>.CreateFrom(lists, this.mapper.Map<IEnumerable<WatchListDto>>, searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(lists, this.mapper.Map<IEnumerable<WatchListDto>>, searchParams);
 
             return this.Ok(paginatedResponse);
         }

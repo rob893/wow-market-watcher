@@ -8,7 +8,7 @@ using WoWMarketWatcher.Common.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Core
 {
-    public class CursorPagedList<TEntity, TEntityKey> : List<TEntity>
+    public class CursorPagedList<TEntity, TEntityKey> : List<TEntity>, IList<TEntity>
         where TEntity : class, IIdentifiable<TEntityKey>
         where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
     {

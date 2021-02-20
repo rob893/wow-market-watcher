@@ -7,7 +7,7 @@ using WoWMarketWatcher.Common.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class WoWItemRepository : Repository<WoWItem, WoWItemQueryParameters>
+    public class WoWItemRepository : Repository<WoWItem, WoWItemQueryParameters>, IWoWItemRepository
     {
         public WoWItemRepository(DataContext context) : base(context) { }
 

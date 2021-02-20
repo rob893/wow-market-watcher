@@ -4,8 +4,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.Common.Models.DTOs;
+using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -13,11 +14,11 @@ namespace WoWMarketWatcher.API.Controllers
     [ApiController]
     public class RealmsController : ServiceControllerBase
     {
-        private readonly RealmRepository realmRepository;
+        private readonly IRealmRepository realmRepository;
         private readonly IMapper mapper;
 
 
-        public RealmsController(RealmRepository realmRepository, IMapper mapper)
+        public RealmsController(IRealmRepository realmRepository, IMapper mapper)
         {
             this.realmRepository = realmRepository;
             this.mapper = mapper;
@@ -27,7 +28,7 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult<CursorPaginatedResponse<RealmDto>>> GetRealmsAsync([FromQuery] RealmQueryParameters searchParams)
         {
             var realms = await this.realmRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponse<RealmDto>.CreateFrom(realms, this.mapper.Map<IEnumerable<RealmDto>>, searchParams);
+            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(realms, this.mapper.Map<IEnumerable<RealmDto>>, searchParams);
 
             return this.Ok(paginatedResponse);
         }
