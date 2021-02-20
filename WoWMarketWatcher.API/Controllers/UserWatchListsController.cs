@@ -87,7 +87,7 @@ namespace WoWMarketWatcher.API.Controllers
                 return this.BadRequest($"Id is required.");
             }
 
-            var watchList = await this.watchListRepository.GetByIdAsync(id);
+            var watchList = await this.watchListRepository.GetByIdAsync(id, list => list.WatchedItems);
 
             if (watchList == null)
             {
@@ -99,9 +99,14 @@ namespace WoWMarketWatcher.API.Controllers
                 return this.Forbidden("You are not authorized to change this resource.");
             }
 
+            if (watchList.WatchedItems.FirstOrDefault(watchedItem => watchedItem.Id == request.Id) != null)
+            {
+                return this.BadRequest($"Watch list {watchList.Id} is already watching item {request.Id}.");
+            }
+
             var itemToAdd = await this.itemRepository.GetByIdAsync(request.Id.Value);
 
-            if (watchList == null)
+            if (itemToAdd == null)
             {
                 return this.NotFound($"No item with Id {request.Id.Value} found.");
             }
@@ -112,7 +117,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             if (!saveResults)
             {
-                return this.BadRequest("Failed to delete the resource.");
+                return this.BadRequest("Failed to add the item to watch list.");
             }
 
             var mapped = this.mapper.Map<WatchListDto>(watchList);

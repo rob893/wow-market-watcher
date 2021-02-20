@@ -5,7 +5,6 @@ using Hangfire.Server;
 using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.Common.Extensions;
 using WoWMarketWatcher.API.Services;
-using WoWMarketWatcher.API.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
@@ -80,7 +79,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                     var auctionData = await this.blizzardService.GetAuctionsAsync(realmId);
 
-                    var mappedAuctions = MapAuctionData(auctionData.Auctions);
+                    var mappedAuctions = MapAuctionData(auctionData.Auctions, realmId);
 
                     var newAuctionsToAdd = mappedAuctions.Where(entry => itemsToUpdate.Contains(entry.WoWItemId));
 
@@ -104,12 +103,12 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                     var newItemChunks = newItemIds.ChunkBy(100);
 
-                    var newItemChunkedChunks = newItemChunks.ChunkBy(3);
+                    var newItemChunkedChunks = newItemChunks.ChunkBy(5);
 
                     var tasks = new List<Task<IEnumerable<WoWItem>>>();
 
-                    context.LogDebug($"{sourceName} ({correlationId}). Processing {newItemChunkedChunks.Count()} chunks of 3 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
-                    this.logger.LogDebug(sourceName, correlationId, $"Processing {newItemChunkedChunks.Count()} chunks of 3 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
+                    context.LogDebug($"{sourceName} ({correlationId}). Processing {newItemChunkedChunks.Count()} chunks of 5 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
+                    this.logger.LogDebug(sourceName, correlationId, $"Processing {newItemChunkedChunks.Count()} chunks of 5 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
 
                     foreach (var chunkedChunk in newItemChunkedChunks)
                     {
@@ -153,7 +152,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             }
         }
 
-        private static List<AuctionTimeSeriesEntry> MapAuctionData(List<BlizzardAuction> auctions)
+        private static List<AuctionTimeSeriesEntry> MapAuctionData(List<BlizzardAuction> auctions, int connectedRealmId)
         {
             var dict = new Dictionary<int, AuctionTimeSeriesEntry>();
             var seen = new Dictionary<int, List<(long amount, long price)>>();
@@ -185,7 +184,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                     dict[auction.Item.Id] = new AuctionTimeSeriesEntry
                     {
                         WoWItemId = auction.Item.Id,
-                        ConnectedRealmId = 3694,
+                        ConnectedRealmId = connectedRealmId,
                         Timestamp = utcNow,
                         TotalAvailableForAuction = auction.Quantity,
                         AveragePrice = price.Value,
