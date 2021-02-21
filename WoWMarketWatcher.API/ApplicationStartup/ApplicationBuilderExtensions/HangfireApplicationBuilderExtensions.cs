@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using Hangfire;
 using Hangfire.Dashboard;
+using Hangfire.Heartbeat.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using WoWMarketWatcher.API.BackgroundJobs;
@@ -18,6 +19,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseAndConfigureHangfire(this IApplicationBuilder app, IRecurringJobManager recurringJobs, IConfiguration config)
         {
+            app.UseHangfireServer(additionalProcesses: new[] { new ProcessMonitor(TimeSpan.FromSeconds(1.5)) });
             app.UseHangfireDashboard(
                 "/hangfire",
                 new DashboardOptions

@@ -30,11 +30,11 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             IAuctionTimeSeriesRepository timeSeriesRepository,
             ILogger<PullAuctionDataBackgroundJob> logger)
         {
-            this.blizzardService = blizzardService;
-            this.itemRepository = itemRepository;
-            this.watchListRepository = watchListRepository;
-            this.timeSeriesRepository = timeSeriesRepository;
-            this.logger = logger;
+            this.blizzardService = blizzardService ?? throw new ArgumentNullException(nameof(blizzardService));
+            this.itemRepository = itemRepository ?? throw new ArgumentNullException(nameof(itemRepository));
+            this.watchListRepository = watchListRepository ?? throw new ArgumentNullException(nameof(watchListRepository));
+            this.timeSeriesRepository = timeSeriesRepository ?? throw new ArgumentNullException(nameof(timeSeriesRepository));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task PullAuctionData(PerformContext context)
@@ -45,10 +45,10 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             }
 
             var sourceName = this.GetSourceName();
-            var correlationId = context.BackgroundJob.Id;
+            var jobId = context.BackgroundJob.Id;
 
-            context.LogInformation($"{sourceName} ({correlationId}). {nameof(PullAuctionDataBackgroundJob)} started.");
-            this.logger.LogInformation(sourceName, correlationId, $"{nameof(PullAuctionDataBackgroundJob)} started.");
+            context.LogInformation($"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} started.");
+            this.logger.LogInformation(jobId, $"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} started.");
 
             try
             {
@@ -57,13 +57,13 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 var newItemIds = new HashSet<int>();
                 var newAuctionTimeSeriesEntries = new List<AuctionTimeSeriesEntry>();
 
-                context.LogDebug($"{sourceName} ({correlationId}). Fetched {realmsToUpdate.Count} connected realms to update auction data from.");
-                this.logger.LogDebug(sourceName, correlationId, $"Fetched {realmsToUpdate.Count} connected realms to update auction data from.");
+                context.LogDebug($"{sourceName} ({jobId}). Fetched {realmsToUpdate.Count} connected realms to update auction data from.");
+                this.logger.LogDebug(jobId, $"{sourceName} ({jobId}). Fetched {realmsToUpdate.Count} connected realms to update auction data from.");
 
                 foreach (var realmId in realmsToUpdate)
                 {
-                    context.LogInformation($"{sourceName} ({correlationId}). Processing auction data for connected realm {realmId}.");
-                    this.logger.LogInformation(sourceName, correlationId, $"Processing auction data for connected realm {realmId}.");
+                    context.LogInformation($"{sourceName} ({jobId}). Processing auction data for connected realm {realmId}.");
+                    this.logger.LogInformation(jobId, $"{sourceName} ({jobId}). Processing auction data for connected realm {realmId}.");
 
                     var itemsToUpdate = (await this.watchListRepository.EntitySetAsNoTracking()
                         .Where(list => list.ConnectedRealmId == realmId)
@@ -73,8 +73,8 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                         .ToListAsync())
                         .ToHashSet();
 
-                    context.LogDebug($"{sourceName} ({correlationId}). Determined auction data for {itemsToUpdate.Count} items need to be processed based on watch lists for connected realm {realmId}.");
-                    this.logger.LogDebug(sourceName, correlationId, $"Determined auction data for {itemsToUpdate.Count} items need to be processed based on watch lists for connected realm {realmId}.");
+                    context.LogDebug($"{sourceName} ({jobId}). Determined auction data for {itemsToUpdate.Count} items need to be processed based on watch lists for connected realm {realmId}.");
+                    this.logger.LogDebug(jobId, $"{sourceName} ({jobId}). Determined auction data for {itemsToUpdate.Count} items need to be processed based on watch lists for connected realm {realmId}.");
 
                     var auctionData = await this.blizzardService.GetAuctionsAsync(realmId);
 
@@ -84,19 +84,19 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                     var newItemIdsFromRealm = auctionData.Auctions.Select(auc => auc.Item.Id).Where(id => !currentItems.Contains(id)).ToHashSet();
 
-                    context.LogDebug($"{sourceName} ({correlationId}). Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
-                    this.logger.LogDebug(sourceName, correlationId, $"Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
+                    context.LogDebug($"{sourceName} ({jobId}). Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
+                    this.logger.LogDebug(jobId, $"{sourceName} ({jobId}). Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {realmId}.");
 
                     newItemIds.UnionWith(newItemIdsFromRealm);
 
-                    context.LogInformation($"{sourceName} ({correlationId}). Processing auction data for connected realm {realmId} complete.");
-                    this.logger.LogInformation(sourceName, correlationId, $"Processing auction data for connected realm {realmId} complete.");
+                    context.LogInformation($"{sourceName} ({jobId}). Processing auction data for connected realm {realmId} complete.");
+                    this.logger.LogInformation(jobId, $"{sourceName} ({jobId}). Processing auction data for connected realm {realmId} complete.");
                 }
 
                 try
                 {
-                    context.LogInformation($"{sourceName} ({correlationId}). Starting to obtain and save data for {newItemIds.Count} newly discovered items.");
-                    this.logger.LogInformation(sourceName, correlationId, $"Starting to obtain and save data for {newItemIds.Count} newly discovered items.");
+                    context.LogInformation($"{sourceName} ({jobId}). Starting to obtain and save data for {newItemIds.Count} newly discovered items.");
+                    this.logger.LogInformation(jobId, $"{sourceName} ({jobId}). Starting to obtain and save data for {newItemIds.Count} newly discovered items.");
 
                     var newItemChunks = newItemIds.ChunkBy(100);
 
@@ -104,8 +104,8 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                     var tasks = new List<Task<IEnumerable<WoWItem>>>();
 
-                    context.LogDebug($"{sourceName} ({correlationId}). Processing {newItemChunkedChunks.Count()} chunks of 5 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
-                    this.logger.LogDebug(sourceName, correlationId, $"Processing {newItemChunkedChunks.Count()} chunks of 5 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
+                    context.LogDebug($"{sourceName} ({jobId}). Processing {newItemChunkedChunks.Count()} chunks of 5 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
+                    this.logger.LogDebug(jobId, $"{sourceName} ({jobId}). Processing {newItemChunkedChunks.Count()} chunks of 5 chunks of 100 item ids. Total of {newItemChunks.Count()} chunks of 100 item ids.");
 
                     foreach (var chunkedChunk in newItemChunkedChunks)
                     {
@@ -120,31 +120,31 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                     currentItems.UnionWith(itemsFromBlizzard.Select(i => i.Id));
 
-                    context.LogInformation($"{sourceName} ({correlationId}). Obtaining and saving data for {newItemIds.Count} newly discovered items. {itemsSaved} database records created/updated.");
-                    this.logger.LogInformation(sourceName, correlationId, $"Obtainint and saving data for {newItemIds.Count} newly discovered items. {itemsSaved} database records created/updated.");
+                    context.LogInformation($"{sourceName} ({jobId}). Obtaining and saving data for {newItemIds.Count} newly discovered items. {itemsSaved} database records created/updated.");
+                    this.logger.LogInformation(jobId, $"{sourceName} ({jobId}). Obtaining and saving data for {newItemIds.Count} newly discovered items. {itemsSaved} database records created/updated.");
                 }
                 catch (Exception ex)
                 {
-                    context.LogWarning($"{sourceName} ({correlationId}). Error while processing data for new items. Auction data will still be processed for all items currently tracked. Reason: {ex.Message}");
-                    this.logger.LogWarning(sourceName, correlationId, $"Error while processing data for new items. Auction data will still be processed for all items currently tracked.", ex.Message);
+                    context.LogWarning($"{sourceName} ({jobId}). Error while processing data for new items. Auction data will still be processed for all items currently tracked. Reason: {ex.Message}");
+                    this.logger.LogWarning(jobId, $"{sourceName} ({jobId}). Error while processing data for new items. Auction data will still be processed for all items currently tracked.", ex.Message);
                 }
 
                 this.timeSeriesRepository.AddRange(newAuctionTimeSeriesEntries.Where(newAuction => currentItems.Contains(newAuction.WoWItemId)));
 
                 var numberOfEntriesUpdated = await this.timeSeriesRepository.SaveChangesAsync();
 
-                context.LogInformation($"{sourceName} ({correlationId}). {nameof(PullAuctionDataBackgroundJob)} complete. {numberOfEntriesUpdated} auction entries were created/updated.");
-                this.logger.LogInformation(sourceName, correlationId, $"{nameof(PullAuctionDataBackgroundJob)} complete. {numberOfEntriesUpdated} auction entries were created/updated.");
+                context.LogInformation($"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} complete. {numberOfEntriesUpdated} auction entries were created/updated.");
+                this.logger.LogInformation(jobId, $"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} complete. {numberOfEntriesUpdated} auction entries were created/updated.");
             }
             catch (OperationCanceledException ex)
             {
-                context.LogWarning($"{sourceName} ({correlationId}). {nameof(PullAuctionDataBackgroundJob)} canceled. Reason: {ex.Message}");
-                this.logger.LogWarning(sourceName, correlationId, $"{nameof(PullAuctionDataBackgroundJob)} canceled.", ex.Message);
+                context.LogWarning($"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} canceled. Reason: {ex.Message}");
+                this.logger.LogWarning(jobId, $"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} canceled.", ex.Message);
             }
             catch (Exception ex)
             {
-                context.LogError($"{sourceName} ({correlationId}). {nameof(PullAuctionDataBackgroundJob)} failed. Reason: {ex.Message}");
-                this.logger.LogError(sourceName, correlationId, $"{nameof(PullAuctionDataBackgroundJob)} failed.", ex);
+                context.LogError($"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} failed. Reason: {ex.Message}");
+                this.logger.LogError(jobId, $"{sourceName} ({jobId}). {nameof(PullAuctionDataBackgroundJob)} failed.", ex);
                 throw new BackgroundJobClientException(ex.Message, ex);
             }
         }

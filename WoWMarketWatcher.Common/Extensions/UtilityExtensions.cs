@@ -97,7 +97,9 @@ namespace WoWMarketWatcher.Common.Extensions
             var sourceName = string.Empty;
             if (!string.IsNullOrWhiteSpace(sourceFilePath))
             {
-                sourceName = sourceFilePath.Split('\\').Last().Split('.').First();
+                sourceName = sourceFilePath.Contains('\\')
+                    ? sourceFilePath.Split('\\').Last().Split('.').First()
+                    : sourceFilePath.Split('/').Last().Split('.').First();
             }
 
             return $"{sourceName}.{memberName}";

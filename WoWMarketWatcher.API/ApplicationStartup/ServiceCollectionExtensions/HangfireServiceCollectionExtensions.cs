@@ -1,9 +1,10 @@
 using System;
 using System.Drawing;
 using Hangfire;
+using Hangfire.Heartbeat;
 using Hangfire.JobsLogger;
 using Hangfire.Logging;
-using Hangfire.MySql;
+using Hangfire.Storage.MySql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WoWMarketWatcher.API.BackgroundJobs;
@@ -20,6 +21,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
+                .UseHeartbeatPage(TimeSpan.FromSeconds(1.5))
                 .UseJobsLogger(new JobsLoggerOptions
                 {
                     LogCriticalColor = Color.DarkRed,
