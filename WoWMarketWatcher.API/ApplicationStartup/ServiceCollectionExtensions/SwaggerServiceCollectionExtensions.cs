@@ -29,7 +29,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                         License = new OpenApiLicense
                         {
                             Name = "Hangfire Dashboard",
-                            Url = new Uri("http://localhost:5000/hangfire")
+                            Url = new Uri(config["Swagger:HangfireEndpoint"])
                         }
                     });
 

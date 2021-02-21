@@ -69,7 +69,9 @@ namespace WoWMarketWatcher.API
                 .ConfigureAppConfiguration((HostBuilderContext, config) => config.AddJsonFile("appsettings.Secrets.json", false, true))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                        .UseStartup<Startup>()
+                        .UseUrls(new[] { "http://localhost:5003" });
                 });
         }
 

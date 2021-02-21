@@ -13,7 +13,6 @@ namespace WoWMarketWatcher.API.Middleware
 {
     public class SwaggerBasicAuthMiddleware
     {
-
         private readonly RequestDelegate next;
 
         public SwaggerBasicAuthMiddleware(RequestDelegate next)

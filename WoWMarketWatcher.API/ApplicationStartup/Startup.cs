@@ -52,21 +52,22 @@ namespace WoWMarketWatcher.API.ApplicationStartup
 
             app.UseExceptionHandler(builder => builder.UseMiddleware<GlobalExceptionHandlerMiddleware>())
                 .UseHsts()
-                .UseHttpsRedirection()
+                // .UseHttpsRedirection()
                 .UseForwardedHeaders(new ForwardedHeadersOptions
                 {
                     ForwardedHeaders = ForwardedHeaders.All
                 })
+                .UseMiddleware<PathBaseRewriterMiddleware>()
+                .UseRouting()
                 .UseCors(header =>
                     header.WithOrigins(this.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "*" })
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .WithExposedHeaders(this.Configuration.GetSection("Cors:ExposedHeaders").Get<string[]>() ?? new[] { "X-Token-Expired", "X-Correlation-Id" })
                 )
-                .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()
-                .UseAndConfigureSwagger(env)
+                .UseAndConfigureSwagger(this.Configuration)
                 .UseAndConfigureHangfire(recurringJobs, this.Configuration)
                 .UseEndpoints(endpoints =>
                 {

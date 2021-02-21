@@ -12,6 +12,15 @@
     "build-api-prod": "npm run clean-dist-api && cd WoWMarketWatcher.API && dotnet publish -c=Release -o dist",
     "build-ui-prod": "npm run clean-dist-ui && cd WoWMarketWatcher.UI && dotnet publish -c=Release -o dist",
     "download-secrets": "scp root@rwherber.com:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json ./WoWMarketWatcher.API",
-    "upload-secrets": "scp ./WoWMarketWatcher.API/appsettings.Secrets.json root@rwherber.com:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API"
+    "upload-secrets": "scp ./WoWMarketWatcher.API/appsettings.Secrets.json root@rwherber.com:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API",
+    "view-logs-digital-ocean": "ssh root@rwherber.com \"sudo journalctl -fu WoWMarketWatcher.API.service\"",
+    "status-digital-ocean": "ssh root@rwherber.com \"sudo systemctl status WoWMarketWatcher.API.service\"",
+    "clean-digital-ocean": "ssh root@rwherber.com \"rm -rf /var/www/html/APIs/WoWMarketWatcher.API/*\"",
+    "copy-dist-to-digital-ocean": "scp -r ./WoWMarketWatcher.API/dist/* root@rwherber.com:/var/www/html/APIs/WoWMarketWatcher.API",
+    "copy-service-file-to-digital-ocean": "scp ./CI/WoWMarketWatcher.API.service root@rwherber.com:/etc/systemd/system",
+    "restart-digital-ocean-service": "ssh root@rwherber.com \"sudo systemctl stop WoWMarketWatcher.API.service; sudo systemctl enable WoWMarketWatcher.API.service; sudo systemctl start WoWMarketWatcher.API.service; sudo systemctl daemon-reload\"",
+    "update-settings-digital-ocean": "scp ./WoWMarketWatcher.API/appsettings.Secrets.json ./WoWMarketWatcher.API/appsettings.json ./WoWMarketWatcher.API/appsettings.Production.json ./WoWMarketWatcher.API/appsettings.Development.json root@rwherber.com:/var/www/html/APIs/WoWMarketWatcher.API && npm run restart-digital-ocean-service",
+    "deploy-api-to-digital-ocean": "npm run clean-digital-ocean && npm run copy-dist-to-digital-ocean && npm run copy-service-file-to-digital-ocean && npm run restart-digital-ocean-service",
+    "build-and-deploy-api-to-digital-ocean": "npm run build-api-prod && npm run clean-digital-ocean && npm run copy-dist-to-digital-ocean && npm run copy-service-file-to-digital-ocean && npm run restart-digital-ocean-service"
   }
 }

@@ -7,15 +7,17 @@
 # SERVER_SSH_KEY: the private key that matches the public key on the remote server
 # KNOWN_HOSTS: the known hosts. Run `ssh-keyscan {{ IP/Domain }}` to obtain this
 
-name: Build and Deploy
+name: Build and Deploy API
 
 on:
   push:
-    branches: [never]
+    branches: [master]
+    paths:
+      - 'WoWMarketWatcher.API/**'
 
 jobs:
   build:
-    name: Build Project
+    name: Build API
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     runs-on: ubuntu-latest
 
@@ -33,7 +35,7 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
-      - name: Build project
+      - name: Build API
         run: |
           cd ./WoWMarketWatcher.API
           dotnet publish -c=Release -o dist
@@ -44,7 +46,7 @@ jobs:
           path: ./WoWMarketWatcher.API/dist
 
   deploy:
-    name: Deploy to Azure
+    name: Deploy to Digital Ocean Web Server
     runs-on: ubuntu-latest
     needs:
       - build
@@ -60,10 +62,8 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Download secret settings file
         run: scp ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json ./wow-market-watcher-b${{ github.run_number }}
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "rherber-wow-market-watcher"
-          slot-name: "production"
-          publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE }}
-          package: wow-market-watcher-b${{ github.run_number }}
+      - name: Deploy to Digital Ocean Web Server
+        run: |
+          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "rm -rf /var/www/html/APIs/WoWMarketWatcher.API/*"
+          scp -r ./wow-market-watcher-b${{ github.run_number }}/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/WoWMarketWatcher.API
+          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "sudo systemctl stop WoWMarketWatcher.API.service; sudo systemctl enable WoWMarketWatcher.API.service; sudo systemctl start WoWMarketWatcher.API.service; sudo systemctl daemon-reload"
