@@ -25,9 +25,6 @@
           "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
         }
       ]
-    },
-    "repoUrl": {
-      "value": "https://github.com/rob893/wow-market-watcher"
     }
   }
 }

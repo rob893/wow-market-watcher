@@ -48,13 +48,6 @@
           "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
         }
       ]
-    },
-    "repoUrl": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional Git Repo URL"
-      }
     }
   },
   "resources": [
@@ -158,18 +151,6 @@
         }
       },
       "resources": [
-        {
-          "condition": "[contains(parameters('repoUrl'),'http')]",
-          "type": "sourcecontrols",
-          "apiVersion": "2018-11-01",
-          "name": "web",
-          "location": "[parameters('location')]",
-          "dependsOn": ["[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"],
-          "properties": {
-            "repoUrl": "[parameters('repoUrl')]",
-            "branch": "master"
-          }
-        },
         {
           "type": "Microsoft.Authorization/locks",
           "apiVersion": "2016-09-01",
