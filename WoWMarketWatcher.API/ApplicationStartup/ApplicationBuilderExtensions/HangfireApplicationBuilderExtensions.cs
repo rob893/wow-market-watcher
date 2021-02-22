@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using WoWMarketWatcher.API.BackgroundJobs;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.Common.Constants;
 using WoWMarketWatcher.Common.Extensions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
@@ -45,7 +44,12 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 
             public bool Authorize(DashboardContext context)
             {
-                if (!this.configuration.GetEnvironment().Equals(ServiceEnvironment.Production, StringComparison.OrdinalIgnoreCase))
+                if (!this.configuration.GetValue<bool>("Hangfire:Dashboard:Enabled"))
+                {
+                    return false;
+                }
+
+                if (!this.configuration.GetValue<bool>("Hangfire:Dashboard:RequireAuth"))
                 {
                     return true;
                 }
@@ -66,7 +70,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                     var password = decodedUsernamePassword.Split(':', 2)[1];
 
                     // Check if login is correct
-                    if (username == this.configuration["Hangfire:DashboardUsername"] && password == this.configuration["Hangfire:DashboardPassword"])
+                    if (username == this.configuration["Hangfire:Dashboard:Username"] && password == this.configuration["Hangfire:Dashboard:Password"])
                     {
                         return true;
                     }

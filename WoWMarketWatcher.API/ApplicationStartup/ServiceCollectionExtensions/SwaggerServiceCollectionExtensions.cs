@@ -62,7 +62,6 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 c.SwaggerGeneratorOptions.DescribeAllParametersInCamelCase = true;
             });
 
-            // services.ConfigureSwaggerGen(c => c.CustomSchemaIds(x => x.FullName));
             services.AddSwaggerGenNewtonsoftSupport();
 
             return services;

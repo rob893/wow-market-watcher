@@ -3,10 +3,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using WoWMarketWatcher.Common.Extensions;
-using WoWMarketWatcher.Common.Constants;
 using WoWMarketWatcher.API.Models.Settings;
 
 namespace WoWMarketWatcher.API.Middleware
@@ -20,13 +17,13 @@ namespace WoWMarketWatcher.API.Middleware
             this.next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IOptions<SwaggerSettings> swaggerSettings, IConfiguration config)
+        public async Task InvokeAsync(HttpContext context, IOptions<SwaggerSettings> swaggerSettings)
         {
             var settings = swaggerSettings.Value;
             var authSettings = settings.AuthSettings;
 
             // Make sure we are hitting the swagger path
-            if (context.Request.Path.StartsWithSegments("/swagger") && config.GetEnvironment().Equals(ServiceEnvironment.Production, StringComparison.OrdinalIgnoreCase))
+            if (context.Request.Path.StartsWithSegments("/swagger"))
             {
                 if (!settings.Enabled)
                 {
@@ -76,7 +73,7 @@ namespace WoWMarketWatcher.API.Middleware
         public static bool IsAuthorized(string username, string password, SwaggerAuthSettings authSettings)
         {
             // Check that username and password are correct
-            return username.Equals(authSettings.Username, StringComparison.OrdinalIgnoreCase) && password.Equals(authSettings.Password);
+            return username.Equals(authSettings.Username, StringComparison.OrdinalIgnoreCase) && password.Equals(authSettings.Password, StringComparison.Ordinal);
         }
     }
 }

@@ -106,9 +106,11 @@ jobs:
           template: ./CI/AzureARM/Templates/wow-market-watcher-wa-arm.json
           parameters: ./CI/AzureARM/Parameters/wow-market-watcher-wa-arm.parameters.dev.json
       - name: Deploy to Azure Web App
+        id: deploy-to-azure
         uses: azure/webapps-deploy@v2
         with:
           app-name: "rherber-wow-market-watcher-uw-wa-d"
           slot-name: "production"
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE_DEV }}
           package: wow-market-watcher-b${{ github.run_number }}
+      - run: echo ${{ steps.deploy-to-azure.outputs }}

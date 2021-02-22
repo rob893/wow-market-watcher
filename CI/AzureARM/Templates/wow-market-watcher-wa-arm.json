@@ -32,6 +32,29 @@
     "aspnetCoreEnvironment": {
       "type": "string",
       "defaultValue": "Production"
+    },
+    "appSettings": {
+      "type": "array",
+      "metadata": {
+        "description": "App settings to apply to web app"
+      },
+      "defaultValue": [
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "[parameters('aspnetCoreEnvironment')]"
+        },
+        {
+          "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+          "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
+        }
+      ]
+    },
+    "repoUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Git Repo URL"
+      }
     }
   },
   "resources": [
@@ -58,6 +81,18 @@
         "targetWorkerCount": 0,
         "targetWorkerSizeId": 0
       },
+      "resources": [
+        {
+          "type": "Microsoft.Authorization/locks",
+          "apiVersion": "2016-09-01",
+          "name": "appServicePlanLock",
+          "dependsOn": ["[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"],
+          "properties": {
+            "level": "CanNotDelete",
+            "notes": "App service plan should not be deleted."
+          }
+        }
+      ],
       "tags": {
         "environment": "[parameters('aspnetCoreEnvironment')]",
         "creator": "Robert Herber"
@@ -73,6 +108,18 @@
         "Application_Type": "web",
         "RetentionInDays": 60
       },
+      "resources": [
+        {
+          "type": "Microsoft.Authorization/locks",
+          "apiVersion": "2016-09-01",
+          "name": "appInsightsLock",
+          "dependsOn": ["[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"],
+          "properties": {
+            "level": "CanNotDelete",
+            "notes": "App Insights should not be deleted."
+          }
+        }
+      ],
       "tags": {
         "environment": "[parameters('aspnetCoreEnvironment')]",
         "creator": "Robert Herber"
@@ -98,16 +145,7 @@
         "httpsOnly": true,
         "siteConfig": {
           "netFrameworkVersion": "v5.0",
-          "appSettings": [
-            {
-              "name": "ASPNETCORE_ENVIRONMENT",
-              "value": "[parameters('aspnetCoreEnvironment')]"
-            },
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
-            }
-          ],
+          "appSettings": "[parameters('appSettings')]",
           "ipSecurityRestrictions": [
             {
               "ipAddress": "Any",
@@ -118,40 +156,31 @@
             }
           ]
         }
-      }
-    },
-    {
-      "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2016-09-01",
-      "name": "siteLock",
-      "scope": "[concat('Microsoft.Web/sites/', parameters('webAppName'))]",
-      "dependsOn": ["[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"],
-      "properties": {
-        "level": "CanNotDelete",
-        "notes": "Site should not be deleted."
-      }
-    },
-    {
-      "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2016-09-01",
-      "name": "appInsightsLock",
-      "scope": "[concat('Microsoft.Insights/components/', parameters('appInsightsName'))]",
-      "dependsOn": ["[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"],
-      "properties": {
-        "level": "CanNotDelete",
-        "notes": "App Insights should not be deleted."
-      }
-    },
-    {
-      "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2016-09-01",
-      "name": "appServicePlanLock",
-      "scope": "[concat('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
-      "dependsOn": ["[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"],
-      "properties": {
-        "level": "CanNotDelete",
-        "notes": "App service plan should not be deleted."
-      }
+      },
+      "resources": [
+        {
+          "condition": "[contains(parameters('repoUrl'),'http')]",
+          "type": "sourcecontrols",
+          "apiVersion": "2018-11-01",
+          "name": "web",
+          "location": "[parameters('location')]",
+          "dependsOn": ["[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"],
+          "properties": {
+            "repoUrl": "[parameters('repoUrl')]",
+            "branch": "master"
+          }
+        },
+        {
+          "type": "Microsoft.Authorization/locks",
+          "apiVersion": "2016-09-01",
+          "name": "siteLock",
+          "dependsOn": ["[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"],
+          "properties": {
+            "level": "CanNotDelete",
+            "notes": "Site should not be deleted."
+          }
+        }
+      ]
     }
   ]
 }

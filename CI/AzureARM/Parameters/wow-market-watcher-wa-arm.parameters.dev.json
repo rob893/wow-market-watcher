@@ -13,6 +13,21 @@
     },
     "aspnetCoreEnvironment": {
       "value": "Production"
+    },
+    "appSettings": {
+      "value": [
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "[parameters('aspnetCoreEnvironment')]"
+        },
+        {
+          "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+          "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
+        }
+      ]
+    },
+    "repoUrl": {
+      "value": "https://github.com/rob893/wow-market-watcher"
     }
   }
 }
