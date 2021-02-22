@@ -45,7 +45,7 @@ jobs:
           name: wow-market-watcher-b${{ github.run_number }}
           path: ./WoWMarketWatcher.API/dist
 
-  deploy:
+  deploy-digital-ocean:
     name: Deploy to Digital Ocean Web Server
     runs-on: ubuntu-latest
     needs:
@@ -67,3 +67,41 @@ jobs:
           ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "rm -rf /var/www/html/APIs/WoWMarketWatcher.API/*"
           scp -r ./wow-market-watcher-b${{ github.run_number }}/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/WoWMarketWatcher.API
           ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "sudo systemctl stop WoWMarketWatcher.API.service; sudo systemctl enable WoWMarketWatcher.API.service; sudo systemctl start WoWMarketWatcher.API.service; sudo systemctl daemon-reload"
+  
+  deploy-azure:
+    name: Deploy to Azure App service
+    runs-on: ubuntu-latest
+    needs:
+      - build
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          name: id_rsa
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Download secret settings file
+        run: scp ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json ./wow-market-watcher-b${{ github.run_number }}
+      - name: Log into Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+      - name: Deploy ARM template
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_DEV }}
+          resourceGroupName: ${{ secrets.AZURE_RG_DEV }}
+          template: ./CI/AzureARM/Templates/wow-market-watcher-wa-arm.json
+          parameters: ./CI/AzureARM/Parameters/wow-market-watcher-wa-arm.parameters.dev.json
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "rherber-wow-market-watcher-uw-wa-d"
+          slot-name: "production"
+          publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE_DEV }}
+          package: wow-market-watcher-b${{ github.run_number }}

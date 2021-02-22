@@ -28,6 +28,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
         {
             services.AddControllerServices()
                 .AddLogging()
+                .AddApplicationInsightsTelemetry()
                 .AddDatabaseServices(this.Configuration)
                 .AddAuthenticationServices(this.Configuration)
                 .AddIdentityServices()

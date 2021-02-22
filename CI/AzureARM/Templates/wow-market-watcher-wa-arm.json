@@ -1,0 +1,156 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the app service plan."
+      },
+      "defaultValue": "rherber-development"
+    },
+    "webAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the web app."
+      },
+      "minLength": 2,
+      "defaultValue": "rherber-wow-market-watcher-uw-wa-d"
+    },
+    "appInsightsName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the app insights instance."
+      },
+      "minLength": 2,
+      "defaultValue": "rherber-wow-market-watcher-uw-ai-d"
+    },
+    "aspnetCoreEnvironment": {
+      "type": "string",
+      "defaultValue": "Production"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-02-01",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "F1",
+        "tier": "Free",
+        "size": "F1",
+        "family": "F",
+        "capacity": 0
+      },
+      "kind": "app",
+      "properties": {
+        "perSiteScaling": false,
+        "maximumElasticWorkerCount": 1,
+        "isSpot": false,
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      },
+      "tags": {
+        "environment": "[parameters('aspnetCoreEnvironment')]",
+        "creator": "Robert Herber"
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2018-05-01-preview",
+      "name": "[parameters('appInsightsName')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web"
+      },
+      "tags": {
+        "environment": "[parameters('aspnetCoreEnvironment')]",
+        "creator": "Robert Herber"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('webAppName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"
+      ],
+      "kind": "app",
+      "tags": {
+        "environment": "[parameters('aspnetCoreEnvironment')]",
+        "creator": "Robert Herber"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "enabled": true,
+        "httpsOnly": true,
+        "siteConfig": {
+          "netFrameworkVersion": "v5.0",
+          "appSettings": [
+            {
+              "name": "ASPNETCORE_ENVIRONMENT",
+              "value": "[parameters('aspnetCoreEnvironment')]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
+            }
+          ],
+          "ipSecurityRestrictions": [
+            {
+              "ipAddress": "Any",
+              "action": "Allow",
+              "priority": 1,
+              "name": "Allow all",
+              "description": "Allow all access"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2016-09-01",
+      "name": "siteLock",
+      "scope": "[concat('Microsoft.Web/sites/', parameters('webAppName'))]",
+      "dependsOn": ["[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"],
+      "properties": {
+        "level": "CanNotDelete",
+        "notes": "Site should not be deleted."
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2016-09-01",
+      "name": "appInsightsLock",
+      "scope": "[concat('Microsoft.Insights/components/', parameters('appInsightsName'))]",
+      "dependsOn": ["[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"],
+      "properties": {
+        "level": "CanNotDelete",
+        "notes": "App Insights should not be deleted."
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2016-09-01",
+      "name": "appServicePlanLock",
+      "scope": "[concat('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
+      "dependsOn": ["[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"],
+      "properties": {
+        "level": "CanNotDelete",
+        "notes": "App service plan should not be deleted."
+      }
+    }
+  ]
+}
