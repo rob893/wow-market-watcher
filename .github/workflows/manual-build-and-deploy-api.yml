@@ -15,11 +15,11 @@ on:
       deploy-digital-ocean:
         description: 'Deploy to Digital Ocean?'
         required: true
-        default: true
+        default: 'true'
       deploy-azure:
         description: 'Deploy to Azure?'
         required: true
-        default: true
+        default: 'true'
 
 jobs:
   build:
@@ -52,7 +52,7 @@ jobs:
 
   deploy-digital-ocean:
     name: Deploy to Digital Ocean Web Server
-    if: github.event.inputs.deploy-digital-ocean == true
+    if: github.event.inputs.deploy-digital-ocean == 'true'
     runs-on: ubuntu-latest
     needs:
       - build
@@ -76,7 +76,7 @@ jobs:
   
   deploy-azure:
     name: Deploy to Azure App service
-    if: github.event.inputs.deploy-azure == true
+    if: github.event.inputs.deploy-azure == 'true'
     runs-on: ubuntu-latest
     needs:
       - build
