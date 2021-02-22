@@ -32,22 +32,6 @@
     "aspnetCoreEnvironment": {
       "type": "string",
       "defaultValue": "Production"
-    },
-    "appSettings": {
-      "type": "array",
-      "metadata": {
-        "description": "App settings to apply to web app"
-      },
-      "defaultValue": [
-        {
-          "name": "ASPNETCORE_ENVIRONMENT",
-          "value": "[parameters('aspnetCoreEnvironment')]"
-        },
-        {
-          "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-          "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
-        }
-      ]
     }
   },
   "resources": [
@@ -138,7 +122,16 @@
         "httpsOnly": true,
         "siteConfig": {
           "netFrameworkVersion": "v5.0",
-          "appSettings": "[parameters('appSettings')]",
+          "appSettings": [
+            {
+              "name": "ASPNETCORE_ENVIRONMENT",
+              "value": "[parameters('aspnetCoreEnvironment')]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('Microsoft.Insights/components/', parameters('appInsightsName'))).InstrumentationKey]"
+            }
+          ],
           "ipSecurityRestrictions": [
             {
               "ipAddress": "Any",
