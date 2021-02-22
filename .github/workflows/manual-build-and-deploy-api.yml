@@ -99,12 +99,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
       - name: Deploy ARM template
+        id: deploy-arm
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_DEV }}
           resourceGroupName: ${{ secrets.AZURE_RG_DEV }}
           template: ./CI/AzureARM/Templates/wow-market-watcher-wa-arm.json
           parameters: ./CI/AzureARM/Parameters/wow-market-watcher-wa-arm.parameters.dev.json
+      - run: echo ${{ steps.deploy-arm.outputs }}
       - name: Deploy to Azure Web App
         id: deploy-to-azure
         uses: azure/webapps-deploy@v2
@@ -113,4 +115,3 @@ jobs:
           slot-name: "production"
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE_DEV }}
           package: wow-market-watcher-b${{ github.run_number }}
-      - run: echo ${{ steps.deploy-to-azure.outputs }}
