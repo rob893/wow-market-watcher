@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Models.Settings;
+using WoWMarketWatcher.Common.Extensions;
 
 namespace WoWMarketWatcher.API.Services
 {
@@ -20,18 +22,23 @@ namespace WoWMarketWatcher.API.Services
         private readonly IHttpClientFactory httpClientFactory;
         private readonly BlizzardSettings settings;
         private readonly IMemoryCache cache;
+        private readonly ILogger<BlizzardService> logger;
 
-        public BlizzardService(IHttpClientFactory httpClientFactory, IOptions<BlizzardSettings> settings, IMemoryCache cache)
+        public BlizzardService(IHttpClientFactory httpClientFactory, IOptions<BlizzardSettings> settings, IMemoryCache cache, ILogger<BlizzardService> logger)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<string> GetAccessTokenAsync()
+        public async Task<string> GetAccessTokenAsync(string correlationId, bool forceRefresh = false)
         {
-            if (this.cache.TryGetValue<string>(CacheKeys.BlizzardAPIAccessTokenKey, out var cachedToken))
+            var sourceName = this.GetSourceName();
+
+            if (!forceRefresh && this.cache.TryGetValue<string>(CacheKeys.BlizzardAPIAccessTokenKey, out var cachedToken))
             {
+                this.logger.LogInformation(sourceName, correlationId, "Some stuff");
                 return cachedToken;
             }
 
@@ -67,9 +74,9 @@ namespace WoWMarketWatcher.API.Services
             return content.AccessToken;
         }
 
-        public async Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId)
+        public async Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId, string correlationId)
         {
-            var accessToken = await this.GetAccessTokenAsync();
+            var accessToken = await this.GetAccessTokenAsync(correlationId);
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
@@ -91,9 +98,9 @@ namespace WoWMarketWatcher.API.Services
             return content ?? throw new HttpRequestException("Unable to deserialize JSON");
         }
 
-        public async Task<BlizzardWoWItem> GetWoWItemAsync(int itemId)
+        public async Task<BlizzardWoWItem> GetWoWItemAsync(int itemId, string correlationId)
         {
-            var accessToken = await this.GetAccessTokenAsync();
+            var accessToken = await this.GetAccessTokenAsync(correlationId);
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
@@ -120,14 +127,14 @@ namespace WoWMarketWatcher.API.Services
             return content ?? throw new HttpRequestException("Unable to deserialize JSON");
         }
 
-        public async Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds)
+        public async Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds, string correlationId)
         {
             if (itemIds.Count() > 100)
             {
                 throw new ArgumentException("itemIds max count is 100");
             }
 
-            var accessToken = await this.GetAccessTokenAsync();
+            var accessToken = await this.GetAccessTokenAsync(correlationId);
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
@@ -156,9 +163,11 @@ namespace WoWMarketWatcher.API.Services
             return content ?? throw new HttpRequestException("Unable to deserialize JSON");
         }
 
-        public async Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync()
+        public async Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync(string correlationId)
         {
-            var accessToken = await this.GetAccessTokenAsync();
+            var sourceName = this.GetSourceName();
+
+            var accessToken = await this.GetAccessTokenAsync(correlationId);
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 

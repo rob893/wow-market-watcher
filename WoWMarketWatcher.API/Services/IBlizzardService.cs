@@ -6,10 +6,10 @@ namespace WoWMarketWatcher.API.Services
 {
     public interface IBlizzardService
     {
-        Task<string> GetAccessTokenAsync();
-        Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId);
-        Task<BlizzardWoWItem> GetWoWItemAsync(int itemId);
-        Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds);
-        Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync();
+        Task<string> GetAccessTokenAsync(string correlationId, bool forceRefresh = false);
+        Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId, string correlationId);
+        Task<BlizzardWoWItem> GetWoWItemAsync(int itemId, string correlationId);
+        Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds, string correlationId);
+        Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync(string correlationId);
     }
 }
