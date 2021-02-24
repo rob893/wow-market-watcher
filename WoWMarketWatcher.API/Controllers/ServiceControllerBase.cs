@@ -4,6 +4,8 @@ using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.Common.Extensions;
 using System.Net;
 using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.API.Constants;
+using System;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -79,6 +81,16 @@ namespace WoWMarketWatcher.API.Controllers
         public ObjectResult InternalServerError(IList<string> errorMessages)
         {
             return base.StatusCode(500, new ProblemDetailsWithErrors(errorMessages, 500, this.Request));
+        }
+
+        internal string GetCorrelationId()
+        {
+            if (this.HttpContext.Request.Headers.TryGetValue(AppHeaderNames.CorrelationId, out var correlationId))
+            {
+                return correlationId;
+            }
+
+            return Guid.NewGuid().ToString();
         }
     }
 }

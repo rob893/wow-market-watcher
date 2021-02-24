@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using WoWMarketWatcher.API.Middleware;
 using WoWMarketWatcher.API.Core;
 using Hangfire;
+using WoWMarketWatcher.API.Constants;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {
@@ -64,7 +65,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                     header.WithOrigins(this.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "*" })
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .WithExposedHeaders(this.Configuration.GetSection("Cors:ExposedHeaders").Get<string[]>() ?? new[] { "X-Token-Expired", "X-Correlation-Id" })
+                        .WithExposedHeaders(this.Configuration.GetSection("Cors:ExposedHeaders").Get<string[]>() ?? new[] { AppHeaderNames.TokenExpired, AppHeaderNames.CorrelationId })
                 )
                 .UseAuthentication()
                 .UseAuthorization()

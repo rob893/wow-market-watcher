@@ -1,6 +1,6 @@
 namespace WoWMarketWatcher.API.Constants
 {
-    public class CacheKeys
+    public static class CacheKeys
     {
         public const string BlizzardAPIAccessTokenKey = "BlizzardAPIAccessTokenKey";
         public const string WoWItemQualitiesKey = "WoWItemQualitiesKey";

@@ -38,7 +38,7 @@ namespace WoWMarketWatcher.API.Services
 
             if (!forceRefresh && this.cache.TryGetValue<string>(CacheKeys.BlizzardAPIAccessTokenKey, out var cachedToken))
             {
-                this.logger.LogInformation(sourceName, correlationId, "Some stuff");
+                this.logger.LogInformation(sourceName, correlationId, "Returning cached Blizzard access token.");
                 return cachedToken;
             }
 
@@ -52,6 +52,7 @@ namespace WoWMarketWatcher.API.Services
             };
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{this.settings.ClientId}:{this.settings.ClientSecret}")));
+            request.Headers.Add(AppHeaderNames.CorrelationId, correlationId);
 
             using var response = await httpClient.SendAsync(request);
 
@@ -83,6 +84,7 @@ namespace WoWMarketWatcher.API.Services
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/connected-realm/{realmId}/auctions?namespace=dynamic-us&locale=en_US");
 
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
+            request.Headers.Add(AppHeaderNames.CorrelationId, correlationId);
 
             using var response = await httpClient.SendAsync(request);
 
@@ -107,6 +109,7 @@ namespace WoWMarketWatcher.API.Services
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/item/{itemId}?namespace=static-us&locale=en_US");
 
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
+            request.Headers.Add(AppHeaderNames.CorrelationId, correlationId);
 
             using var response = await httpClient.SendAsync(request);
 
@@ -143,6 +146,7 @@ namespace WoWMarketWatcher.API.Services
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/search/item?namespace=static-us&locale=en_US&{itemIdsQuery}");
 
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
+            request.Headers.Add(AppHeaderNames.CorrelationId, correlationId);
 
             using var response = await httpClient.SendAsync(request);
 
@@ -174,6 +178,7 @@ namespace WoWMarketWatcher.API.Services
             using var request = new HttpRequestMessage(HttpMethod.Get, $"data/wow/search/connected-realm?namespace=dynamic-us&locale=en_US");
 
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
+            request.Headers.Add(AppHeaderNames.CorrelationId, correlationId);
 
             using var response = await httpClient.SendAsync(request);
 
