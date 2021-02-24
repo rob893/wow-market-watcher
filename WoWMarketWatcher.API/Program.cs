@@ -66,7 +66,14 @@ namespace WoWMarketWatcher.API
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((HostBuilderContext, config) => config.AddJsonFile("appsettings.Secrets.json", false, true))
+                .ConfigureAppConfiguration((HostBuilderContext, config) =>
+                {
+                    config
+                        .AddJsonFile("appsettings.Secrets.json", false, true)
+                        // Add local settings file last so it takes priority. 
+                        // This file should only be used for local development.
+                        .AddJsonFile("appsettings.Local.json", true, true);
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
@@ -79,7 +86,10 @@ namespace WoWMarketWatcher.API
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.Secrets.json", optional: false);
+                .AddJsonFile("appsettings.Secrets.json", false, true)
+                // Add local settings file last so it takes priority. 
+                // This file should only be used for local development.
+                .AddJsonFile("appsettings.Local.json", true, true);
 
             var config = builder.Build();
 

@@ -4,7 +4,9 @@ using Hangfire;
 using Hangfire.Heartbeat;
 using Hangfire.JobsLogger;
 using Hangfire.Logging;
-using Hangfire.Storage.MySql;
+using Hangfire.MySql;
+using Hangfire.Tags;
+using Hangfire.Tags.MySql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WoWMarketWatcher.API.BackgroundJobs;
@@ -16,6 +18,17 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
         public static IServiceCollection AddHangfireServices(this IServiceCollection services, IConfiguration config)
         {
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 10 });
+
+            var mySqlOptions = new MySqlStorageOptions
+            {
+                QueuePollInterval = TimeSpan.FromSeconds(15),
+                JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                PrepareSchemaIfNecessary = true,
+                DashboardJobListLimit = 50000,
+                TransactionTimeout = TimeSpan.FromMinutes(1),
+                TablesPrefix = "Hangfire"
+            };
 
             services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
@@ -31,16 +44,8 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                     LogDebugColor = Color.Gray
                 })
                 .UseColouredConsoleLogProvider(LogLevel.Warn)
-                .UseStorage(new MySqlStorage(config["Hangfire:DatabaseConnection"], new MySqlStorageOptions
-                {
-                    QueuePollInterval = TimeSpan.FromSeconds(15),
-                    JobExpirationCheckInterval = TimeSpan.FromHours(1),
-                    CountersAggregateInterval = TimeSpan.FromMinutes(5),
-                    PrepareSchemaIfNecessary = true,
-                    DashboardJobListLimit = 50000,
-                    TransactionTimeout = TimeSpan.FromMinutes(1),
-                    TablesPrefix = "Hangfire"
-                }))
+                // .UseTagsWithMySql(new TagsOptions { TagsListStyle = TagsListStyle.Dropdown }, mySqlOptions)
+                .UseStorage(new MySqlStorage(config["Hangfire:DatabaseConnection"], mySqlOptions))
             );
 
             services.AddTransient<PullAuctionDataBackgroundJob>();
