@@ -141,7 +141,7 @@ namespace WoWMarketWatcher.API.Services
 
             if (response.StatusCode == HttpStatusCode.Unauthorized && !isRetry)
             {
-                this.logger.LogWarning(sourceName, correlationId, $"Request to {url} failed due to unauthorizied. Refreshing token and retrying.");
+                this.logger.LogWarning(sourceName, correlationId, $"Request to {url} failed due to being unauthorizied. Refreshing token and retrying.");
                 return await this.SendRequestAsync<T>(method, url, correlationId, true);
             }
 
