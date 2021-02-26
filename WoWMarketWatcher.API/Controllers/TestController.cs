@@ -3,6 +3,14 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Core;
 using Microsoft.AspNetCore.Authorization;
+using WoWMarketWatcher.API.Services;
+using System.Threading.Tasks;
+using WoWMarketWatcher.API.Models.Responses.Blizzard;
+using System;
+using Google.Apis.Logging;
+using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.Common.Extensions;
+using System.Collections.Generic;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -12,10 +20,34 @@ namespace WoWMarketWatcher.API.Controllers
     public class TestController : ServiceControllerBase
     {
         private readonly Counter counter;
+        private readonly IBlizzardService blizzardService;
+        private readonly ILogger<TestController> logger;
 
-        public TestController(Counter counter)
+        public TestController(Counter counter, IBlizzardService blizzardService, ILogger<TestController> logger)
         {
             this.counter = counter;
+            this.blizzardService = blizzardService;
+            this.logger = logger;
+        }
+
+        [HttpGet("blizz/items/{id}")]
+        public async Task<ActionResult<BlizzardWoWItem>> GetItem([FromRoute] int id)
+        {
+            var item = await this.blizzardService.GetWoWItemAsync(id, Guid.NewGuid().ToString());
+
+            return this.Ok(item);
+        }
+
+        [HttpGet("logger")]
+        public ActionResult<BlizzardWoWItem> TestLogger()
+        {
+            var sourceName = this.GetSourceName();
+            var correlationId = Guid.NewGuid().ToString();
+            var LOL = "foobar";
+
+            this.logger.LogInformation(sourceName, correlationId, "TEST {LOL}", "I {intend to break things}");
+
+            return this.Ok(new { correlationId });
         }
 
         [HttpGet]

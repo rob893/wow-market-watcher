@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace WoWMarketWatcher.Common.Extensions
@@ -14,9 +15,17 @@ namespace WoWMarketWatcher.Common.Extensions
             logger.Log(LogLevel.Debug, FormatMessage(sourceName, correlationId, message), sourceName, correlationId, args);
         }
 
-        public static void LogInformation(this ILogger logger, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogInformation(this ILogger logger, string sourceName, string correlationId, string message, object? customProps = null)
         {
-            logger.Log(LogLevel.Information, FormatMessage(sourceName, correlationId, message), sourceName, correlationId, args);
+            if (customProps != null)
+            {
+                var customProperties = customProps.ToJson();
+                logger.Log(LogLevel.Information, $"{FormatMessage(sourceName, correlationId, message)} {{customProperties}}", sourceName, correlationId, customProperties);
+            }
+            else
+            {
+                logger.Log(LogLevel.Information, $"{{sourceName}} ({{correlationId}}). {message.TrimEnd('.')}.", sourceName, correlationId);
+            }
         }
 
         public static void LogWarning(this ILogger logger, string sourceName, string correlationId, string message, params object[] args)
@@ -36,7 +45,7 @@ namespace WoWMarketWatcher.Common.Extensions
 
         private static string FormatMessage(string sourceName, string correlationId, string message)
         {
-            return $"{sourceName} ({correlationId}). {message.TrimEnd('.')}.";
+            return $"{{sourceName}} ({{correlationId}}). {message.TrimEnd('.').Replace("{", string.Empty).Replace("}", string.Empty)}.";
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
-
+using Newtonsoft.Json;
 using WoWMarketWatcher.Common.Constants;
 
 namespace WoWMarketWatcher.Common.Extensions
@@ -103,6 +103,25 @@ namespace WoWMarketWatcher.Common.Extensions
             }
 
             return $"{sourceName}.{memberName}";
+        }
+
+        public static string ToJson(this object value, Formatting formatting = Formatting.None)
+        {
+            if (value == null)
+            {
+                return "null";
+            }
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(value, formatting);
+
+                return json;
+            }
+            catch (Exception ex)
+            {
+                return $"Exception - {ex?.Message}";
+            }
         }
 
         private static void AddPropertyToDictionary<T>(PropertyDescriptor property, object source, Dictionary<string, T> dictionary)
