@@ -1,38 +1,57 @@
+using System.Collections.Generic;
 using Hangfire.JobsLogger;
 using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.Common.Extensions;
 
 namespace WoWMarketWatcher.API.Extensions
 {
     public static class HangfireLoggerExtensions
     {
-        public static void LogTrace(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogTrace(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Trace, jobId: hangfireJobId, FormatMessage(sourceName, correlationId, message), hangfireJobId, sourceName, correlationId, args);
+            logger.Log(LogLevel.Trace, hangfireJobId, sourceName, correlationId, message, customProperties);
         }
 
-        public static void LogDebug(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogDebug(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Debug, jobId: hangfireJobId, FormatMessage(sourceName, correlationId, message), hangfireJobId, sourceName, correlationId, args);
+            logger.Log(LogLevel.Debug, hangfireJobId, sourceName, correlationId, message, customProperties);
         }
 
-        public static void LogInformation(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogInformation(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Information, jobId: hangfireJobId, FormatMessage(sourceName, correlationId, message), hangfireJobId, sourceName, correlationId, args);
+            logger.Log(LogLevel.Information, hangfireJobId, sourceName, correlationId, message, customProperties);
         }
 
-        public static void LogWarning(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogWarning(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Warning, jobId: hangfireJobId, FormatMessage(sourceName, correlationId, message), hangfireJobId, sourceName, correlationId, args);
+            logger.Log(LogLevel.Warning, hangfireJobId, sourceName, correlationId, message, customProperties);
         }
 
-        public static void LogError(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogError(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Error, jobId: hangfireJobId, FormatMessage(sourceName, correlationId, message), hangfireJobId, sourceName, correlationId, args);
+            logger.Log(LogLevel.Error, hangfireJobId, sourceName, correlationId, message, customProperties);
         }
 
-        public static void LogCritical(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogCritical(this ILogger logger, string hangfireJobId, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Critical, jobId: hangfireJobId, FormatMessage(sourceName, correlationId, message), hangfireJobId, sourceName, correlationId, args);
+            logger.Log(LogLevel.Critical, hangfireJobId, sourceName, correlationId, message, customProperties);
+        }
+
+        public static void Log(this ILogger logger, LogLevel logLevel, string hangfireJobId, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
+        {
+            if (customProperties == null)
+            {
+                customProperties = new Dictionary<string, object>();
+            }
+
+            customProperties[nameof(sourceName)] = sourceName;
+            customProperties[nameof(correlationId)] = correlationId;
+            customProperties[nameof(hangfireJobId)] = hangfireJobId;
+
+            using (logger.BeginScope(customProperties))
+            {
+                logger.Log(logLevel, jobId: hangfireJobId, FormatMessage(sourceName, correlationId, message));
+            }
         }
 
         private static string FormatMessage(string sourceName, string correlationId, string message)

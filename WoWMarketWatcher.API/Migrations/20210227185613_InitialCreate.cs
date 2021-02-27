@@ -32,6 +32,7 @@ namespace WoWMarketWatcher.API.Migrations
                     FirstName = table.Column<string>(type: "varchar(255) CHARACTER SET utf8mb4", maxLength: 255, nullable: false),
                     LastName = table.Column<string>(type: "varchar(255) CHARACTER SET utf8mb4", maxLength: 255, nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
+                    MembershipLevel = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
                     UserName = table.Column<string>(type: "varchar(256) CHARACTER SET utf8mb4", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "varchar(256) CHARACTER SET utf8mb4", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "varchar(256) CHARACTER SET utf8mb4", maxLength: 256, nullable: true),

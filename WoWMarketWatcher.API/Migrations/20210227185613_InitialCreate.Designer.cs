@@ -9,7 +9,7 @@ using WoWMarketWatcher.API.Data;
 namespace WoWMarketWatcher.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210215192007_InitialCreate")]
+    [Migration("20210227185613_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -333,6 +333,10 @@ namespace WoWMarketWatcher.API.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("MembershipLevel")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)

@@ -5,47 +5,55 @@ namespace WoWMarketWatcher.Common.Extensions
 {
     public static class LoggerExtensions
     {
-        public static void LogTrace(this ILogger logger, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogTrace(this ILogger logger, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Trace, FormatMessage(sourceName, correlationId, message), sourceName, correlationId, args);
+            logger.Log(LogLevel.Trace, sourceName, correlationId, message, customProperties);
         }
 
-        public static void LogDebug(this ILogger logger, string sourceName, string correlationId, string message, params object[] args)
+        public static void LogDebug(this ILogger logger, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            logger.Log(LogLevel.Debug, FormatMessage(sourceName, correlationId, message), sourceName, correlationId, args);
+            logger.Log(LogLevel.Debug, sourceName, correlationId, message, customProperties);
         }
 
-        public static void LogInformation(this ILogger logger, string sourceName, string correlationId, string message, object? customProps = null)
+        public static void LogInformation(this ILogger logger, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
-            if (customProps != null)
+            logger.Log(LogLevel.Information, sourceName, correlationId, message, customProperties);
+        }
+
+        public static void LogWarning(this ILogger logger, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
+        {
+            logger.Log(LogLevel.Warning, sourceName, correlationId, message, customProperties);
+        }
+
+        public static void LogError(this ILogger logger, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
+        {
+            logger.Log(LogLevel.Error, sourceName, correlationId, message, customProperties);
+        }
+
+        public static void LogCritical(this ILogger logger, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
+        {
+            logger.Log(LogLevel.Critical, sourceName, correlationId, message, customProperties);
+        }
+
+        public static void Log(this ILogger logger, LogLevel logLevel, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
+        {
+            if (customProperties == null)
             {
-                var customProperties = customProps.ToJson();
-                logger.Log(LogLevel.Information, $"{FormatMessage(sourceName, correlationId, message)} {{customProperties}}", sourceName, correlationId, customProperties);
+                customProperties = new Dictionary<string, object>();
             }
-            else
+
+            customProperties[nameof(sourceName)] = sourceName;
+            customProperties[nameof(correlationId)] = correlationId;
+
+            using (logger.BeginScope(customProperties))
             {
-                logger.Log(LogLevel.Information, $"{{sourceName}} ({{correlationId}}). {message.TrimEnd('.')}.", sourceName, correlationId);
+                logger.Log(logLevel, message: FormatMessage(sourceName, correlationId, message));
             }
-        }
-
-        public static void LogWarning(this ILogger logger, string sourceName, string correlationId, string message, params object[] args)
-        {
-            logger.Log(LogLevel.Warning, FormatMessage(sourceName, correlationId, message), sourceName, correlationId, args);
-        }
-
-        public static void LogError(this ILogger logger, string sourceName, string correlationId, string message, params object[] args)
-        {
-            logger.Log(LogLevel.Error, FormatMessage(sourceName, correlationId, message), sourceName, correlationId, args);
-        }
-
-        public static void LogCritical(this ILogger logger, string sourceName, string correlationId, string message, params object[] args)
-        {
-            logger.Log(LogLevel.Critical, FormatMessage(sourceName, correlationId, message), sourceName, correlationId, args);
         }
 
         private static string FormatMessage(string sourceName, string correlationId, string message)
         {
-            return $"{{sourceName}} ({{correlationId}}). {message.TrimEnd('.').Replace("{", string.Empty).Replace("}", string.Empty)}.";
+            return $"{sourceName} ({correlationId}). {message.TrimEnd('.')}.";
         }
     }
 }

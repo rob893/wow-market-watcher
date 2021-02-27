@@ -142,7 +142,7 @@ namespace WoWMarketWatcher.API.Data
 
         private void SeedAuctionTimeSeries()
         {
-            if (this.context.WoWItems.Any())
+            if (this.context.AuctionTimeSeries.Any())
             {
                 return;
             }

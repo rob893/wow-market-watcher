@@ -15,6 +15,7 @@ namespace WoWMarketWatcher.API.Entities
         [MaxLength(255)]
         public string LastName { get; set; } = default!;
         public DateTimeOffset Created { get; set; }
+        public MembershipLevel MembershipLevel { get; set; }
         public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
         public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public List<LinkedAccount> LinkedAccounts { get; set; } = new List<LinkedAccount>();

@@ -7,27 +7,31 @@ using WoWMarketWatcher.API.Services;
 using System.Threading.Tasks;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using System;
-using Google.Apis.Logging;
 using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.Common.Extensions;
 using System.Collections.Generic;
+using WoWMarketWatcher.Common.Constants;
+using WoWMarketWatcher.API.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
     public class TestController : ServiceControllerBase
     {
         private readonly Counter counter;
         private readonly IBlizzardService blizzardService;
         private readonly ILogger<TestController> logger;
+        private readonly DataContext dbContext;
 
-        public TestController(Counter counter, IBlizzardService blizzardService, ILogger<TestController> logger)
+        public TestController(Counter counter, IBlizzardService blizzardService, ILogger<TestController> logger, DataContext dbContext)
         {
             this.counter = counter;
             this.blizzardService = blizzardService;
             this.logger = logger;
+            this.dbContext = dbContext;
         }
 
         [HttpGet("blizz/items/{id}")]
@@ -43,11 +47,24 @@ namespace WoWMarketWatcher.API.Controllers
         {
             var sourceName = this.GetSourceName();
             var correlationId = Guid.NewGuid().ToString();
-            var LOL = "foobar";
 
-            this.logger.LogInformation(sourceName, correlationId, "TEST {LOL}", "I {intend to break things}");
+            using var _ = this.logger.BeginScope(new Dictionary<string, object> { { "BALLS", "PENIS" } });
+
+            this.logger.LogInformation(sourceName, correlationId, "TEST ASDF", new Dictionary<string, object> { { "FART", "FACE" } });
 
             return this.Ok(new { correlationId });
+        }
+
+        [HttpPost("auctionTimeSeries/download")]
+        public async Task<ActionResult> DownloadAuctionTimeSeriesAsync()
+        {
+            var items = await this.dbContext.AuctionTimeSeries.ToListAsync();
+
+            var asJson = items.ToJson();
+
+            await System.IO.File.WriteAllTextAsync($"Data/SeedData/AuctionTimeSeriesSeedData-{DateTime.Now:dd-MM-yy}.json", asJson);
+
+            return this.Ok();
         }
 
         [HttpGet]

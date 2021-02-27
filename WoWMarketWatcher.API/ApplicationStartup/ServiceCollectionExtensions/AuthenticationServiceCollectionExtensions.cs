@@ -50,7 +50,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                             context.Response.StatusCode = 401;
                             context.Response.ContentType = "application/json";
 
-                            string errorMessage = string.IsNullOrWhiteSpace(context.ErrorDescription) ? context.Error : $"{context.Error}. {context.ErrorDescription}.";
+                            var errorMessage = string.IsNullOrWhiteSpace(context.ErrorDescription) ? context.Error : $"{context.Error}. {context.ErrorDescription}.";
 
                             var problem = new ProblemDetailsWithErrors(errorMessage ?? "Invalid token", 401, context.Request);
 
@@ -63,7 +63,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                         },
                         OnAuthenticationFailed = context =>
                         {
-                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                            if (context.Exception is SecurityTokenExpiredException)
                             {
                                 context.Response.Headers.Add("X-Token-Expired", "true");
                             }

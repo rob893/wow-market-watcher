@@ -43,6 +43,11 @@ namespace WoWMarketWatcher.API.Data
                 rToken.HasKey(k => new { k.UserId, k.DeviceId });
             });
 
+            builder.Entity<User>(user =>
+            {
+                user.Property(u => u.MembershipLevel).HasConversion<string>();
+            });
+
             builder.Entity<LinkedAccount>(linkedAccount =>
             {
                 linkedAccount.HasKey(account => new { account.Id, account.LinkedAccountType });

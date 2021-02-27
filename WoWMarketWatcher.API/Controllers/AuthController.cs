@@ -19,6 +19,8 @@ using Google.Apis.Auth;
 using WoWMarketWatcher.Common.Models.Requests;
 using WoWMarketWatcher.Common.Models.Responses;
 using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.Common.Constants;
+using System.Globalization;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -42,7 +44,7 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<LoginResponse>> RegisterAsync([FromBody] RegisterUserRequest userForRegisterDto)
         {
-            var user = mapper.Map<User>(userForRegisterDto);
+            var user = this.mapper.Map<User>(userForRegisterDto);
 
             var result = await userRepository.CreateUserWithPasswordAsync(user, userForRegisterDto.Password);
 
@@ -315,13 +317,18 @@ namespace WoWMarketWatcher.API.Controllers
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer),
                 new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.GivenName, user.FirstName),
+                new Claim(ClaimTypes.Surname, user.LastName),
+                new Claim(AppClaimTypes.EmailVerified, user.EmailConfirmed.ToString(), ClaimValueTypes.Boolean),
+                new Claim(AppClaimTypes.MembershipType, user.MembershipLevel.ToString())
             };
 
             if (user.UserRoles != null)
             {
-                foreach (string role in user.UserRoles.Select(r => r.Role.Name))
+                foreach (var role in user.UserRoles.Select(r => r.Role.Name))
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
                 }
@@ -339,11 +346,11 @@ namespace WoWMarketWatcher.API.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(authSettings.TokenExpirationTimeInMinutes),
+                Expires = DateTime.UtcNow.AddMinutes(this.authSettings.TokenExpirationTimeInMinutes),
                 NotBefore = DateTime.UtcNow,
                 SigningCredentials = creds,
-                Audience = authSettings.TokenAudience,
-                Issuer = authSettings.TokenIssuer
+                Audience = this.authSettings.TokenAudience,
+                Issuer = this.authSettings.TokenIssuer
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
