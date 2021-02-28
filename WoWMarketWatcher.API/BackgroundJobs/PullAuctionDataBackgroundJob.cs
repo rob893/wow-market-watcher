@@ -13,6 +13,7 @@ using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.Common.Extensions;
+using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs
 {
@@ -45,7 +46,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var sourceName = this.GetSourceName();
+            var sourceName = GetSourceName();
             var hangfireJobId = context.BackgroundJob.Id;
             var correlationId = $"{hangfireJobId}-{Guid.NewGuid()}";
 

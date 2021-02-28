@@ -14,7 +14,9 @@ using System.Threading.Tasks;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Models.Settings;
+using WoWMarketWatcher.Common.Constants;
 using WoWMarketWatcher.Common.Extensions;
+using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Services
 {
@@ -35,7 +37,7 @@ namespace WoWMarketWatcher.API.Services
 
         public async Task<string> GetAccessTokenAsync(string correlationId, bool forceRefresh = false)
         {
-            var sourceName = this.GetSourceName();
+            var sourceName = GetSourceName();
 
             this.logger.LogDebug(sourceName, correlationId, "Method started.");
 
@@ -124,7 +126,7 @@ namespace WoWMarketWatcher.API.Services
 
         private async Task<T> SendRequestAsync<T>(HttpMethod method, string url, string correlationId, bool isRetry = false)
         {
-            var sourceName = this.GetSourceName();
+            var sourceName = GetSourceName();
 
             var accessToken = await this.GetAccessTokenAsync(correlationId, isRetry);
 

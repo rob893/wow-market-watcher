@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using WoWMarketWatcher.API.Middleware;
 using WoWMarketWatcher.API.Core;
 using Hangfire;
-using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.Common.Constants;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {

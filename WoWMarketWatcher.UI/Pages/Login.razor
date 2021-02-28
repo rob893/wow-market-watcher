@@ -1,5 +1,6 @@
 ﻿@using WoWMarketWatcher.UI.Services
-@inject AuthService authService
+@inject IAuthService authService
+@inject TestService testService
 
 @page "/"
 
@@ -52,8 +53,9 @@
         Console.WriteLine(res.User.UserName);
     }
 
-    public void ClearLoginForm()
+    public async Task ClearLoginForm()
     {
+        await this.testService.Test();
         this.Username = "";
         this.Password = "";
     }

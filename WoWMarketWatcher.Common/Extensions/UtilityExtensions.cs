@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using WoWMarketWatcher.Common.Constants;
@@ -85,24 +83,6 @@ namespace WoWMarketWatcher.Common.Extensions
             return endDate < startDate
                 ? throw new ArgumentException($"{nameof(startDate)} must be less than {nameof(endDate)}.")
                 : input >= startDate && input <= endDate;
-        }
-
-        public static string GetSourceName(
-            this object _,
-            [CallerFilePath]
-            string sourceFilePath = "",
-            [CallerMemberName]
-            string memberName = "")
-        {
-            var sourceName = string.Empty;
-            if (!string.IsNullOrWhiteSpace(sourceFilePath))
-            {
-                sourceName = sourceFilePath.Contains('\\')
-                    ? sourceFilePath.Split('\\').Last().Split('.').First()
-                    : sourceFilePath.Split('/').Last().Split('.').First();
-            }
-
-            return $"{sourceName}.{memberName}";
         }
 
         public static string ToJson(this object value, Formatting formatting = Formatting.None)

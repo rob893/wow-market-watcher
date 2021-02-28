@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
+using WoWMarketWatcher.Common.Extensions;
+using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {
@@ -20,9 +22,13 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             {
                 c.BaseAddress = new Uri(settings.BaseUrl);
             }).AddTransientHttpErrorPolicy(p =>
-                p.WaitAndRetryAsync(3, (retryAttempt) => TimeSpan.FromMilliseconds(retryAttempt * 300), onRetry: (outcome, _, retryAttempt) =>
+                p.WaitAndRetryAsync(5, (retryAttempt) => TimeSpan.FromMilliseconds(retryAttempt * 300), onRetry: (outcome, timespan, retryAttempt, context) =>
                 {
-                    services.BuildServiceProvider().GetRequiredService<ILogger<BlizzardService>>().LogWarning($"Attempting retry for {outcome.Result.RequestMessage?.RequestUri}, then making retry {retryAttempt}.");
+                    var sourceName = GetSourceName();
+                    var correlationId = outcome.Result.RequestMessage?.Headers.GetOrGenerateCorrelationId() ?? Guid.NewGuid().ToString();
+
+                    services.BuildServiceProvider().GetRequiredService<ILogger<BlizzardService>>()
+                        .LogWarning(sourceName, correlationId, $"Request to {outcome.Result.RequestMessage?.RequestUri} failed with status {outcome.Result.StatusCode}. Delaying for {timespan.TotalMilliseconds}ms, then making retry {retryAttempt}.");
                 }));
 
             services.AddScoped<IBlizzardService, BlizzardService>();

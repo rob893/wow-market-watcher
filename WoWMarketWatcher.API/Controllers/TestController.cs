@@ -13,25 +13,29 @@ using System.Collections.Generic;
 using WoWMarketWatcher.Common.Constants;
 using WoWMarketWatcher.API.Data;
 using Microsoft.EntityFrameworkCore;
+using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
+using System.Net.Http;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
+    //[Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
     public class TestController : ServiceControllerBase
     {
         private readonly Counter counter;
         private readonly IBlizzardService blizzardService;
         private readonly ILogger<TestController> logger;
         private readonly DataContext dbContext;
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public TestController(Counter counter, IBlizzardService blizzardService, ILogger<TestController> logger, DataContext dbContext)
+        public TestController(Counter counter, IBlizzardService blizzardService, ILogger<TestController> logger, DataContext dbContext, IHttpClientFactory httpClientFactory)
         {
             this.counter = counter;
             this.blizzardService = blizzardService;
             this.logger = logger;
             this.dbContext = dbContext;
+            this.httpClientFactory = httpClientFactory;
         }
 
         [HttpGet("blizz/items/{id}")]
@@ -45,7 +49,7 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet("logger")]
         public ActionResult<BlizzardWoWItem> TestLogger()
         {
-            var sourceName = this.GetSourceName();
+            var sourceName = GetSourceName();
             var correlationId = Guid.NewGuid().ToString();
 
             this.logger.LogInformation(sourceName, correlationId, $"TEST ASDF");
@@ -65,7 +69,21 @@ namespace WoWMarketWatcher.API.Controllers
             return this.Ok();
         }
 
+        [HttpGet("self")]
+        [AllowAnonymous]
+        public async Task<ActionResult> TestSelf([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? per, [FromQuery] int delay = 0)
+        {
+            var query = $"?status={status}&delay={delay}{(statusAfter == null ? "" : $"&statusAfter={statusAfter}")}{(per == null ? "" : $"&per={per}")}";
+
+            var client = this.httpClientFactory.CreateClient(nameof(BlizzardService));
+
+            var res = await client.GetAsync($"http://localhost:5003/api/test{query}");
+
+            return this.Ok();
+        }
+
         [HttpGet]
+        //[AllowAnonymous]
         public ActionResult Test([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? per, [FromQuery] int delay = 0)
         {
             this.counter.Count++;
