@@ -48,9 +48,7 @@ namespace WoWMarketWatcher.API.Controllers
             var sourceName = this.GetSourceName();
             var correlationId = Guid.NewGuid().ToString();
 
-            using var _ = this.logger.BeginScope(new Dictionary<string, object> { { "BALLS", "PENIS" } });
-
-            this.logger.LogInformation(sourceName, correlationId, "TEST ASDF", new Dictionary<string, object> { { "FART", "FACE" } });
+            this.logger.LogInformation(sourceName, correlationId, $"TEST ASDF");
 
             return this.Ok(new { correlationId });
         }
