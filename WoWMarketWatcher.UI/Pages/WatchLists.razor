@@ -1,0 +1,33 @@
+@page "/watchLists"
+
+<h1>Watch Lists</h1>
+
+<p>Currently logged in user's watch lists.</p>
+
+@if (watchLists == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @foreach (var watchList in watchLists)
+    {
+        <p>@watchList.Name</p>
+        <p>@watchList.Description</p>
+        <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var watchedItem in watchList.WatchedItems)
+            {
+                <tr>
+                    <td>@watchedItem.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>   
+    }
+}

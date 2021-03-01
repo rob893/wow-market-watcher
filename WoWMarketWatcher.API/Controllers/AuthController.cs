@@ -291,7 +291,7 @@ namespace WoWMarketWatcher.API.Controllers
             user.RefreshTokens.Add(new RefreshToken
             {
                 Token = refreshToken,
-                Expiration = DateTimeOffset.UtcNow.AddSeconds(5), //.AddMinutes(authSettings.RefreshTokenExpirationTimeInMinutes),
+                Expiration = DateTimeOffset.UtcNow.AddMinutes(authSettings.RefreshTokenExpirationTimeInMinutes),
                 DeviceId = refreshTokenDto.DeviceId
             });
 
@@ -346,7 +346,7 @@ namespace WoWMarketWatcher.API.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddSeconds(5), //.AddMinutes(this.authSettings.TokenExpirationTimeInMinutes),
+                Expires = DateTime.UtcNow.AddMinutes(this.authSettings.TokenExpirationTimeInMinutes),
                 NotBefore = DateTime.UtcNow,
                 SigningCredentials = creds,
                 Audience = this.authSettings.TokenAudience,

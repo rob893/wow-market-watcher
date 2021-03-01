@@ -60,6 +60,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                     ForwardedHeaders = ForwardedHeaders.All
                 })
                 .UseMiddleware<PathBaseRewriterMiddleware>()
+                .UseMiddleware<CorrelationIdMiddleware>()
                 .UseRouting()
                 .UseCors(header =>
                     header.WithOrigins(this.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "*" })

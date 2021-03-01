@@ -15,6 +15,9 @@ namespace WoWMarketWatcher.UI.Pages
         private TestService TestService { get; set; }
 
         [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
+        [Inject]
         private ILogger<Login> Logger { get; set; }
 
         private string Username { get; set; }
@@ -28,6 +31,8 @@ namespace WoWMarketWatcher.UI.Pages
             var res = await this.AuthService.Login(this.Username, this.Password);
 
             this.Logger.LogInformation(res.User.UserName);
+
+            this.NavigationManager.NavigateTo("watchLists");
         }
 
         public async Task ClearLoginForm()

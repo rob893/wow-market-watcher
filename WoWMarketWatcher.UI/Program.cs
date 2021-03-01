@@ -30,29 +30,32 @@ namespace WoWMarketWatcher.UI
 
             services.AddMudServices();
 
-            var unAuthPolicy = Policy.HandleResult<HttpResponseMessage>(response => response.StatusCode == HttpStatusCode.Unauthorized && response.Headers.TryGetValues(AppHeaderNames.TokenExpired, out var values) && values.Any())
-            .RetryAsync(retryCount: 1, onRetryAsync: async (outcome, retryNumber, context) =>
-            {
-                var authService = services.BuildServiceProvider().GetRequiredService<IAuthService>();
-                var res = await authService.RefreshTokenAsync();
-                outcome.Result.RequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", res.Token);
-            });
-
             services.AddHttpClient(HttpClientNames.AuthorizedWoWMarketWatcherAPI, client =>
             {
                 var authService = services.BuildServiceProvider().GetRequiredService<IAuthService>();
                 client.BaseAddress = new Uri(builder.Configuration[ConfigurationKeys.WoWMarketWatcherAPIBaseUrl]);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authService.AccessToken);
             })
-            .AddTransientHttpErrorPolicy(p =>
-                p.WaitAndRetryAsync(5, (retryAttempt) => TimeSpan.FromMilliseconds(retryAttempt * 300), onRetry: (outcome, timespan, retryAttempt, context) =>
-                {
-                    var sourceName = GetSourceName();
-                    var correlationId = outcome.Result.RequestMessage?.Headers.GetOrGenerateCorrelationId() ?? Guid.NewGuid().ToString();
+                .AddTransientHttpErrorPolicy(p =>
+                    p.WaitAndRetryAsync(5, (retryAttempt) => TimeSpan.FromMilliseconds(retryAttempt * 300), onRetry: (outcome, timespan, retryAttempt, context) =>
+                    {
+                        var sourceName = GetSourceName();
+                        var correlationId = outcome.Result.RequestMessage?.Headers.GetOrGenerateCorrelationId() ?? Guid.NewGuid().ToString();
 
-                    services.BuildServiceProvider().GetRequiredService<ILogger<HttpClient>>()
-                        .LogWarning(sourceName, correlationId, $"Request to {outcome.Result.RequestMessage?.RequestUri} failed with status {outcome.Result.StatusCode}. Delaying for {timespan.TotalMilliseconds}ms, then making retry {retryAttempt}.");
-                })).AddPolicyHandler(unAuthPolicy);
+                        services.BuildServiceProvider().GetRequiredService<ILogger<HttpClient>>()
+                            .LogWarning(sourceName, correlationId, $"Request to {outcome.Result.RequestMessage?.RequestUri} failed with status {outcome.Result.StatusCode}. Delaying for {timespan.TotalMilliseconds}ms, then making retry {retryAttempt}.");
+                    }))
+                .AddPolicyHandler(Policy.HandleResult<HttpResponseMessage>(
+                    response =>
+                        response.StatusCode == HttpStatusCode.Unauthorized
+                        && response.Headers.TryGetValues(AppHeaderNames.TokenExpired, out var values)
+                        && values.Any())
+                .RetryAsync(retryCount: 1, onRetryAsync: async (outcome, retryNumber, context) =>
+                {
+                    var authService = services.BuildServiceProvider().GetRequiredService<IAuthService>();
+                    var res = await authService.RefreshTokenAsync();
+                    outcome.Result.RequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", res.Token);
+                }));
 
             services.AddHttpClient(HttpClientNames.AnonymousWoWMarketWatcherAPI, client =>
             {
@@ -69,6 +72,7 @@ namespace WoWMarketWatcher.UI
                 }));
 
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IWatchListService, WatchListService>();
             services.AddScoped<TestService>();
             services.AddBlazoredLocalStorage();
 
