@@ -1,8 +1,4 @@
-﻿@using WoWMarketWatcher.UI.Services
-@inject IAuthService authService
-@inject TestService testService
-
-@page "/"
+﻿@page "/"
 
 <MudGrid Justify="Justify.Center" Class="mt-6">
     <MudCard Class="login-card">
@@ -37,26 +33,3 @@
         width: 400px;
     }
 </style>
-
-@code
-{
-    private string Username { get; set; }
-
-    private string Password { get; set; }
-
-    public async Task LoginAsync()
-    {
-        Console.WriteLine("Logging in!");
-
-        var res = await this.authService.Login(this.Username, this.Password);
-
-        Console.WriteLine(res.User.UserName);
-    }
-
-    public async Task ClearLoginForm()
-    {
-        await this.testService.Test();
-        this.Username = "";
-        this.Password = "";
-    }
-}
