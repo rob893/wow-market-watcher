@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using MudBlazor;
 using WoWMarketWatcher.UI.Services;
 
 namespace WoWMarketWatcher.UI.Pages
@@ -24,7 +25,29 @@ namespace WoWMarketWatcher.UI.Pages
 
         private string Password { get; set; }
 
-        public async Task LoginAsync()
+        private bool passwordVisibility;
+
+        private InputType passwordInput = InputType.Password;
+
+        private string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+        private void TogglePasswordVisibility()
+        {
+            if (this.passwordVisibility)
+            {
+                this.passwordVisibility = false;
+                this.passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+                this.passwordInput = InputType.Password;
+            }
+            else
+            {
+                this.passwordVisibility = true;
+                this.passwordInputIcon = Icons.Material.Filled.Visibility;
+                this.passwordInput = InputType.Text;
+            }
+        }
+
+        private async Task LoginAsync()
         {
             this.Logger.LogInformation("Logging in!");
 
@@ -35,7 +58,7 @@ namespace WoWMarketWatcher.UI.Pages
             this.NavigationManager.NavigateTo("watchLists");
         }
 
-        public async Task ClearLoginForm()
+        private async Task ClearLoginForm()
         {
             await this.TestService.Test();
             this.Username = "";

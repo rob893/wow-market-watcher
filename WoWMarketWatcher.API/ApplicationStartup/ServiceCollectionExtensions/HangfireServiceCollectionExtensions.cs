@@ -42,7 +42,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                     LogDebugColor = Color.Gray
                 })
                 .UseColouredConsoleLogProvider(LogLevel.Warn)
-                // Can't use tags yet. Issue with Pomelo ef core MySQL connector
+                // Can't use tags yet. Issue with Pomelo ef core MySQL connector. Also won't work with using Hangfire.Storage.MySql;
                 // .UseTagsWithMySql(new TagsOptions { TagsListStyle = TagsListStyle.Dropdown }, mySqlOptions)
                 .UseStorage(new MySqlStorage(config["Hangfire:DatabaseConnection"], mySqlOptions))
             );

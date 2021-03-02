@@ -1,35 +1,23 @@
 ﻿@page "/"
+@page "/login"
+@layout LoginLayout
 
-<MudGrid Justify="Justify.Center" Class="mt-6">
-    <MudCard Class="login-card">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h6" Align="Align.Center">Login</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
-        <MudCardContent>
-            <MudTextField @bind-Value="Username" Label="Username" Variant="Variant.Text"></MudTextField>
-            <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Text" InputType="InputType.Password">
-            </MudTextField>
-        </MudCardContent>
-        <MudCardActions>
-            <MudGrid Spacing="2" Justify="Justify.Center">
-                <MudItem>
-                    <MudButton Variant="Variant.Filled" Color="Color.Success" @onclick="() => LoginAsync()">Login
-                    </MudButton>
-                </MudItem>
+<MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
 
-                <MudItem>
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" @onclick="() => ClearLoginForm()">Clear
-                    </MudButton>
-                </MudItem>
-            </MudGrid>
-        </MudCardActions>
-    </MudCard>
-</MudGrid>
+<MudText>Don't have an account? <MudLink Href="/register">Sign Up</MudLink>
+</MudText>
 
-<style>
-    .login-card {
-        width: 400px;
-    }
-</style>
+<MudTextField T="string" @bind-Value="Username" Label="Username" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+
+<MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@passwordInput"
+    Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+
+<div Class="d-flex justify-space-between align-center">
+    <MudCheckBox T="bool" Label="Remember me?" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
+    <MudLink Href="/forgot-password">Forgot pwd?</MudLink>
+</div>
+
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="/personal/dashboard" Size="Size.Large" FullWidth="true"
+    @onclick="() => LoginAsync()">
+    Sign In</MudButton>
