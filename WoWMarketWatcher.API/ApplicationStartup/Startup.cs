@@ -12,6 +12,7 @@ using WoWMarketWatcher.API.Middleware;
 using WoWMarketWatcher.API.Core;
 using Hangfire;
 using WoWMarketWatcher.Common.Constants;
+using WoWMarketWatcher.API.Constants;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {
@@ -78,6 +79,13 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                     {
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                     });
+
+                    endpoints.MapHealthChecks("health/liveness", new HealthCheckOptions()
+                    {
+                        Predicate = (check) => !check.Tags.Contains(HealthCheckTags.Dependency),
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    });
+
                     endpoints.MapControllers();
                 });
         }

@@ -1,6 +1,7 @@
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
@@ -13,7 +14,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 .AddDbContextCheck<DataContext>(
                     name: "Database",
                     failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { "db" })
+                    tags: new[] { HealthCheckTags.Database, HealthCheckTags.Dependency })
                 .AddHangfire(
                     options =>
                     {
@@ -21,7 +22,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                     },
                     name: "Hangfire",
                     failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { "hangfire" });
+                    tags: new[] { HealthCheckTags.Hangfire, HealthCheckTags.Dependency });
 
             return services;
         }
