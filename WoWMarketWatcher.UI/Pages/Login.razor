@@ -2,22 +2,23 @@
 @page "/login"
 @layout LoginLayout
 
-<MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
+<MudForm @ref="LoginForm">
+    <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
 
-<MudText>Don't have an account? <MudLink Href="/register">Sign Up</MudLink>
-</MudText>
+    <MudText>Don't have an account? <MudLink Href="/register">Sign Up</MudLink></MudText>
 
-<MudTextField T="string" @bind-Value="Username" Label="Username" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+    <MudTextField T="string" @bind-Value="Username" Label="Username" Variant="Variant.Outlined" Class="my-6" Autocomplete="username" />
 
-<MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@passwordInput"
-    Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+    <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@passwordInput"
+        Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Autocomplete="current-password" />
 
-<div Class="d-flex justify-space-between align-center">
-    <MudCheckBox T="bool" Label="Remember me?" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
-    <MudLink Href="/forgot-password">Forgot pwd?</MudLink>
-</div>
+    <div Class="d-flex justify-space-between align-center">
+        <MudCheckBox T="bool" Label="Remember me?" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
+        <MudLink Href="/forgot-password">Forgot password?</MudLink>
+    </div>
 
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true"
+        @onclick="() => LoginAsync()">
+        Sign In</MudButton>
+</MudForm>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="/personal/dashboard" Size="Size.Large" FullWidth="true"
-    @onclick="() => LoginAsync()">
-    Sign In</MudButton>

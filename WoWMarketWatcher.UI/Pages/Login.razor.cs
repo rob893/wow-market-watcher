@@ -25,6 +25,8 @@ namespace WoWMarketWatcher.UI.Pages
 
         private string Password { get; set; }
 
+        private MudForm LoginForm { get; set; }
+
         private bool passwordVisibility;
 
         private InputType passwordInput = InputType.Password;
