@@ -50,8 +50,6 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             var hangfireJobId = context.BackgroundJob.Id;
             var correlationId = $"{hangfireJobId}-{Guid.NewGuid()}";
 
-            using var _ = this.logger.BeginScope(new Dictionary<string, object> { { nameof(sourceName), sourceName }, { nameof(hangfireJobId), hangfireJobId }, { nameof(correlationId), correlationId } });
-
             // Can't use tags yet. Issue with Pomelo ef core MySQL connector
             // context.AddTags(nameof(PullAuctionData));
 
