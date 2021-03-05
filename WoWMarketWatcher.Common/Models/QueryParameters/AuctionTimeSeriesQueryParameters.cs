@@ -9,7 +9,6 @@ namespace WoWMarketWatcher.Common.Models.QueryParameters
         public int? ConnectedRealmId { get; init; }
         [Required]
         public DateTime? StartDate { get; init; }
-        [Required]
         public DateTime? EndDate { get; init; }
     }
 }
