@@ -1,8 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Security.Claims;
+using System.Web;
 using Newtonsoft.Json;
 using WoWMarketWatcher.Common.Constants;
 
@@ -83,6 +86,37 @@ namespace WoWMarketWatcher.Common.Extensions
             return endDate < startDate
                 ? throw new ArgumentException($"{nameof(startDate)} must be less than {nameof(endDate)}.")
                 : input >= startDate && input <= endDate;
+        }
+
+        public static string ToQueryString(this object obj)
+        {
+            if (obj == null || obj.GetType().IsPrimitive || obj is string)
+            {
+                return string.Empty;
+            }
+
+            var results = new List<string>();
+            var asJson = obj.ToJson();
+            var asDict = JsonConvert.DeserializeObject<Dictionary<string, object?>>(asJson);
+
+            foreach (var entry in asDict)
+            {
+                if (entry.Key == null || entry.Value == null)
+                {
+                    continue;
+                }
+
+                if (!(entry.Value is string) && entry.Value is IEnumerable<object> enumberable)
+                {
+                    results.AddRange(enumberable.Select(e => $"{HttpUtility.UrlEncode(entry.Key)}={HttpUtility.UrlEncode(e.ToString())}"));
+                }
+                else
+                {
+                    results.Add($"{HttpUtility.UrlEncode(entry.Key)}={HttpUtility.UrlEncode(entry.Value.ToString())}");
+                }
+            }
+
+            return string.Join("&", results);
         }
 
         public static string ToJson(this object value, Formatting formatting = Formatting.None)

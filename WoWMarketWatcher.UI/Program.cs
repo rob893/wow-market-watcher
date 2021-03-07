@@ -73,6 +73,7 @@ namespace WoWMarketWatcher.UI
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IWatchListService, WatchListService>();
+            services.AddScoped<AuctionTimeSeriesService>();
             services.AddScoped<TestService>();
             services.AddBlazoredLocalStorage();
 
