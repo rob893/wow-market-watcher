@@ -1,21 +1,21 @@
 using System;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
-using WoWMarketWatcher.UI.Services;
 using Polly;
 using Polly.Extensions.Http;
-using WoWMarketWatcher.UI.Constants;
-using WoWMarketWatcher.Common.Extensions;
-using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
-using Blazored.LocalStorage;
-using System.Net.Http.Headers;
 using WoWMarketWatcher.Common.Constants;
-using System.Linq;
-using System.Net;
+using WoWMarketWatcher.Common.Extensions;
+using WoWMarketWatcher.UI.Constants;
+using WoWMarketWatcher.UI.Services;
+using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.UI
 {

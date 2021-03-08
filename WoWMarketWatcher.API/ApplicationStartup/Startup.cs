@@ -1,18 +1,18 @@
-using WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions;
+using Hangfire;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.HttpOverrides;
-using WoWMarketWatcher.API.Middleware;
-using WoWMarketWatcher.API.Core;
-using Hangfire;
-using WoWMarketWatcher.Common.Constants;
+using WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions;
 using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.API.Middleware;
+using WoWMarketWatcher.Common.Constants;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {

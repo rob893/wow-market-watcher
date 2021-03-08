@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace WoWMarketWatcher.API.Extensions
 {

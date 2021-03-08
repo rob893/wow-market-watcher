@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.Common.Extensions;
-using System.Net;
-using WoWMarketWatcher.Common.Models;
 using WoWMarketWatcher.Common.Constants;
-using System;
+using WoWMarketWatcher.Common.Extensions;
+using WoWMarketWatcher.Common.Models;
 
 namespace WoWMarketWatcher.API.Controllers
 {

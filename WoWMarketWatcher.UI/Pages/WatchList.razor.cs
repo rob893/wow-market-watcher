@@ -38,7 +38,7 @@ namespace WoWMarketWatcher.UI.Pages
 
             var timeSeriesTasks = new List<Task<List<AuctionTimeSeriesEntryDto>>>();
 
-            foreach(var item in this.watchList.WatchedItems)
+            foreach (var item in this.watchList.WatchedItems)
             {
                 timeSeriesTasks.Add(this.AuctionTimeSeriesService.GetAuctionTimeSeriesAsync(new AuctionTimeSeriesQueryParameters
                 {
@@ -65,7 +65,7 @@ namespace WoWMarketWatcher.UI.Pages
             {
                 this.auctionTimeSeriesChartSeries[entry.Key] = new List<ChartSeries>
                 {
-               
+
                     new ChartSeries
                     {
                         Name = "25th Percentile",

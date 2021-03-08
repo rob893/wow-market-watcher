@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using WoWMarketWatcher.API.Entities;
-using Newtonsoft.Json;
-using System.Linq;
 using System.IO;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Data

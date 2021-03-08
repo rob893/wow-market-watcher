@@ -1,7 +1,7 @@
-using Xunit;
-using WoWMarketWatcher.Common.Extensions;
 using System.Collections.Generic;
+using WoWMarketWatcher.Common.Extensions;
 using WoWMarketWatcher.Common.Test.TestUtilities;
+using Xunit;
 
 namespace WoWMarketWatcher.Common.Test.Extensions
 {

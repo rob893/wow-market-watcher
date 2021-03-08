@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using WoWMarketWatcher.API.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using WoWMarketWatcher.API.Core;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {

@@ -1,17 +1,17 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Hangfire.JobsLogger;
 using Hangfire.Server;
-using Microsoft.Extensions.Logging;
-using WoWMarketWatcher.API.Extensions;
-using WoWMarketWatcher.API.Services;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Hangfire;
-using System.Collections.Generic;
-using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.API.Models.Responses.Blizzard;
+using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.API.Models.Responses.Blizzard;
+using WoWMarketWatcher.API.Services;
 using WoWMarketWatcher.Common.Extensions;
 using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
 

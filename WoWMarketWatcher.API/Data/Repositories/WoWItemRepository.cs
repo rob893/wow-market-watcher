@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.Common.Models.QueryParameters;
 

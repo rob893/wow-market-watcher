@@ -1,20 +1,20 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.Common.Models.DTOs;
-using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.Common.Constants;
 using Microsoft.AspNetCore.JsonPatch;
-using WoWMarketWatcher.Common.Extensions;
-using WoWMarketWatcher.Common.Models.Requests;
-using WoWMarketWatcher.API.Extensions;
-using WoWMarketWatcher.Common.Models.Responses;
+using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.Common.Constants;
+using WoWMarketWatcher.Common.Extensions;
+using WoWMarketWatcher.Common.Models.DTOs;
+using WoWMarketWatcher.Common.Models.QueryParameters;
+using WoWMarketWatcher.Common.Models.Requests;
+using WoWMarketWatcher.Common.Models.Responses;
 
 namespace WoWMarketWatcher.API.Controllers
 {

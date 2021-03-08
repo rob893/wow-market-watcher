@@ -1,20 +1,20 @@
-using System.Threading;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using WoWMarketWatcher.API.Core;
-using Microsoft.AspNetCore.Authorization;
-using WoWMarketWatcher.API.Services;
-using System.Threading.Tasks;
-using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using System;
-using Microsoft.Extensions.Logging;
-using WoWMarketWatcher.Common.Extensions;
 using System.Collections.Generic;
-using WoWMarketWatcher.Common.Constants;
-using WoWMarketWatcher.API.Data;
-using Microsoft.EntityFrameworkCore;
-using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
+using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.API.Data;
+using WoWMarketWatcher.API.Models.Responses.Blizzard;
+using WoWMarketWatcher.API.Services;
+using WoWMarketWatcher.Common.Constants;
+using WoWMarketWatcher.Common.Extensions;
+using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Controllers
 {
