@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Hangfire;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
         {
             services.AddControllerServices()
                 .AddLogging()
+                .AddRateLimitingServices(this.Configuration)
                 .AddApplicationInsightsTelemetry()
                 .AddDatabaseServices(this.Configuration)
                 .AddAuthenticationServices(this.Configuration)
@@ -53,7 +55,8 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseExceptionHandler(builder => builder.UseMiddleware<GlobalExceptionHandlerMiddleware>())
+            app.UseIpRateLimiting()
+                .UseExceptionHandler(builder => builder.UseMiddleware<GlobalExceptionHandlerMiddleware>())
                 .UseHsts()
                 // .UseHttpsRedirection()
                 .UseForwardedHeaders(new ForwardedHeadersOptions
