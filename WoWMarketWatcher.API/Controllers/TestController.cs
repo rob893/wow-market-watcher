@@ -20,7 +20,7 @@ namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
+    [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
     public class TestController : ServiceControllerBase
     {
         private readonly Counter counter;
@@ -69,6 +69,18 @@ namespace WoWMarketWatcher.API.Controllers
             return this.Ok();
         }
 
+        [HttpPost("wowItems/download")]
+        public async Task<ActionResult> DownloadWoWItemsAsync()
+        {
+            var items = await this.dbContext.WoWItems.ToListAsync();
+
+            var asJson = items.ToJson();
+
+            await System.IO.File.WriteAllTextAsync($"Data/SeedData/WoWItemsSeedData-{DateTime.Now:dd-MM-yy}.json", asJson);
+
+            return this.Ok();
+        }
+
         [HttpGet("self")]
         [AllowAnonymous]
         public async Task<ActionResult> TestSelf([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? per, [FromQuery] int delay = 0)
@@ -83,7 +95,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpGet]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult Test([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? per, [FromQuery] int delay = 0)
         {
             this.counter.Count++;

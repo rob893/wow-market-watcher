@@ -1,10 +1,12 @@
 using System;
+using Newtonsoft.Json;
 
 namespace WoWMarketWatcher.Common.Models.DTOs
 {
     public record AuctionTimeSeriesEntryDto : IIdentifiable<long>
     {
         public long Id { get; init; }
+        [JsonProperty("wowItemId")]
         public int WoWItemId { get; init; }
         public int ConnectedRealmId { get; init; }
         public DateTime Timestamp { get; init; }
