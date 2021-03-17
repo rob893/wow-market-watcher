@@ -10,6 +10,7 @@ namespace WoWMarketWatcher.API.Data
         IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DbSet<RefreshToken> RefreshTokens => this.Set<RefreshToken>();
+        public DbSet<UserPreference> UserPreferences => this.Set<UserPreference>();
         public DbSet<LinkedAccount> LinkedAccounts => this.Set<LinkedAccount>();
         public DbSet<ConnectedRealm> ConnectedRealms => this.Set<ConnectedRealm>();
         public DbSet<Realm> Realms => this.Set<Realm>();
@@ -46,6 +47,11 @@ namespace WoWMarketWatcher.API.Data
             builder.Entity<User>(user =>
             {
                 user.Property(u => u.MembershipLevel).HasConversion<string>();
+            });
+
+            builder.Entity<UserPreference>(preference =>
+            {
+                preference.Property(p => p.UITheme).HasConversion<string>();
             });
 
             builder.Entity<LinkedAccount>(linkedAccount =>

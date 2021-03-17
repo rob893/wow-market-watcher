@@ -58,6 +58,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("auctionTimeSeries/download")]
+        [AllowAnonymous]
         public async Task<ActionResult> DownloadAuctionTimeSeriesAsync()
         {
             var items = await this.dbContext.AuctionTimeSeries.ToListAsync();
@@ -70,6 +71,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("wowItems/download")]
+        [AllowAnonymous]
         public async Task<ActionResult> DownloadWoWItemsAsync()
         {
             var items = await this.dbContext.WoWItems.ToListAsync();

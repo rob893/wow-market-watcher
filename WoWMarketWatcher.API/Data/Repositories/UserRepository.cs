@@ -100,7 +100,8 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query
                 .Include(user => user.UserRoles)
                 .ThenInclude(userRole => userRole.Role)
-                .Include(user => user.LinkedAccounts);
+                .Include(user => user.LinkedAccounts)
+                .Include(user => user.Preferences);
         }
     }
 }

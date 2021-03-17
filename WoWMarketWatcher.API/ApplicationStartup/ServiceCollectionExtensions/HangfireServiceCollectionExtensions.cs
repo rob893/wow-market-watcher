@@ -7,6 +7,7 @@ using Hangfire.Logging;
 using Hangfire.MySql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 using WoWMarketWatcher.API.BackgroundJobs;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
@@ -25,7 +26,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 PrepareSchemaIfNecessary = true,
                 DashboardJobListLimit = 50000,
                 TransactionTimeout = TimeSpan.FromMinutes(1),
-                TablesPrefix = "Hangfire"
+                TablesPrefix = "WoWMarketWatcher"
             };
 
             services.AddHangfire(configuration => configuration
@@ -44,7 +45,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 .UseColouredConsoleLogProvider(LogLevel.Warn)
                 // Can't use tags yet. Issue with Pomelo ef core MySQL connector. Also won't work with using Hangfire.Storage.MySql;
                 // .UseTagsWithMySql(new TagsOptions { TagsListStyle = TagsListStyle.Dropdown }, mySqlOptions)
-                .UseStorage(new MySqlStorage(config["Hangfire:DatabaseConnection"], mySqlOptions))
+                .UseStorage(new MySqlStorage(GetHangfireMySqlConnectionString(config["Hangfire:DatabaseName"], config["Hangfire:DatabaseConnection"]), mySqlOptions))
             );
 
             services.AddTransient<PullAuctionDataBackgroundJob>();
@@ -52,6 +53,20 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             services.AddHangfireServer();
 
             return services;
+        }
+
+        private static string GetHangfireMySqlConnectionString(string hangfireDbName, string dbConnectionString)
+        {
+
+            using var connection = new MySqlConnection(dbConnectionString);
+            connection.Open();
+
+            using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {hangfireDbName}", connection);
+            command.ExecuteNonQuery();
+
+            connection.Close();
+
+            return $"{dbConnectionString.TrimEnd(';')}; Database={hangfireDbName};";
         }
     }
 }

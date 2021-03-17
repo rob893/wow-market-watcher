@@ -30,6 +30,11 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                         {
                             Name = "Hangfire Dashboard",
                             Url = new Uri(config["Swagger:HangfireEndpoint"])
+                        },
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Health Checks UI",
+                            Url = new Uri("https://rwherber.com/health-checker/healthchecks-ui")
                         }
                     });
 

@@ -21,13 +21,15 @@ namespace WoWMarketWatcher.API.Controllers
     {
         private readonly IWatchListRepository watchListRepository;
         private readonly IWoWItemRepository itemRepository;
+        private readonly IRealmRepository realmRepository;
         private readonly IMapper mapper;
 
 
-        public UserWatchListsController(IWatchListRepository watchListRepository, IWoWItemRepository itemRepository, IMapper mapper)
+        public UserWatchListsController(IWatchListRepository watchListRepository, IWoWItemRepository itemRepository, IRealmRepository realmRepository, IMapper mapper)
         {
             this.watchListRepository = watchListRepository;
             this.itemRepository = itemRepository;
+            this.realmRepository = realmRepository;
             this.mapper = mapper;
         }
 
@@ -70,6 +72,18 @@ namespace WoWMarketWatcher.API.Controllers
         {
             var newWatchList = this.mapper.Map<WatchList>(request);
             newWatchList.UserId = userId;
+
+            var realm = await this.realmRepository.GetByIdAsync(newWatchList.RealmId);
+
+            if (realm == null)
+            {
+                return this.BadRequest($"No realm with id ${newWatchList.RealmId} exists.");
+            }
+
+            if (realm.ConnectedRealmId != newWatchList.ConnectedRealmId)
+            {
+                return this.BadRequest($"Realm {realm.Id} does not belong to connected realm {newWatchList.ConnectedRealmId}.");
+            }
 
             this.watchListRepository.Add(newWatchList);
 

@@ -15,7 +15,7 @@ namespace WoWMarketWatcher.API.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.3");
+                .HasAnnotation("ProductVersion", "5.0.4");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
@@ -375,6 +375,27 @@ namespace WoWMarketWatcher.API.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.UserPreference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("UITheme")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserPreferences");
+                });
+
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.UserRole", b =>
                 {
                     b.Property<int>("UserId")
@@ -406,12 +427,17 @@ namespace WoWMarketWatcher.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int>("RealmId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ConnectedRealmId");
+
+                    b.HasIndex("RealmId");
 
                     b.HasIndex("UserId");
 
@@ -576,6 +602,17 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.UserPreference", b =>
+                {
+                    b.HasOne("WoWMarketWatcher.API.Entities.User", "User")
+                        .WithOne("Preferences")
+                        .HasForeignKey("WoWMarketWatcher.API.Entities.UserPreference", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.UserRole", b =>
                 {
                     b.HasOne("WoWMarketWatcher.API.Entities.Role", "Role")
@@ -603,6 +640,12 @@ namespace WoWMarketWatcher.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WoWMarketWatcher.API.Entities.Realm", "Realm")
+                        .WithMany()
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WoWMarketWatcher.API.Entities.User", "User")
                         .WithMany("WatchLists")
                         .HasForeignKey("UserId")
@@ -610,6 +653,8 @@ namespace WoWMarketWatcher.API.Migrations
                         .IsRequired();
 
                     b.Navigation("ConnectedRealm");
+
+                    b.Navigation("Realm");
 
                     b.Navigation("User");
                 });
@@ -629,6 +674,9 @@ namespace WoWMarketWatcher.API.Migrations
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.User", b =>
                 {
                     b.Navigation("LinkedAccounts");
+
+                    b.Navigation("Preferences")
+                        .IsRequired();
 
                     b.Navigation("RefreshTokens");
 

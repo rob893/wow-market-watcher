@@ -25,6 +25,7 @@ namespace WoWMarketWatcher.API.Core
                 .ForMember(dto => dto.Roles, opt =>
                     opt.MapFrom(u => u.UserRoles.Select(ur => ur.Role.Name)));
             this.CreateMap<RegisterUserRequest, User>();
+            this.CreateMap<UserPreference, UserPreferenceDto>();
             this.CreateMap<Role, RoleDto>();
             this.CreateMap<LinkedAccount, LinkedAccountDto>();
             this.CreateMap<JsonPatchDocument<UpdateUserRequest>, JsonPatchDocument<User>>();
