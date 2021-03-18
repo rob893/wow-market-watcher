@@ -10,8 +10,6 @@ namespace WoWMarketWatcher.API.Entities
         public User User { get; set; } = default!;
         public int ConnectedRealmId { get; set; }
         public ConnectedRealm ConnectedRealm { get; set; } = default!;
-        public int RealmId { get; set; }
-        public Realm Realm { get; set; } = default!;
         public string Name { get; set; } = default!;
         public string? Description { get; set; }
         public List<WoWItem> WatchedItems { get; set; } = new List<WoWItem>();

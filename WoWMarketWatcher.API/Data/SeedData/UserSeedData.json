@@ -39,7 +39,6 @@
         "Name": "Herb Mats - Lightbringer",
         "Description": "My list of herbs to watch",
         "ConnectedRealmId": 3694,
-        "RealmId": 1,
         "WatchedItems": [
           {
             "Id": 168589
@@ -65,7 +64,6 @@
         "Name": "Herb Mats - Sargeras",
         "Description": "My list of herbs to watch",
         "ConnectedRealmId": 76,
-        "RealmId": 76,
         "WatchedItems": [
           {
             "Id": 168589
@@ -91,7 +89,6 @@
         "Name": "Herb Mats - Turalyon",
         "Description": "My list of herbs to watch",
         "ConnectedRealmId": 3685,
-        "RealmId": 1265,
         "WatchedItems": [
           {
             "Id": 168589

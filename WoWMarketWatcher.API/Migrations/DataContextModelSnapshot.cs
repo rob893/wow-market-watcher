@@ -427,17 +427,12 @@ namespace WoWMarketWatcher.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int>("RealmId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ConnectedRealmId");
-
-                    b.HasIndex("RealmId");
 
                     b.HasIndex("UserId");
 
@@ -640,12 +635,6 @@ namespace WoWMarketWatcher.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WoWMarketWatcher.API.Entities.Realm", "Realm")
-                        .WithMany()
-                        .HasForeignKey("RealmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WoWMarketWatcher.API.Entities.User", "User")
                         .WithMany("WatchLists")
                         .HasForeignKey("UserId")
@@ -653,8 +642,6 @@ namespace WoWMarketWatcher.API.Migrations
                         .IsRequired();
 
                     b.Navigation("ConnectedRealm");
-
-                    b.Navigation("Realm");
 
                     b.Navigation("User");
                 });

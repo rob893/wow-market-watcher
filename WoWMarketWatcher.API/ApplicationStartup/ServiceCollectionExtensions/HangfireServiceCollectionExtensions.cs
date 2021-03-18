@@ -26,7 +26,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 PrepareSchemaIfNecessary = true,
                 DashboardJobListLimit = 50000,
                 TransactionTimeout = TimeSpan.FromMinutes(1),
-                TablesPrefix = "WoWMarketWatcher"
+                TablesPrefix = "Hangfire"
             };
 
             services.AddHangfire(configuration => configuration
@@ -61,7 +61,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             using var connection = new MySqlConnection(dbConnectionString);
             connection.Open();
 
-            using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {hangfireDbName}", connection);
+            using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS `{hangfireDbName}`", connection);
             command.ExecuteNonQuery();
 
             connection.Close();

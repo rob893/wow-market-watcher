@@ -7,8 +7,6 @@ namespace WoWMarketWatcher.Common.Models.Requests
         [Required]
         public int? ConnectedRealmId { get; init; }
         [Required]
-        public int? RealmId { get; init; }
-        [Required]
         public string Name { get; init; } = default!;
         public string? Description { get; init; }
     }
