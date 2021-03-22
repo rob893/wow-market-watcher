@@ -9,6 +9,7 @@ using Hangfire.Heartbeat.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using WoWMarketWatcher.API.BackgroundJobs;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.Common.Extensions;
 
@@ -71,7 +72,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                     var password = decodedUsernamePassword.Split(':', 2)[1];
 
                     // Check if login is correct
-                    if (username == this.configuration["Hangfire:Dashboard:Username"] && password == this.configuration["Hangfire:Dashboard:Password"])
+                    if (username == this.configuration[ConfigurationKeys.HangfireDashboardUsername] && password == this.configuration[ConfigurationKeys.HangfireDashboardPassword])
                     {
                         return true;
                     }

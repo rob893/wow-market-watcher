@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using WoWMarketWatcher.API.BackgroundJobs;
+using WoWMarketWatcher.API.Constants;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {
@@ -45,7 +46,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 .UseColouredConsoleLogProvider(LogLevel.Warn)
                 // Can't use tags yet. Issue with Pomelo ef core MySQL connector. Also won't work with using Hangfire.Storage.MySql;
                 // .UseTagsWithMySql(new TagsOptions { TagsListStyle = TagsListStyle.Dropdown }, mySqlOptions)
-                .UseStorage(new MySqlStorage(GetHangfireMySqlConnectionString(config["Hangfire:DatabaseName"], config["Hangfire:DatabaseConnection"]), mySqlOptions))
+                .UseStorage(new MySqlStorage(GetHangfireMySqlConnectionString(config[ConfigurationKeys.HangfireDatabaseName], config[ConfigurationKeys.HangfireDatabaseConnection]), mySqlOptions))
             );
 
             services.AddTransient<PullAuctionDataBackgroundJob>();

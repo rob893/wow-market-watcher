@@ -17,7 +17,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                 .UseSwaggerUI(
                     c =>
                     {
-                        c.SwaggerEndpoint(config["Swagger:SwaggerEndpoint"], FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
+                        c.SwaggerEndpoint(config[ConfigurationKeys.SwaggerEndpoint], FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
                         c.DocumentTitle = $"WoW Market Watcher - {config.GetEnvironment()}";
                     });
 
