@@ -1,6 +1,7 @@
 using AspNetCoreRateLimit;
 using Hangfire;
 using HealthChecks.UI.Client;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +39,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .AddIdentityServices()
                 .AddRepositoryServices()
                 .AddSingleton<Counter>()
+                .AddSingleton<ITelemetryInitializer, ApplicationInsightsTelemetryInitializer>()
                 .AddHangfireServices(this.Configuration)
                 .AddSwaggerServices(this.Configuration)
                 .AddAutoMapper(typeof(Startup))
