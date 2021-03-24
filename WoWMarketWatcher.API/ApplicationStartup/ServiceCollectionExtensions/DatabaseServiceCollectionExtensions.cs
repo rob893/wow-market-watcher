@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data;
 using WoWMarketWatcher.API.Models.Settings;
 
@@ -10,9 +11,9 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<MySQLSettings>(config.GetSection("MySQL"));
+            services.Configure<MySQLSettings>(config.GetSection(ConfigurationKeys.MySQL));
 
-            var settings = config.GetSection("MySQL").Get<MySQLSettings>();
+            var settings = config.GetSection(ConfigurationKeys.MySQL).Get<MySQLSettings>();
 
             services.AddDbContext<DataContext>(
                 dbContextOptions =>

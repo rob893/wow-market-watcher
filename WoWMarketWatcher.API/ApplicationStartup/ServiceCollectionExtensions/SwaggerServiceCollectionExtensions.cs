@@ -16,7 +16,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddSwaggerServices(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<SwaggerSettings>(config.GetSection("Swagger"));
+            services.Configure<SwaggerSettings>(config.GetSection(ConfigurationKeys.Swagger));
 
             services.AddSwaggerGen(c =>
             {

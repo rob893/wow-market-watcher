@@ -9,5 +9,12 @@ namespace WoWMarketWatcher.API.Constants
         public const string HangfireDashboardPassword = "Hangfire:Dashboard:Password";
         public const string SwaggerEndpoint = "Swagger:SwaggerEndpoint";
         public const string SwaggerHangfireEndpoint = "Swagger:HangfireEndpoint";
+        public const string CorsAllowedOrigins = "Cors:AllowedOrigins";
+        public const string CorsExposedHeaders = "Cors:ExposedHeaders";
+        public const string Authentication = "Authentication";
+        public const string Blizzard = "Blizzard";
+        public const string MySQL = "MySQL";
+        public const string IpRateLimiting = "IpRateLimiting";
+        public const string Swagger = "Swagger";
     }
 }

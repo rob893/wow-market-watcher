@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.Common.Constants;
@@ -18,9 +19,9 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<AuthenticationSettings>(config.GetSection("Authentication"));
+            services.Configure<AuthenticationSettings>(config.GetSection(ConfigurationKeys.Authentication));
 
-            var authSettings = config.GetSection("Authentication").Get<AuthenticationSettings>();
+            var authSettings = config.GetSection(ConfigurationKeys.Authentication).Get<AuthenticationSettings>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

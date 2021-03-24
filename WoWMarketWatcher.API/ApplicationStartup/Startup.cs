@@ -69,10 +69,10 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .UseMiddleware<CorrelationIdMiddleware>()
                 .UseRouting()
                 .UseCors(header =>
-                    header.WithOrigins(this.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "*" })
+                    header.WithOrigins(this.Configuration.GetSection(ConfigurationKeys.CorsAllowedOrigins).Get<string[]>() ?? new[] { "*" })
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .WithExposedHeaders(this.Configuration.GetSection("Cors:ExposedHeaders").Get<string[]>() ?? new[] { AppHeaderNames.TokenExpired, AppHeaderNames.CorrelationId })
+                        .WithExposedHeaders(this.Configuration.GetSection(ConfigurationKeys.CorsExposedHeaders).Get<string[]>() ?? new[] { AppHeaderNames.TokenExpired, AppHeaderNames.CorrelationId })
                 )
                 .UseAuthentication()
                 .UseAuthorization()
@@ -80,12 +80,12 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .UseAndConfigureHangfire(recurringJobs, this.Configuration)
                 .UseEndpoints(endpoints =>
                 {
-                    endpoints.MapHealthChecks("/health", new HealthCheckOptions()
+                    endpoints.MapHealthChecks(Settings.HealthCheckEndpoint, new HealthCheckOptions()
                     {
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                     });
 
-                    endpoints.MapHealthChecks("health/liveness", new HealthCheckOptions()
+                    endpoints.MapHealthChecks(Settings.LivenessHealthCheckEndpoint, new HealthCheckOptions()
                     {
                         Predicate = (check) => !check.Tags.Contains(HealthCheckTags.Dependency),
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

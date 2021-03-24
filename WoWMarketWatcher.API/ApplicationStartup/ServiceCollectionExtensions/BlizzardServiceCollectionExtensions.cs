@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
 using WoWMarketWatcher.Common.Extensions;
@@ -14,9 +15,9 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddBlizzardServices(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<BlizzardSettings>(config.GetSection("Blizzard"));
+            services.Configure<BlizzardSettings>(config.GetSection(ConfigurationKeys.Blizzard));
 
-            var settings = config.GetSection("Blizzard").Get<BlizzardSettings>();
+            var settings = config.GetSection(ConfigurationKeys.Blizzard).Get<BlizzardSettings>();
 
             services.AddHttpClient(nameof(BlizzardService), c =>
             {
