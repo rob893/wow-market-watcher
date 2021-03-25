@@ -58,7 +58,6 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("auctionTimeSeries/download")]
-        [AllowAnonymous]
         public async Task<ActionResult> DownloadAuctionTimeSeriesAsync()
         {
             var items = await this.dbContext.AuctionTimeSeries.ToListAsync();
@@ -71,7 +70,6 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("wowItems/download")]
-        [AllowAnonymous]
         public async Task<ActionResult> DownloadWoWItemsAsync()
         {
             var items = await this.dbContext.WoWItems.ToListAsync();
@@ -85,9 +83,9 @@ namespace WoWMarketWatcher.API.Controllers
 
         [HttpGet("self")]
         [AllowAnonymous]
-        public async Task<ActionResult> TestSelf([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? per, [FromQuery] int delay = 0)
+        public async Task<ActionResult> TestSelf([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? delayAfter, [FromQuery] int? delayPer, [FromQuery] int? per, [FromQuery] int delay = 0)
         {
-            var query = $"?status={status}&delay={delay}{(statusAfter == null ? "" : $"&statusAfter={statusAfter}")}{(per == null ? "" : $"&per={per}")}";
+            var query = $"?status={status}&delay={delay}{(statusAfter == null ? "" : $"&statusAfter={statusAfter}")}{(per == null ? "" : $"&per={per}")}{(delayPer == null ? "" : $"&delayPer={delayPer}")}{(delayAfter == null ? "" : $"&delayAfter={delayAfter}")}";
 
             var client = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
@@ -98,10 +96,10 @@ namespace WoWMarketWatcher.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult Test([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? per, [FromQuery] int delay = 0)
+        public ActionResult Test([FromQuery] HttpStatusCode status, [FromQuery] HttpStatusCode? statusAfter, [FromQuery] int? delayAfter, [FromQuery] int? delayPer, [FromQuery] int? per, [FromQuery] int delay = 0)
         {
             this.counter.Count++;
-            Thread.Sleep(delay);
+            Thread.Sleep(delayAfter != null && delayPer != null && this.counter.Count % delayPer.Value == 0 ? delayAfter.Value : delay);
 
             return statusAfter != null && per != null && per.Value != 0 && this.counter.Count % per.Value == 0
                 ? this.GetReturn(statusAfter.Value)
