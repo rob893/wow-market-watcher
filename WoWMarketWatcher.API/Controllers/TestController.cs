@@ -46,6 +46,14 @@ namespace WoWMarketWatcher.API.Controllers
             return this.Ok(item);
         }
 
+        [HttpGet("misc")]
+        public async Task<ActionResult> GetMisc()
+        {
+            var items = await this.blizzardService.GetAllConnectedRealmsAsync(Guid.NewGuid().ToString());
+
+            return this.Ok(items);
+        }
+
         [HttpGet("logger")]
         public ActionResult<BlizzardWoWItem> TestLogger()
         {

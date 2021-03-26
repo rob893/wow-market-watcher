@@ -21,6 +21,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
         void Delete(TEntity entity);
         void DeleteRange(IEnumerable<TEntity> entities);
         IQueryable<TEntity> EntitySetAsNoTracking();
+        IQueryable<TEntity> EntitySet();
         Task<bool> SaveAllAsync();
         Task<int> SaveChangesAsync();
         Task<TEntity> GetByIdAsync(TEntityKey id);

@@ -116,12 +116,33 @@ namespace WoWMarketWatcher.API.Services
                 correlationId);
         }
 
-        public Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync(string correlationId)
+        public Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync(string correlationId, int pageNumber = 1, int pageSize = 100)
         {
             return this.SendRequestAsync<BlizzardSearchResponse<BlizzardConnectedRealm>>(
                 HttpMethod.Get,
-                "data/wow/search/connected-realm?namespace=dynamic-us&locale=en_US",
+                $"data/wow/search/connected-realm?namespace=dynamic-us&locale=en_US&_page={pageNumber}&_pageSize={pageSize}",
                 correlationId);
+        }
+
+        public async Task<IEnumerable<BlizzardConnectedRealm>> GetAllConnectedRealmsAsync(string correlationId)
+        {
+            var firstPage = await this.GetConnectedRealmsAsync(correlationId, 1, 100);
+
+            if (firstPage.PageCount <= 1)
+            {
+                return firstPage.Results.Select(r => r.Data);
+            }
+
+            var tasks = new List<Task<BlizzardSearchResponse<BlizzardConnectedRealm>>>(firstPage.PageCount - 1);
+
+            for (var i = firstPage.Page + 1; i <= firstPage.PageCount; i++)
+            {
+                tasks.Add(this.GetConnectedRealmsAsync(correlationId, i, 100));
+            }
+
+            var total = (await Task.WhenAll(tasks)).Aggregate(firstPage.Results.Select(r => r.Data), (prev, curr) => prev.Concat(curr.Results.Select(r => r.Data)));
+
+            return total;
         }
 
         private async Task<T> SendRequestAsync<T>(HttpMethod method, string url, string correlationId, bool isRetry = false)

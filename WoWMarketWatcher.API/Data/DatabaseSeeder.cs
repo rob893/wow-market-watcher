@@ -75,6 +75,11 @@ namespace WoWMarketWatcher.API.Data
             var data = File.ReadAllText("Data/SeedData/RoleSeedData.json");
             var roles = JsonConvert.DeserializeObject<List<Role>>(data);
 
+            if (roles == null)
+            {
+                throw new JsonException("Unable to deserialize data.");
+            }
+
             foreach (var role in roles)
             {
                 this.roleManager.CreateAsync(role).Wait();
@@ -90,6 +95,11 @@ namespace WoWMarketWatcher.API.Data
 
             var data = File.ReadAllText("Data/SeedData/UserSeedData.json");
             var users = JsonConvert.DeserializeObject<List<User>>(data);
+
+            if (users == null)
+            {
+                throw new JsonException("Unable to deserialize data.");
+            }
 
             foreach (var user in users)
             {

@@ -99,6 +99,11 @@ namespace WoWMarketWatcher.Common.Extensions
             var asJson = obj.ToJson();
             var asDict = JsonConvert.DeserializeObject<Dictionary<string, object?>>(asJson);
 
+            if (asDict == null)
+            {
+                return string.Empty;
+            }
+
             foreach (var entry in asDict)
             {
                 if (entry.Key == null || entry.Value == null)
