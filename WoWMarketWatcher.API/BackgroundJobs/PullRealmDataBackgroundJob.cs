@@ -57,10 +57,33 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                     if (!currentRealms.ContainsKey(connectedRealm.Id))
                     {
                         this.realmRepository.Add(this.mapper.Map<ConnectedRealm>(connectedRealm));
+                        continue;
+                    }
+
+                    var currentConnectedRealm = currentRealms[connectedRealm.Id];
+                    var pulledRealms = connectedRealm.Realms.ToDictionary(r => r.Id);
+                    var currentRealmsForConnectedRealm = currentConnectedRealm.Realms.ToDictionary(r => r.Id);
+
+                    foreach (var realmId in pulledRealms.Keys)
+                    {
+                        if (!currentRealmsForConnectedRealm.ContainsKey(realmId))
+                        {
+                            currentConnectedRealm.Realms.Add(this.mapper.Map<Realm>(pulledRealms[realmId]));
+                        }
+                    }
+
+                    foreach (var realmId in currentRealmsForConnectedRealm.Keys)
+                    {
+                        if (!pulledRealms.ContainsKey(realmId))
+                        {
+                            currentConnectedRealm.Realms.Remove(currentRealmsForConnectedRealm[realmId]);
+                        }
                     }
                 }
 
-                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(PullRealmDataBackgroundJob)} complete.", metadata);
+                var entriesUpdated = await this.realmRepository.SaveChangesAsync();
+
+                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(PullRealmDataBackgroundJob)} complete. {entriesUpdated} entries updated.", metadata);
             }
             catch (OperationCanceledException ex)
             {
