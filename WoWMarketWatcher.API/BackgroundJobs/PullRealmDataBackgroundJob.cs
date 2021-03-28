@@ -8,6 +8,7 @@ using Hangfire.JobsLogger;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
@@ -41,7 +42,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             // Can't use tags yet. Issue with Pomelo ef core MySQL connector
             // context.AddTags(nameof(PullRealmDataBackgroundJob));
 
-            var metadata = new Dictionary<string, object> { { "backgroundJobName", nameof(PullRealmDataBackgroundJob) } };
+            var metadata = new Dictionary<string, object> { { LogMetadataFields.BackgroundJobName, nameof(PullRealmDataBackgroundJob) } };
 
             this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(PullRealmDataBackgroundJob)} started.", metadata);
 
