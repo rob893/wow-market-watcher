@@ -3,8 +3,8 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Middleware;
-using WoWMarketWatcher.Common.Extensions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 {

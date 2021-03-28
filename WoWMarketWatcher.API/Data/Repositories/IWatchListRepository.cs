@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Entities;
-using WoWMarketWatcher.Common.Models.QueryParameters;
+using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {

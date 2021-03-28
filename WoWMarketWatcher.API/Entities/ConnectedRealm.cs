@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.API.Models;
 
 namespace WoWMarketWatcher.API.Entities
 {

@@ -10,8 +10,7 @@ using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Extensions;
-using WoWMarketWatcher.Common.Extensions;
-using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs
 {

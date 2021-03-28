@@ -13,14 +13,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models;
+using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.API.Models.Requests;
+using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.API.Models.Settings;
-using WoWMarketWatcher.Common.Constants;
-using WoWMarketWatcher.Common.Models;
-using WoWMarketWatcher.Common.Models.DTOs;
-using WoWMarketWatcher.Common.Models.Requests;
-using WoWMarketWatcher.Common.Models.Responses;
 
 namespace WoWMarketWatcher.API.Controllers
 {

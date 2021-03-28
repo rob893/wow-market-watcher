@@ -11,7 +11,6 @@ using Newtonsoft.Json.Serialization;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Models.Settings;
-using WoWMarketWatcher.Common.Constants;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {

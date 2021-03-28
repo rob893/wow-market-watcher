@@ -13,8 +13,7 @@ using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Services;
-using WoWMarketWatcher.Common.Extensions;
-using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs
 {

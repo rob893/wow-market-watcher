@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.Common.Models;
-using WoWMarketWatcher.Common.Models.QueryParameters;
+using WoWMarketWatcher.API.Models;
+using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {

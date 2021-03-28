@@ -14,7 +14,6 @@ using WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Middleware;
-using WoWMarketWatcher.Common.Constants;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {

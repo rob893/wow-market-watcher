@@ -2,9 +2,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using WoWMarketWatcher.Common.Constants;
-using WoWMarketWatcher.Common.Extensions;
-using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
+using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.API.Extensions;
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Middleware
 {

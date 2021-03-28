@@ -7,9 +7,9 @@ using Microsoft.Extensions.Caching.Memory;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.Common.Models.DTOs;
-using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.API.Models.QueryParameters;
+using WoWMarketWatcher.API.Models.Responses;
 
 namespace WoWMarketWatcher.API.Controllers
 {

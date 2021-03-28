@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using WoWMarketWatcher.API.BackgroundJobs;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.Common.Extensions;
+using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 {

@@ -36,9 +36,7 @@
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
     <PackageReference Include="AspNetCoreRateLimit" Version="3.2.2" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WoWMarketWatcher.Common\WoWMarketWatcher.Common.csproj" />
-  </ItemGroup>
+
   <ItemGroup>
     <Content Update="appsettings.Local.json" CopyToPublishDirectory="Never" />
   </ItemGroup>

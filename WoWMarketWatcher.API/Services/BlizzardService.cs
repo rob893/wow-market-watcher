@@ -12,11 +12,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Models.Settings;
-using WoWMarketWatcher.Common.Constants;
-using WoWMarketWatcher.Common.Extensions;
-using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Services
 {

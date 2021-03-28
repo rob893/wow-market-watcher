@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Services;
-using WoWMarketWatcher.Common.Constants;
-using WoWMarketWatcher.Common.Extensions;
-using static WoWMarketWatcher.Common.Utilities.UtilityFunctions;
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Controllers
 {

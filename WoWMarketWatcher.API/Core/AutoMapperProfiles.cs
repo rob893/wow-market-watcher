@@ -3,9 +3,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.API.Models.Requests;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
-using WoWMarketWatcher.Common.Models.DTOs;
-using WoWMarketWatcher.Common.Models.Requests;
 
 namespace WoWMarketWatcher.API.Core
 {

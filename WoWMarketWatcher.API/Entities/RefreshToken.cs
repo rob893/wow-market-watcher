@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.API.Models;
 
 namespace WoWMarketWatcher.API.Entities
 {

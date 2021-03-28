@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Hangfire.JobsLogger;
 using Microsoft.Extensions.Logging;
-using WoWMarketWatcher.Common.Extensions;
+using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Extensions
 {

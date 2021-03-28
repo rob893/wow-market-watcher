@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using WoWMarketWatcher.Common.Models;
+using WoWMarketWatcher.API.Models;
 
 namespace WoWMarketWatcher.API.Entities
 {

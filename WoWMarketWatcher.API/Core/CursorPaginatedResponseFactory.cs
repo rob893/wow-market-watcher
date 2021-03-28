@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WoWMarketWatcher.Common.Models;
-using WoWMarketWatcher.Common.Models.QueryParameters;
-using WoWMarketWatcher.Common.Models.Responses;
+using WoWMarketWatcher.API.Models;
+using WoWMarketWatcher.API.Models.QueryParameters;
+using WoWMarketWatcher.API.Models.Responses;
 
 namespace WoWMarketWatcher.API.Core
 {

@@ -7,8 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Settings;
-using WoWMarketWatcher.Common.Extensions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {
