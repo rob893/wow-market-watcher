@@ -3,6 +3,7 @@ namespace WoWMarketWatcher.API.Constants
     public static class ConfigurationKeys
     {
         public const string ApplicationInsightsCloudRoleName = "ApplicationInsights:CloudRoleName";
+        public const string BackgroundJobs = "BackgroundJobs";
         public const string HangfireDatabaseName = "Hangfire:DatabaseName";
         public const string HangfireDatabaseConnection = "Hangfire:DatabaseConnection";
         public const string HangfireDashboardUsername = "Hangfire:Dashboard:Username";

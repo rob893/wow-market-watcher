@@ -40,8 +40,13 @@ namespace WoWMarketWatcher.API.Core
 
         private void CreateRealmMaps()
         {
-            this.CreateMap<BlizzardConnectedRealm, ConnectedRealm>();
-            this.CreateMap<BlizzardLocaleRealm, Realm>();
+            this.CreateMap<BlizzardConnectedRealm, ConnectedRealm>()
+                .ForMember(realm => realm.Population, opt => opt.MapFrom(blizzRealm => blizzRealm.Population.Name.EnUS));
+            this.CreateMap<BlizzardLocaleRealm, Realm>()
+                .ForMember(realm => realm.Name, opt => opt.MapFrom(blizzRealm => blizzRealm.Name.EnUS))
+                .ForMember(realm => realm.Region, opt => opt.MapFrom(blizzRealm => blizzRealm.Region.Name.EnUS))
+                .ForMember(realm => realm.Category, opt => opt.MapFrom(blizzRealm => blizzRealm.Category.EnUS))
+                .ForMember(realm => realm.Type, opt => opt.MapFrom(blizzRealm => blizzRealm.Type.Name.EnUS));
             this.CreateMap<Realm, RealmDto>();
             this.CreateMap<ConnectedRealm, ConnectedRealmDto>();
         }

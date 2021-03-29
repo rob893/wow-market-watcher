@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using WoWMarketWatcher.API.BackgroundJobs;
 using WoWMarketWatcher.API.Constants;
-using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.API.Models.Settings;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 {
@@ -19,6 +19,8 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseAndConfigureHangfire(this IApplicationBuilder app, IRecurringJobManager recurringJobs, IConfiguration config)
         {
+            var backgroundJobSettings = config.GetSection(ConfigurationKeys.BackgroundJobs).Get<BackgroundJobSettings>();
+
             app.UseHangfireServer(additionalProcesses: new[] { new ProcessMonitor(TimeSpan.FromSeconds(1.5)) });
             app.UseHangfireDashboard(
                 "/hangfire",
@@ -29,8 +31,32 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
                 }
             );
 
-            recurringJobs.AddOrUpdate<PullAuctionDataBackgroundJob>(nameof(PullAuctionDataBackgroundJob), job => job.PullAuctionData(null!), CronBuilder.AtEveryXHour(4));
-            recurringJobs.AddOrUpdate<RemoveOldDataBackgroundJob>(nameof(RemoveOldDataBackgroundJob), job => job.RemoveOldData(null!), Cron.Daily());
+            if (backgroundJobSettings.PullAuctionDataBackgroundJob.Enabled)
+            {
+                recurringJobs.AddOrUpdate<PullAuctionDataBackgroundJob>(nameof(PullAuctionDataBackgroundJob), job => job.PullAuctionData(null!), backgroundJobSettings.PullAuctionDataBackgroundJob.Schedule);
+            }
+            else
+            {
+                recurringJobs.RemoveIfExists(nameof(PullAuctionDataBackgroundJob));
+            }
+
+            if (backgroundJobSettings.RemoveOldDataBackgroundJob.Enabled)
+            {
+                recurringJobs.AddOrUpdate<RemoveOldDataBackgroundJob>(nameof(RemoveOldDataBackgroundJob), job => job.RemoveOldData(null!), backgroundJobSettings.RemoveOldDataBackgroundJob.Schedule);
+            }
+            else
+            {
+                recurringJobs.RemoveIfExists(nameof(RemoveOldDataBackgroundJob));
+            }
+
+            if (backgroundJobSettings.PullRealmDataBackgroundJob.Enabled)
+            {
+                recurringJobs.AddOrUpdate<PullRealmDataBackgroundJob>(nameof(PullRealmDataBackgroundJob), job => job.PullRealmData(null!), backgroundJobSettings.PullRealmDataBackgroundJob.Schedule);
+            }
+            else
+            {
+                recurringJobs.RemoveIfExists(nameof(PullRealmDataBackgroundJob));
+            }
 
             return app;
         }
