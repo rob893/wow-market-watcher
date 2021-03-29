@@ -142,7 +142,7 @@ namespace WoWMarketWatcher.API.Extensions
             return string.Join("&", results);
         }
 
-        public static string ToJson(this object value, Formatting formatting = Formatting.None)
+        public static string ToJson(this object value, Formatting formatting = Formatting.None, JsonSerializerSettings? settings = null)
         {
             if (value == null)
             {
@@ -151,7 +151,10 @@ namespace WoWMarketWatcher.API.Extensions
 
             try
             {
-                var json = JsonConvert.SerializeObject(value, formatting);
+                var json = JsonConvert.SerializeObject(value, formatting, settings ?? new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
 
                 return json;
             }

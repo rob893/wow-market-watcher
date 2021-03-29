@@ -74,7 +74,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             await System.IO.File.WriteAllTextAsync($"Data/SeedData/AuctionTimeSeriesSeedData-{DateTime.Now:dd-MM-yy}.json", asJson);
 
-            return this.Ok();
+            return this.Ok(items);
         }
 
         [HttpPost("wowItems/download")]
@@ -86,7 +86,19 @@ namespace WoWMarketWatcher.API.Controllers
 
             await System.IO.File.WriteAllTextAsync($"Data/SeedData/WoWItemsSeedData-{DateTime.Now:dd-MM-yy}.json", asJson);
 
-            return this.Ok();
+            return this.Ok(items);
+        }
+
+        [HttpPost("connectedRealms/download")]
+        public async Task<ActionResult> DownloadConnectedRealmsAsync()
+        {
+            var items = await this.dbContext.ConnectedRealms.Include(r => r.Realms).ToListAsync();
+
+            var asJson = items.ToJson();
+
+            await System.IO.File.WriteAllTextAsync($"Data/SeedData/ConnectedRealmsSeedData-{DateTime.Now:dd-MM-yy}.json", asJson);
+
+            return this.Ok(items);
         }
 
         [HttpGet("self")]
