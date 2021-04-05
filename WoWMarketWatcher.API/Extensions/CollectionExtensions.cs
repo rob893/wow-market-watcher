@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ConcurrentCollections;
 
 namespace WoWMarketWatcher.API.Extensions
 {
@@ -12,6 +13,14 @@ namespace WoWMarketWatcher.API.Extensions
                 .Select((x, i) => (Index: i, Value: x))
                 .GroupBy(x => x.Index / chunkSize)
                 .Select(x => x.Select(v => v.Value).ToList());
+        }
+
+        public static void UnionWith<T>(this ConcurrentHashSet<T> source, IEnumerable<T> other)
+        {
+            foreach (var entry in other)
+            {
+                source.Add(entry);
+            }
         }
 
         public static long Percentile(this IEnumerable<long> source, double percentile, bool isSourceSorted = false)
