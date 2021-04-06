@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ConcurrentCollections;
@@ -66,6 +67,9 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             try
             {
+                this.timeSeriesRepository.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+                this.timeSeriesRepository.Context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
                 var realmIdsToUpdate = processAllRealms
                     ? await this.connectedRealmRepository.EntitySetAsNoTracking().Select(realm => realm.Id).Distinct().ToListAsync()
                     : await this.watchListRepository.EntitySetAsNoTracking().Select(list => list.ConnectedRealmId).Distinct().ToListAsync();
@@ -73,7 +77,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                 this.logger.LogDebug(hangfireJobId, sourceName, correlationId, $"Fetched {realmIdsToUpdate.Count} connected realms to update auction data from.", logMetadata);
 
-                var chunkedRealms = realmIdsToUpdate.ChunkBy(40);
+                var chunkedRealms = realmIdsToUpdate.ChunkBy(400);
                 var tasks = new List<Task<(int numberNewItemsAdded, int numberAuctionEntriesAdded)>>();
 
                 foreach (var chunk in chunkedRealms)
@@ -97,6 +101,11 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             {
                 this.logger.LogError(hangfireJobId, sourceName, correlationId, $"{nameof(PullAuctionDataBackgroundJob)} failed. Reason: {ex}", logMetadata);
                 throw new BackgroundJobClientException(ex.Message, ex);
+            }
+            finally
+            {
+                this.timeSeriesRepository.Context.ChangeTracker.AutoDetectChangesEnabled = true;
+                this.timeSeriesRepository.Context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             }
         }
 
@@ -168,17 +177,29 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                 numberNewItemsAdded += await this.ProcessNewItemsAsync(newItemIdsFromRealm, correlationId, hangfireJobId, logMetadata);
 
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
                 var newAuctionsToAdd = this.MapAuctionData(auctionData.Auctions, connectedRealmId, itemsToUpdate, processAllItems, correlationId, hangfireJobId, logMetadata);
+                stopwatch.Stop();
 
-                var chunkedAuctions = newAuctionsToAdd.ChunkBy(1000);
+                this.logger.LogDebug(hangfireJobId, sourceName, correlationId, $"Mapping complete in {stopwatch.ElapsedMilliseconds}ms. Saving...");
 
-                foreach (var chunk in chunkedAuctions)
-                {
-                    this.timeSeriesRepository.AddRange(chunk);
-                    numberAuctionEntriesAdded += await this.timeSeriesRepository.SaveChangesAsync();
-                }
+                stopwatch.Reset();
+                stopwatch.Start();
 
-                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Processing auction data for connected realm {connectedRealmId} complete. {numberAuctionEntriesAdded} auction entries added.", logMetadata);
+
+                // var chunkedAuctions = newAuctionsToAdd.ChunkBy(10000);
+
+                // foreach (var chunk in chunkedAuctions)
+                // {
+                this.timeSeriesRepository.AddRange(newAuctionsToAdd);
+                numberAuctionEntriesAdded += await this.timeSeriesRepository.SaveChangesAsync();
+                // }
+
+                stopwatch.Stop();
+
+                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Processing auction data for connected realm {connectedRealmId} complete in {stopwatch.ElapsedMilliseconds}ms. {numberAuctionEntriesAdded} auction entries added.", logMetadata);
 
                 return (numberNewItemsAdded, numberAuctionEntriesAdded);
             }

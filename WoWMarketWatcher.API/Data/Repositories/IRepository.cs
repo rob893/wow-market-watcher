@@ -15,6 +15,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
         where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         where TSearchParams : CursorPaginationParameters
     {
+        DataContext Context { get; }
         EntityEntry<TEntity> Entry(TEntity entity);
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entities);

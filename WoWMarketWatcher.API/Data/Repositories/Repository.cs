@@ -16,7 +16,8 @@ namespace WoWMarketWatcher.API.Data.Repositories
         where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         where TSearchParams : CursorPaginationParameters
     {
-        protected DataContext Context { get; init; }
+        public DataContext Context { get; protected init; }
+
         protected Func<TEntityKey, string> ConvertIdToBase64 { get; init; }
         protected Func<string, TEntityKey> ConvertBase64ToIdType { get; init; }
         protected Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddAfterExp { get; init; }
