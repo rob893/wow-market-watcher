@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using WoWMarketWatcher.API.BackgroundJobs;
 using WoWMarketWatcher.API.Constants;
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {
@@ -37,6 +38,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 .UseHeartbeatPage(TimeSpan.FromSeconds(1.5))
                 .UseJobsLogger(new JobsLoggerOptions
                 {
+                    LogLevel = LogLevelFromString(config[ConfigurationKeys.HangfireJobsLoggerLevel]),
                     LogCriticalColor = Color.DarkRed,
                     LogErrorColor = Color.Red,
                     LogWarningColor = Color.DarkOrange,

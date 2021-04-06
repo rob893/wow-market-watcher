@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
 namespace WoWMarketWatcher.API.Utilities
 {
@@ -20,6 +22,20 @@ namespace WoWMarketWatcher.API.Utilities
             }
 
             return $"{sourceName}.{memberName}";
+        }
+
+        public static LogLevel LogLevelFromString(string logLevel)
+        {
+            return (logLevel.ToUpperInvariant()) switch
+            {
+                "TRACE" => LogLevel.Trace,
+                "DEBUG" => LogLevel.Debug,
+                "INFORMATION" => LogLevel.Information,
+                "WARNING" => LogLevel.Warning,
+                "ERROR" => LogLevel.Error,
+                "CRITICAL" => LogLevel.Critical,
+                _ => throw new ArgumentException($"{nameof(logLevel)} must be Trace, Debug, Information, Warning, Error, or Critical.", nameof(logLevel)),
+            };
         }
     }
 }
