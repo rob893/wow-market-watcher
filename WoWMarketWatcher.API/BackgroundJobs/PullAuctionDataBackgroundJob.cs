@@ -8,11 +8,13 @@ using Hangfire.JobsLogger;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
+using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
@@ -25,6 +27,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
         private readonly IWatchListRepository watchListRepository;
         private readonly IAuctionTimeSeriesRepository timeSeriesRepository;
         private readonly IConnectedRealmRepository connectedRealmRepository;
+        private readonly PullAuctionDataBackgroundJobSettings jobSettings;
         private readonly ILogger<PullAuctionDataBackgroundJob> logger;
         private readonly HashSet<int> currentItemIds = new();
         private readonly HashSet<int> itemIdsToAlwaysProcess = new();
@@ -35,6 +38,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             IWatchListRepository watchListRepository,
             IAuctionTimeSeriesRepository timeSeriesRepository,
             IConnectedRealmRepository connectedRealmRepository,
+            IOptions<PullAuctionDataBackgroundJobSettings> jobSettings,
             ILogger<PullAuctionDataBackgroundJob> logger)
         {
             this.blizzardService = blizzardService ?? throw new ArgumentNullException(nameof(blizzardService));
@@ -42,6 +46,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             this.watchListRepository = watchListRepository ?? throw new ArgumentNullException(nameof(watchListRepository));
             this.timeSeriesRepository = timeSeriesRepository ?? throw new ArgumentNullException(nameof(timeSeriesRepository));
             this.connectedRealmRepository = connectedRealmRepository ?? throw new ArgumentNullException(nameof(connectedRealmRepository));
+            this.jobSettings = jobSettings.Value ?? throw new ArgumentNullException(nameof(jobSettings));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -73,23 +78,28 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 this.itemRepository.Context.ChangeTracker.AutoDetectChangesEnabled = false;
                 this.itemRepository.Context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-                var realmIds = await this.connectedRealmRepository.EntitySetAsNoTracking().Select(realm => realm.Id).Distinct().ToListAsync();
+                var realmIdsToUpdate = this.jobSettings.AlwaysProcessCertainItemsEnabled
+                    ? await this.connectedRealmRepository.EntitySetAsNoTracking().Select(realm => realm.Id).Distinct().ToListAsync()
+                    : await this.watchListRepository.EntitySetAsNoTracking().Select(list => list.ConnectedRealmId).Distinct().ToListAsync();
                 this.currentItemIds.UnionWith(await this.itemRepository.EntitySetAsNoTracking().Select(i => i.Id).ToListAsync());
 
                 var subclassesToAlwaysProcess = new HashSet<string> { "Cooking", "Herb", "Leather", "Metal & Stone", "Enchanting" };
 
-                this.itemIdsToAlwaysProcess.UnionWith(
-                    await this.itemRepository.EntitySetAsNoTracking()
-                        .Where(item => item.ItemClass == "Tradeskill" && subclassesToAlwaysProcess.Contains(item.ItemSubclass))
-                        .Select(item => item.Id).ToListAsync()
-                    );
+                if (this.jobSettings.AlwaysProcessCertainItemsEnabled)
+                {
+                    this.itemIdsToAlwaysProcess.UnionWith(
+                        await this.itemRepository.EntitySetAsNoTracking()
+                            .Where(item => item.ItemClass == "Tradeskill" && subclassesToAlwaysProcess.Contains(item.ItemSubclass))
+                            .Select(item => item.Id).ToListAsync()
+                        );
+                }
 
-                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Fetched {realmIds.Count} connected realms to update auction data from with {this.itemIdsToAlwaysProcess.Count} items to always process.", logMetadata);
+                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Fetched {realmIdsToUpdate.Count} connected realms to update auction data from with {this.itemIdsToAlwaysProcess.Count} items to always process.", logMetadata);
 
                 var numberNewItemsAdded = 0;
                 var numberAuctionEntriesAdded = 0;
 
-                foreach (var connectedRealmId in realmIds)
+                foreach (var connectedRealmId in realmIdsToUpdate)
                 {
                     try
                     {
