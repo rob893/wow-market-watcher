@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using WoWMarketWatcher.API.BackgroundJobs;
 using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.API.Models.Settings;
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
@@ -18,6 +19,8 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddHangfireServices(this IServiceCollection services, IConfiguration config)
         {
+            services.Configure<BackgroundJobSettings>(config.GetSection(ConfigurationKeys.BackgroundJobs));
+
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 10 });
 
             var mySqlOptions = new MySqlStorageOptions
