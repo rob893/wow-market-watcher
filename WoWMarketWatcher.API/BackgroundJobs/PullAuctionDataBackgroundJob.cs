@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.JobsLogger;
 using Hangfire.Server;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -88,25 +89,48 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                     : await this.watchListRepository.EntitySetAsNoTracking().Select(list => list.ConnectedRealmId).Distinct().ToListAsync();
                 this.currentItemIds.UnionWith(await this.itemRepository.EntitySetAsNoTracking().Select(i => i.Id).ToListAsync());
 
-                var subclassesToAlwaysProcess = new HashSet<string> { "Cooking", "Herb", "Leather", "Metal & Stone", "Enchanting" };
-
                 if (this.jobSettings.AlwaysProcessCertainItemsEnabled)
                 {
+                    var predicate = PredicateBuilder.New<WoWItem>();
+
+                    foreach (var entry in this.jobSettings.AlwayProcessItemClasses)
+                    {
+                        var itemClass = entry.Key;
+                        var itemSubclasses = entry.Value.ToList();
+                        predicate.Or(item => item.ItemClass == itemClass && itemSubclasses.Contains(item.ItemSubclass));
+                    }
+
                     this.itemIdsToAlwaysProcess.UnionWith(
                         await this.itemRepository.EntitySetAsNoTracking()
-                            .Where(item => item.ItemClass == "Tradeskill" && subclassesToAlwaysProcess.Contains(item.ItemSubclass))
+                            .Where(predicate)
                             .Select(item => item.Id).ToListAsync()
                         );
                 }
 
                 this.logger.LogInformation(this.hangfireJobId, sourceName, this.correlationId, $"Fetched {realmIdsToUpdate.Count} connected realms to update auction data from with {this.itemIdsToAlwaysProcess.Count} items to always process.", this.logMetadata);
 
+                var attempts = new Dictionary<int, int>();
+                var realmsQueue = new Queue<int>(realmIdsToUpdate);
+                var maxAttempts = 5;
                 var numberAuctionEntriesAdded = 0;
 
-                foreach (var connectedRealmId in realmIdsToUpdate)
+                while (realmsQueue.Any())
                 {
+                    var connectedRealmId = realmsQueue.Dequeue();
+
+                    if (attempts.ContainsKey(connectedRealmId))
+                    {
+                        attempts[connectedRealmId]++;
+                    }
+                    else
+                    {
+                        attempts[connectedRealmId] = 1;
+                    }
+
                     try
                     {
+                        this.logMetadata[nameof(connectedRealmId)] = connectedRealmId;
+
                         var numAuctionEntriesAdded = await this.ProcessConnectedRealmAuctionDataAsync(connectedRealmId);
                         numberAuctionEntriesAdded += numAuctionEntriesAdded;
                         this.itemRepository.Context.ChangeTracker.Clear();
@@ -114,11 +138,39 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                     }
                     catch (Exception ex)
                     {
-                        this.logger.LogError(this.hangfireJobId, sourceName, this.correlationId, $"Failed to process auction data for connected realm {connectedRealmId}. Reason: {ex}", this.logMetadata);
+                        if (!attempts.ContainsKey(connectedRealmId))
+                        {
+                            this.logger.LogError(this.hangfireJobId, sourceName, this.correlationId, $"Failed to process auction data for connected realm {connectedRealmId} and realm id not in attempts dictionary. Reason: {ex}", this.logMetadata);
+                        }
+
+                        var attemptNumber = attempts[connectedRealmId];
+
+                        if (attemptNumber < maxAttempts)
+                        {
+                            realmsQueue.Enqueue(connectedRealmId);
+                            this.logger.LogWarning(this.hangfireJobId, sourceName, this.correlationId, $"Failed to process auction data for connected realm {connectedRealmId} after {attemptNumber} attempts. This realm will be retried. Reason: {ex}", this.logMetadata);
+                        }
+                        else
+                        {
+                            this.logger.LogError(this.hangfireJobId, sourceName, this.correlationId, $"Failed to process auction data for connected realm {connectedRealmId} after {attemptNumber} attempts. No longer retrying. Reason: {ex}", this.logMetadata);
+                        }
+                    }
+                    finally
+                    {
+                        this.logMetadata.Remove(nameof(connectedRealmId));
                     }
                 }
 
-                var numberNewItemsAdded = await this.ProcessNewItemsAsync();
+                var numberNewItemsAdded = 0;
+
+                try
+                {
+                    numberNewItemsAdded = await this.ProcessNewItemsAsync();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(this.hangfireJobId, sourceName, this.correlationId, $"Error while processing data for new items. Reason: {ex}", this.logMetadata);
+                }
 
                 stopwatch.Stop();
                 this.logMetadata[LogMetadataFields.Duration] = stopwatch.ElapsedMilliseconds;
@@ -146,96 +198,72 @@ namespace WoWMarketWatcher.API.BackgroundJobs
         {
             var sourceName = GetSourceName();
 
-            try
-            {
-                this.logMetadata[nameof(connectedRealmId)] = connectedRealmId;
-                this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Processing auction data for connected realm {connectedRealmId}.", this.logMetadata);
+            this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Processing auction data for connected realm {connectedRealmId}.", this.logMetadata);
 
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-                var itemsToUpdate = (await this.watchListRepository.EntitySetAsNoTracking()
-                    .Where(list => list.ConnectedRealmId == connectedRealmId)
-                    .SelectMany(list => list.WatchedItems
-                    .Select(item => item.Id))
-                    .Distinct()
-                    .ToListAsync())
-                    .ToHashSet();
+            var itemsToUpdate = (await this.watchListRepository.EntitySetAsNoTracking()
+                .Where(list => list.ConnectedRealmId == connectedRealmId)
+                .SelectMany(list => list.WatchedItems
+                .Select(item => item.Id))
+                .Distinct()
+                .ToListAsync())
+                .ToHashSet();
 
-                itemsToUpdate.UnionWith(this.itemIdsToAlwaysProcess);
+            itemsToUpdate.UnionWith(this.itemIdsToAlwaysProcess);
 
-                this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Determined auction data for {itemsToUpdate.Count} items need to be processed for connected realm {connectedRealmId}.", this.logMetadata);
+            this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Determined auction data for {itemsToUpdate.Count} items need to be processed for connected realm {connectedRealmId}.", this.logMetadata);
 
-                var auctionData = await this.blizzardService.GetAuctionsAsync(connectedRealmId, this.correlationId);
+            var auctionData = await this.blizzardService.GetAuctionsAsync(connectedRealmId, this.correlationId);
 
-                var newItemIdsFromRealm = auctionData.Auctions.Select(auc => auc.Item.Id).Where(id => !this.currentItemIds.Contains(id)).ToHashSet();
+            var newItemIdsFromRealm = auctionData.Auctions.Select(auc => auc.Item.Id).Where(id => !this.currentItemIds.Contains(id)).ToHashSet();
 
-                this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {connectedRealmId}.", this.logMetadata);
+            this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {connectedRealmId}.", this.logMetadata);
 
-                this.newItemIds.UnionWith(newItemIdsFromRealm);
+            this.newItemIds.UnionWith(newItemIdsFromRealm);
 
-                var newAuctionsToAdd = this.MapAuctionData(auctionData.Auctions, connectedRealmId, itemsToUpdate);
+            var newAuctionsToAdd = this.MapAuctionData(auctionData.Auctions, connectedRealmId, itemsToUpdate);
 
-                this.timeSeriesRepository.AddRange(newAuctionsToAdd);
-                var numberAuctionEntriesAdded = await this.timeSeriesRepository.SaveChangesAsync();
+            this.timeSeriesRepository.AddRange(newAuctionsToAdd);
+            var numberAuctionEntriesAdded = await this.timeSeriesRepository.SaveChangesAsync();
 
-                stopwatch.Stop();
+            stopwatch.Stop();
 
-                this.logger.LogInformation(this.hangfireJobId, sourceName, this.correlationId, $"Processing auction data for connected realm {connectedRealmId} complete in {stopwatch.ElapsedMilliseconds}ms. {numberAuctionEntriesAdded} auction entries added and {newItemIdsFromRealm.Count} new items found.", this.logMetadata);
+            this.logger.LogInformation(this.hangfireJobId, sourceName, this.correlationId, $"Processing auction data for connected realm {connectedRealmId} complete in {stopwatch.ElapsedMilliseconds}ms. {numberAuctionEntriesAdded} auction entries added and {newItemIdsFromRealm.Count} new items found.", this.logMetadata);
 
-                return numberAuctionEntriesAdded;
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(this.hangfireJobId, sourceName, this.correlationId, $"Failed to process auction data for connected realm {connectedRealmId}. Reason: {ex}", this.logMetadata);
-
-                return 0;
-            }
-            finally
-            {
-                this.logMetadata.Remove(nameof(connectedRealmId));
-            }
+            return numberAuctionEntriesAdded;
         }
 
         private async Task<int> ProcessNewItemsAsync()
         {
             var sourceName = GetSourceName();
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            try
+            this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Starting to obtain and save data for {this.newItemIds.Count} newly discovered items.", this.logMetadata);
+
+            var newItemChunks = this.newItemIds.ChunkBy(100);
+
+            var newItemChunkedChunks = newItemChunks.ChunkBy(5);
+
+            var tasks = new List<Task<IEnumerable<WoWItem>>>();
+
+            foreach (var chunkedChunk in newItemChunkedChunks)
             {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Starting to obtain and save data for {this.newItemIds.Count} newly discovered items.", this.logMetadata);
-
-                var newItemChunks = this.newItemIds.ChunkBy(100);
-
-                var newItemChunkedChunks = newItemChunks.ChunkBy(5);
-
-                var tasks = new List<Task<IEnumerable<WoWItem>>>();
-
-                foreach (var chunkedChunk in newItemChunkedChunks)
-                {
-                    tasks.Add(this.HandleChunkedItemRequestsAsync(chunkedChunk));
-                }
-
-                var itemsFromBlizzard = (await Task.WhenAll(tasks)).SelectMany(item => item);
-
-                this.itemRepository.AddRange(itemsFromBlizzard);
-
-                var itemsSaved = await this.itemRepository.SaveChangesAsync();
-
-                stopwatch.Stop();
-                this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Obtaining and saving data for {this.newItemIds.Count} newly discovered items complete in {stopwatch.ElapsedMilliseconds}ms. {itemsSaved} database records created.", this.logMetadata);
-
-                return itemsSaved;
+                tasks.Add(this.HandleChunkedItemRequestsAsync(chunkedChunk));
             }
-            catch (Exception ex)
-            {
-                this.logger.LogWarning(this.hangfireJobId, sourceName, this.correlationId, $"Error while processing data for new items. Reason: {ex}", this.logMetadata);
 
-                return 0;
-            }
+            var itemsFromBlizzard = (await Task.WhenAll(tasks)).SelectMany(item => item);
+
+            this.itemRepository.AddRange(itemsFromBlizzard);
+
+            var itemsSaved = await this.itemRepository.SaveChangesAsync();
+
+            stopwatch.Stop();
+            this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Obtaining and saving data for {this.newItemIds.Count} newly discovered items complete in {stopwatch.ElapsedMilliseconds}ms. {itemsSaved} database records created.", this.logMetadata);
+
+            return itemsSaved;
         }
 
         private List<AuctionTimeSeriesEntry> MapAuctionData(List<BlizzardAuction> auctions, int connectedRealmId, HashSet<int> itemIdsToProcess)
