@@ -15,6 +15,7 @@ namespace WoWMarketWatcher.API.Core
             string? endCursor,
             bool hasNextPage,
             bool hasPreviousPage,
+            int pageCount,
             int? totalCount,
             Func<TEntityKey, string> ConvertIdToBase64,
             bool includeNodes = true,
@@ -36,9 +37,10 @@ namespace WoWMarketWatcher.API.Core
                     StartCursor = startCursor,
                     EndCursor = endCursor,
                     HasNextPage = hasNextPage,
-                    HasPreviousPage = hasPreviousPage
-                },
-                TotalCount = totalCount
+                    HasPreviousPage = hasPreviousPage,
+                    PageCount = pageCount,
+                    TotalCount = totalCount
+                }
             };
         }
 
@@ -56,6 +58,7 @@ namespace WoWMarketWatcher.API.Core
                 items.EndCursor,
                 items.HasNextPage,
                 items.HasPreviousPage,
+                items.PageCount,
                 items.TotalCount,
                 ConvertIdToBase64,
                 includeNodes,
@@ -78,6 +81,7 @@ namespace WoWMarketWatcher.API.Core
                 items.EndCursor,
                 items.HasNextPage,
                 items.HasPreviousPage,
+                items.PageCount,
                 items.TotalCount,
                 Id => Convert.ToBase64String(BitConverter.GetBytes(Id)),
                 includeNodes,
@@ -109,6 +113,7 @@ namespace WoWMarketWatcher.API.Core
                 items.EndCursor,
                 items.HasNextPage,
                 items.HasPreviousPage,
+                items.PageCount,
                 items.TotalCount,
                 Id => Convert.ToBase64String(BitConverter.GetBytes(Id)),
                 includeNodes,
@@ -143,6 +148,7 @@ namespace WoWMarketWatcher.API.Core
                 items.EndCursor,
                 items.HasNextPage,
                 items.HasPreviousPage,
+                items.PageCount,
                 items.TotalCount,
                 Id => Convert.ToBase64String(BitConverter.GetBytes(Id)),
                 includeNodes,
@@ -164,6 +170,7 @@ namespace WoWMarketWatcher.API.Core
                 items.EndCursor,
                 items.HasNextPage,
                 items.HasPreviousPage,
+                items.PageCount,
                 items.TotalCount,
                 Id => Convert.ToBase64String(BitConverter.GetBytes(Id)),
                 includeNodes,

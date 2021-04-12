@@ -13,8 +13,6 @@ namespace WoWMarketWatcher.API.Models.Responses
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public IEnumerable<TEntity>? Nodes { get; init; }
         public PageInfo PageInfo { get; init; } = default!;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? TotalCount { get; init; }
     }
 
     public record CursorPaginatedResponse<TEntity> : CursorPaginatedResponse<TEntity, int>
@@ -33,5 +31,8 @@ namespace WoWMarketWatcher.API.Models.Responses
         public string? EndCursor { get; init; }
         public bool HasNextPage { get; init; }
         public bool HasPreviousPage { get; init; }
+        public int PageCount { get; init; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? TotalCount { get; init; }
     }
 }

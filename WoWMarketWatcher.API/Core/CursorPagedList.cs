@@ -17,16 +17,18 @@ namespace WoWMarketWatcher.API.Core
         public string? StartCursor { get; set; }
         public string? EndCursor { get; set; }
         public int? TotalCount { get; set; }
+        public int PageCount { get; set; }
 
 
-        public CursorPagedList(IEnumerable<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount)
+        public CursorPagedList(ICollection<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount)
         {
-            HasNextPage = hasNextPage;
-            HasPreviousPage = hasPreviousPage;
-            StartCursor = startCursor;
-            EndCursor = endCursor;
-            TotalCount = totalCount;
-            AddRange(items);
+            this.HasNextPage = hasNextPage;
+            this.HasPreviousPage = hasPreviousPage;
+            this.StartCursor = startCursor;
+            this.EndCursor = endCursor;
+            this.TotalCount = totalCount;
+            this.PageCount = items.Count;
+            this.AddRange(items);
         }
 
         public static async Task<CursorPagedList<T, R>> CreateAsync<T, R>(IQueryable<T> source, int? first, string? after, int? last, string? before, bool includeTotal,
@@ -36,7 +38,7 @@ namespace WoWMarketWatcher.API.Core
         {
             if (first != null && last != null)
             {
-                throw new ArgumentException("Passing both `first` and `last` to paginate is not supported.");
+                throw new NotSupportedException($"Passing both `{nameof(first)}` and `{nameof(last)}` to paginate is not supported.");
             }
 
             int? totalCount = null;
@@ -48,22 +50,14 @@ namespace WoWMarketWatcher.API.Core
 
             if (first == null && last == null)
             {
-                var items = await source.OrderBy(item => item.Id).ToListAsync();
-
-                var firstItem = items.FirstOrDefault();
-                var lastItem = items.LastOrDefault();
-
-                var startCursor = firstItem != null ? ConvertIdToBase64(firstItem.Id) : null;
-                var endCursor = lastItem != null ? ConvertIdToBase64(lastItem.Id) : null;
-
-                return new CursorPagedList<T, R>(items, false, false, startCursor, endCursor, totalCount);
+                first = 100;
             }
 
             if (first != null)
             {
                 if (first.Value < 0)
                 {
-                    throw new ArgumentException("first cannot be less than 0.");
+                    throw new ArgumentException($"{nameof(first)} cannot be less than 0.", nameof(first));
                 }
 
                 if (after != null)
@@ -101,7 +95,7 @@ namespace WoWMarketWatcher.API.Core
             {
                 if (last.Value < 0)
                 {
-                    throw new ArgumentException("last cannot be less than 0.");
+                    throw new ArgumentException($"{nameof(last)} cannot be less than 0.", nameof(last));
                 }
 
                 if (after != null)
@@ -153,7 +147,7 @@ namespace WoWMarketWatcher.API.Core
                     }
                     catch
                     {
-                        throw new ArgumentException($"{str} is not a valid base 64 encoded int32.");
+                        throw new ArgumentException($"{str} is not a valid base 64 encoded int32.", nameof(str));
                     }
                 },
                 (source, afterId) => source.Where(item => item.Id > afterId),
@@ -179,7 +173,7 @@ namespace WoWMarketWatcher.API.Core
     public class CursorPagedList<TEntity> : CursorPagedList<TEntity, int>
         where TEntity : class, IIdentifiable<int>
     {
-        public CursorPagedList(IEnumerable<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount) : base(
+        public CursorPagedList(ICollection<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount) : base(
             items,
             hasNextPage,
             hasPreviousPage,
