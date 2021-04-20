@@ -11,13 +11,11 @@ namespace WoWMarketWatcher.API.Models.Requests
         [StringLength(256, MinimumLength = 6, ErrorMessage = "You must specify a password between 4 and 256 characters")]
         public string Password { get; init; } = default!;
 
-        [Required]
         [MaxLength(255)]
-        public string FirstName { get; init; } = default!;
+        public string? FirstName { get; init; }
 
-        [Required]
         [MaxLength(255)]
-        public string LastName { get; init; } = default!;
+        public string? LastName { get; init; }
 
         [Required]
         public string Email { get; init; } = default!;

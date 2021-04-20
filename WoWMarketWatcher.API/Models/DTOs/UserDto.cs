@@ -7,8 +7,8 @@ namespace WoWMarketWatcher.API.Models.DTOs
     {
         public int Id { get; init; }
         public string UserName { get; init; } = default!;
-        public string FirstName { get; init; } = default!;
-        public string LastName { get; init; } = default!;
+        public string? FirstName { get; init; }
+        public string? LastName { get; init; }
         public string Email { get; init; } = default!;
         public UserPreferenceDto Preferences { get; init; } = default!;
         public MembershipLevel MembershipLevel { get; init; }

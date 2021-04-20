@@ -46,14 +46,14 @@ namespace WoWMarketWatcher.API.Controllers
         {
             var user = this.mapper.Map<User>(userForRegisterDto);
 
-            var result = await userRepository.CreateUserWithPasswordAsync(user, userForRegisterDto.Password);
+            var result = await this.userRepository.CreateUserWithPasswordAsync(user, userForRegisterDto.Password);
 
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors.Select(e => e.Description).ToList());
+                return this.BadRequest(result.Errors.Select(e => e.Description).ToList());
             }
 
-            var token = GenerateJwtToken(user);
+            var token = this.GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshTokens.Add(new RefreshToken
@@ -63,11 +63,11 @@ namespace WoWMarketWatcher.API.Controllers
                 DeviceId = userForRegisterDto.DeviceId
             });
 
-            await userRepository.SaveAllAsync();
+            await this.userRepository.SaveAllAsync();
 
-            var userToReturn = mapper.Map<UserDto>(user);
+            var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
+            return this.CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
             {
                 Token = token,
                 RefreshToken = refreshToken,
@@ -87,8 +87,6 @@ namespace WoWMarketWatcher.API.Controllers
                     UserName = userForRegisterDto.UserName,
                     Email = validatedToken.Email,
                     EmailConfirmed = validatedToken.EmailVerified,
-                    FirstName = validatedToken.GivenName,
-                    LastName = validatedToken.FamilyName,
                     LinkedAccounts = new List<LinkedAccount>
                     {
                         new LinkedAccount
@@ -320,11 +318,19 @@ namespace WoWMarketWatcher.API.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Surname, user.LastName),
                 new Claim(AppClaimTypes.EmailVerified, user.EmailConfirmed.ToString(), ClaimValueTypes.Boolean),
                 new Claim(AppClaimTypes.MembershipType, user.MembershipLevel.ToString())
             };
+
+            if (user.FirstName != null)
+            {
+                claims.Add(new Claim(ClaimTypes.GivenName, user.FirstName));
+            }
+
+            if (user.LastName != null)
+            {
+                claims.Add(new Claim(ClaimTypes.Surname, user.LastName));
+            }
 
             if (user.UserRoles != null)
             {

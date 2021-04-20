@@ -8,12 +8,10 @@ namespace WoWMarketWatcher.API.Entities
 {
     public class User : IdentityUser<int>, IIdentifiable<int>
     {
-        [Required]
         [MaxLength(255)]
-        public string FirstName { get; set; } = default!;
-        [Required]
+        public string? FirstName { get; set; }
         [MaxLength(255)]
-        public string LastName { get; set; } = default!;
+        public string? LastName { get; set; }
         public DateTimeOffset Created { get; set; }
         public MembershipLevel MembershipLevel { get; set; }
         public UserPreference Preferences { get; set; } = default!;
