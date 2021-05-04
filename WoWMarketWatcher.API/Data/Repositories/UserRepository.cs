@@ -14,21 +14,22 @@ namespace WoWMarketWatcher.API.Data.Repositories
 {
     public class UserRepository : Repository<User, CursorPaginationParameters>, IUserRepository
     {
-        private readonly UserManager<User> userManager;
+        public UserManager<User> UserManager { get; init; }
+
         private readonly SignInManager<User> signInManager;
 
 
         public UserRepository(DataContext context, UserManager<User> userManager, SignInManager<User> signInManager) : base(context)
         {
-            this.userManager = userManager;
+            this.UserManager = userManager;
             this.signInManager = signInManager;
         }
 
         public async Task<IdentityResult> CreateUserWithAsync(User user)
         {
             user.Created = DateTime.UtcNow;
-            var created = await this.userManager.CreateAsync(user);
-            await this.userManager.AddToRoleAsync(user, "User");
+            var created = await this.UserManager.CreateAsync(user);
+            await this.UserManager.AddToRoleAsync(user, "User");
 
             return created;
         }
@@ -36,8 +37,8 @@ namespace WoWMarketWatcher.API.Data.Repositories
         public async Task<IdentityResult> CreateUserWithPasswordAsync(User user, string password)
         {
             user.Created = DateTime.UtcNow;
-            var created = await this.userManager.CreateAsync(user, password);
-            await this.userManager.AddToRoleAsync(user, "User");
+            var created = await this.UserManager.CreateAsync(user, password);
+            await this.UserManager.AddToRoleAsync(user, "User");
 
             return created;
         }

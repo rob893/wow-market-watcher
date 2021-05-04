@@ -21,6 +21,7 @@ using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.Requests;
 using WoWMarketWatcher.API.Models.Responses;
 using WoWMarketWatcher.API.Models.Settings;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -31,12 +32,14 @@ namespace WoWMarketWatcher.API.Controllers
     {
         private readonly IUserRepository userRepository;
         private readonly AuthenticationSettings authSettings;
+        private readonly IEmailService emailService;
         private readonly IMapper mapper;
 
 
-        public AuthController(IUserRepository userRepository, IOptions<AuthenticationSettings> authSettings, IMapper mapper)
+        public AuthController(IUserRepository userRepository, IEmailService emailService, IOptions<AuthenticationSettings> authSettings, IMapper mapper)
         {
             this.userRepository = userRepository;
+            this.emailService = emailService;
             this.authSettings = authSettings.Value;
             this.mapper = mapper;
         }
@@ -64,6 +67,10 @@ namespace WoWMarketWatcher.API.Controllers
             });
 
             await this.userRepository.SaveAllAsync();
+
+            var emailToken = await this.userRepository.UserManager.GenerateEmailConfirmationTokenAsync(user);
+            var confLink = $"https://rwherber.com/wow-market-watcher?token={emailToken}&email={user.Email}";
+            await this.emailService.SendEmailAsync("rwherber@gmail.com", "Confirm your email", $"Please click {confLink} to confirm email");
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 

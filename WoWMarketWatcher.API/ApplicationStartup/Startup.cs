@@ -41,6 +41,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .AddSingleton<ITelemetryInitializer, ApplicationInsightsTelemetryInitializer>()
                 .AddHangfireServices(this.Configuration)
                 .AddSwaggerServices(this.Configuration)
+                .AddEmailServices(this.Configuration)
                 .AddAutoMapper(typeof(Startup))
                 .AddHealthCheckServices()
                 .AddBlizzardServices(this.Configuration)

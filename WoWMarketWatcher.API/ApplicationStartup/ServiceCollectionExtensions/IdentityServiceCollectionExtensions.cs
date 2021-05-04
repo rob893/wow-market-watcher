@@ -15,7 +15,9 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 opt.Password.RequiredLength = 4;
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequireUppercase = false;
-            });
+
+                opt.User.RequireUniqueEmail = true;
+            }).AddDefaultTokenProviders();
 
             builder = new IdentityBuilder(builder.UserType, typeof(Role), builder.Services);
             builder.AddEntityFrameworkStores<DataContext>();

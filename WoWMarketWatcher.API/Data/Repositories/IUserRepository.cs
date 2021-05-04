@@ -12,6 +12,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
 {
     public interface IUserRepository : IRepository<User, CursorPaginationParameters>
     {
+        UserManager<User> UserManager { get; }
         Task<IdentityResult> CreateUserWithAsync(User user);
         Task<IdentityResult> CreateUserWithPasswordAsync(User user, string password);
         Task<User> GetByUsernameAsync(string username);
