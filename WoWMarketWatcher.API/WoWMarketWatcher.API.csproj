@@ -37,6 +37,7 @@
     <PackageReference Include="AspNetCoreRateLimit" Version="3.2.2"/>
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.24"/>
     <PackageReference Include="SendGrid" Version="9.23.0"/>
+    <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.0"/>
   </ItemGroup>
   <ItemGroup>
     <Content Update="appsettings.Local.json" CopyToPublishDirectory="Never"/>

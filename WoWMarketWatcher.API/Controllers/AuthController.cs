@@ -47,6 +47,7 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<LoginResponse>> RegisterAsync([FromBody] RegisterUserRequest userForRegisterDto)
         {
+            var correlationId = this.GetOrGenerateCorrelationId();
             var user = this.mapper.Map<User>(userForRegisterDto);
 
             var result = await this.userRepository.CreateUserWithPasswordAsync(user, userForRegisterDto.Password);
@@ -70,7 +71,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             var emailToken = await this.userRepository.UserManager.GenerateEmailConfirmationTokenAsync(user);
             var confLink = $"https://rwherber.com/wow-market-watcher?token={emailToken}&email={user.Email}";
-            await this.emailService.SendEmailAsync("rwherber@gmail.com", "Confirm your email", $"Please click {confLink} to confirm email");
+            await this.emailService.SendEmailAsync(correlationId, "rwherber@gmail.com", "Confirm your email", $"Please click {confLink} to confirm email");
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 
