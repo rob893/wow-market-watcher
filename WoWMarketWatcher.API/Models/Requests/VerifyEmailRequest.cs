@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WoWMarketWatcher.API.Models.Requests
 {
-    public record VerifyEmailRequest
+    public record ConfirmEmailRequest
     {
         [Required]
         [EmailAddress]

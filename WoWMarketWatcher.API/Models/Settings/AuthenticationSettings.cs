@@ -31,5 +31,9 @@ namespace WoWMarketWatcher.API.Models.Settings
         /// List of Google OAuth Client IDs to validate Google Tokens against
         /// </summary>
         public List<string> GoogleOAuthAudiences { get; init; } = new List<string>();
+
+        public string ForgotPasswordCallbackUrl { get; init; } = default!;
+
+        public string ConfirmEmailCallbackUrl { get; init; } = default!;
     }
 }

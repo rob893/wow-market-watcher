@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Web;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
@@ -59,6 +60,18 @@ namespace WoWMarketWatcher.API.Extensions
         public static bool HasProperty(this object obj, string property)
         {
             return obj != null && obj.GetType().GetProperty(property) != null;
+        }
+
+        public static string Base64Encode(this string str)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(str);
+            return Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(this string str)
+        {
+            var base64EncodedBytes = Convert.FromBase64String(str);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         public static int ConvertToInt32FromBase64(this string str)

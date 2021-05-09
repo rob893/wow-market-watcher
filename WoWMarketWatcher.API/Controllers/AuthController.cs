@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.Requests;
@@ -63,15 +64,13 @@ namespace WoWMarketWatcher.API.Controllers
             user.RefreshTokens.Add(new RefreshToken
             {
                 Token = refreshToken,
-                Expiration = DateTimeOffset.UtcNow.AddMinutes(authSettings.RefreshTokenExpirationTimeInMinutes),
+                Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
                 DeviceId = userForRegisterDto.DeviceId
             });
 
             await this.userRepository.SaveAllAsync();
 
-            var emailToken = await this.userRepository.UserManager.GenerateEmailConfirmationTokenAsync(user);
-            var confLink = $"https://rwherber.com/wow-market-watcher?token={emailToken}&email={user.Email}";
-            await this.emailService.SendEmailAsync(correlationId, user.Email, "Confirm your email", $"Please click {confLink} to confirm email");
+            await this.SendConfirmEmailLink(user, correlationId);
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 
@@ -96,7 +95,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             var token = await this.userRepository.UserManager.GeneratePasswordResetTokenAsync(user);
 
-            var confLink = $"https://rwherber.com/wow-market-watcher?token={token}&email={user.Email}";
+            var confLink = $"{this.authSettings.ForgotPasswordCallbackUrl}?token={token}&email={user.Email}";
             await this.emailService.SendEmailAsync(correlationId, user.Email, "Reset your password", $"Please click {confLink} to reset your password");
 
             return this.NoContent();
@@ -123,7 +122,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpPost("confirmEmail")]
-        public async Task<ActionResult> ConfirmEmailAsync([FromBody] VerifyEmailRequest request)
+        public async Task<ActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
             var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
 
@@ -132,7 +131,9 @@ namespace WoWMarketWatcher.API.Controllers
                 return this.BadRequest("Unable to confirm email.");
             }
 
-            var confirmResult = await this.userRepository.UserManager.ConfirmEmailAsync(user, request.Token);
+            var decoded = request.Token.Base64Decode();
+
+            var confirmResult = await this.userRepository.UserManager.ConfirmEmailAsync(user, decoded);
 
             if (!confirmResult.Succeeded)
             {
@@ -147,6 +148,7 @@ namespace WoWMarketWatcher.API.Controllers
         {
             try
             {
+                var correlationId = this.GetOrGenerateCorrelationId();
                 var validatedToken = await GoogleJsonWebSignature.ValidateAsync(userForRegisterDto.IdToken, new GoogleJsonWebSignature.ValidationSettings { Audience = this.authSettings.GoogleOAuthAudiences });
 
                 var user = new User
@@ -164,28 +166,33 @@ namespace WoWMarketWatcher.API.Controllers
                     }
                 };
 
-                var createResult = await userRepository.CreateUserWithAsync(user);
+                var createResult = await this.userRepository.CreateUserWithAsync(user);
 
                 if (!createResult.Succeeded)
                 {
-                    return BadRequest(createResult.Errors.Select(e => e.Description).ToList());
+                    return this.BadRequest(createResult.Errors.Select(e => e.Description).ToList());
                 }
 
-                var token = GenerateJwtToken(user);
+                if (!validatedToken.EmailVerified)
+                {
+                    await this.SendConfirmEmailLink(user, correlationId);
+                }
+
+                var token = this.GenerateJwtToken(user);
                 var refreshToken = GenerateRefreshToken();
 
                 user.RefreshTokens.Add(new RefreshToken
                 {
                     Token = refreshToken,
-                    Expiration = DateTimeOffset.UtcNow.AddMinutes(authSettings.RefreshTokenExpirationTimeInMinutes),
+                    Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
                     DeviceId = userForRegisterDto.DeviceId
                 });
 
-                await userRepository.SaveAllAsync();
+                await this.userRepository.SaveAllAsync();
 
-                var userToReturn = mapper.Map<UserDto>(user);
+                var userToReturn = this.mapper.Map<UserDto>(user);
 
-                return CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
+                return this.CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
                 {
                     Token = token,
                     RefreshToken = refreshToken,
@@ -194,11 +201,11 @@ namespace WoWMarketWatcher.API.Controllers
             }
             catch (InvalidJwtException)
             {
-                return Unauthorized("Invaid Id Token.");
+                return this.Unauthorized("Invaid Id Token.");
             }
             catch
             {
-                return InternalServerError("Unable to register using Google account.");
+                return this.InternalServerError("Unable to register using Google account.");
             }
         }
 
@@ -431,6 +438,14 @@ namespace WoWMarketWatcher.API.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        private async Task SendConfirmEmailLink(User user, string correlationId)
+        {
+            var emailToken = await this.userRepository.UserManager.GenerateEmailConfirmationTokenAsync(user);
+            var encoded = emailToken.Base64Encode();
+            var confLink = $"{this.authSettings.ConfirmEmailCallbackUrl}?token={encoded}&email={user.Email}";
+            await this.emailService.SendEmailAsync(correlationId, user.Email, "Confirm your email", $"Please click {confLink} to confirm email");
         }
     }
 }
