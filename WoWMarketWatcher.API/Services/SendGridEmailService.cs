@@ -28,6 +28,12 @@ namespace WoWMarketWatcher.API.Services
         {
             var sourceName = GetSourceName();
 
+            if (!this.settings.Enabled)
+            {
+                this.logger.LogInformation(sourceName, correlationId, "Email sending is disabled. Returning.");
+                return;
+            }
+
             var msg = new SendGridMessage
             {
                 From = new EmailAddress(this.settings.Sender, this.settings.SenderName),

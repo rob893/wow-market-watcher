@@ -71,7 +71,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             var emailToken = await this.userRepository.UserManager.GenerateEmailConfirmationTokenAsync(user);
             var confLink = $"https://rwherber.com/wow-market-watcher?token={emailToken}&email={user.Email}";
-            await this.emailService.SendEmailAsync(correlationId, "rwherber@gmail.com", "Confirm your email", $"Please click {confLink} to confirm email");
+            await this.emailService.SendEmailAsync(correlationId, user.Email, "Confirm your email", $"Please click {confLink} to confirm email");
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 
@@ -81,6 +81,65 @@ namespace WoWMarketWatcher.API.Controllers
                 RefreshToken = refreshToken,
                 User = userToReturn
             });
+        }
+
+        [HttpPost("forgotPassword")]
+        public async Task<ActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
+        {
+            var correlationId = this.GetOrGenerateCorrelationId();
+            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
+            {
+                return this.BadRequest();
+            }
+
+            var token = await this.userRepository.UserManager.GeneratePasswordResetTokenAsync(user);
+
+            var confLink = $"https://rwherber.com/wow-market-watcher?token={token}&email={user.Email}";
+            await this.emailService.SendEmailAsync(correlationId, user.Email, "Reset your password", $"Please click {confLink} to reset your password");
+
+            return this.NoContent();
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<ActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+        {
+            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
+            {
+                return this.BadRequest();
+            }
+
+            var result = await this.userRepository.UserManager.ResetPasswordAsync(user, request.Token, request.Password);
+
+            if (!result.Succeeded)
+            {
+                return this.BadRequest(result.Errors.Select(e => e.Description).ToList());
+            }
+
+            return this.NoContent();
+        }
+
+        [HttpPost("confirmEmail")]
+        public async Task<ActionResult> ConfirmEmailAsync([FromBody] VerifyEmailRequest request)
+        {
+            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
+            {
+                return this.BadRequest("Unable to confirm email.");
+            }
+
+            var confirmResult = await this.userRepository.UserManager.ConfirmEmailAsync(user, request.Token);
+
+            if (!confirmResult.Succeeded)
+            {
+                return this.BadRequest(confirmResult.Errors.Select(e => e.Description).ToList());
+            }
+
+            return this.NoContent();
         }
 
         [HttpPost("register/google")]

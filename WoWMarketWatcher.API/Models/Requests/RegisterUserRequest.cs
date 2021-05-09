@@ -18,6 +18,7 @@ namespace WoWMarketWatcher.API.Models.Requests
         public string? LastName { get; init; }
 
         [Required]
+        [EmailAddress]
         public string Email { get; init; } = default!;
 
         [Required]
