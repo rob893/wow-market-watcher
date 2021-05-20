@@ -58,6 +58,9 @@
       "preLaunchTask": "docker-run: debug",
       "netCore": {
         "appProject": "${workspaceFolder}/WoWMarketWatcher.API/WoWMarketWatcher.API.csproj"
+      },
+      "dockerServerReadyAction": {
+        "uriFormat": "%s://localhost:%s"
       }
     }
   ]

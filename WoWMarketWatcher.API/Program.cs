@@ -77,8 +77,8 @@ namespace WoWMarketWatcher.API
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseStartup<Startup>()
-                        .UseUrls(new[] { "http://localhost:5003" });
+                        .UseStartup<Startup>();
+                    //.UseUrls(new[] { "http://localhost:5003" });
                 });
         }
 
