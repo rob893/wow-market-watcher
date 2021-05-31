@@ -10,9 +10,8 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
         public static IServiceCollection AddRateLimitingServices(this IServiceCollection services, IConfiguration config)
         {
             services.Configure<IpRateLimitOptions>(config.GetSection(ConfigurationKeys.IpRateLimiting));
+            services.AddInMemoryRateLimiting();
 
-            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             return services;
