@@ -95,7 +95,7 @@ jobs:
           name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Deploy to Digital Ocean Web Server Docker
-        run: ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}; docker pull rob893/wow-market-watcher-api:latest; docker stop wow-market-watcher-api-1; docker rm wow-market-watcher-api-1; docker run --restart=always -d -p 127.0.0.1:5003:5003 --name wow-market-watcher-api-1 -v /var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json:/app/appsettings.Secrets.json rob893/wow-market-watcher-api:latest"
+        run: ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}; docker pull rob893/wow-market-watcher-api:latest; docker stop wow-market-watcher-api-1; docker rm wow-market-watcher-api-1; docker run --restart=always -d -p 127.0.0.1:5003:5003 --name wow-market-watcher-api-1 -v /var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json:/app/appsettings.Secrets.json rob893/wow-market-watcher-api:latest; docker container prune -f; docker image prune -f"
 
   deploy-azure:
     name: Deploy to Azure App service
