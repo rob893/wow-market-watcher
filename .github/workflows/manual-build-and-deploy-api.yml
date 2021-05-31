@@ -68,23 +68,35 @@ jobs:
     needs:
       - build
 
+    # Deploy to digital ocean VM (not using docker)
+    # steps:
+    #   - name: Download build artifacts
+    #     uses: actions/download-artifact@v2
+    #   - name: Install SSH key
+    #     uses: shimataro/ssh-key-action@v2
+    #     with:
+    #       key: ${{ secrets.SERVER_SSH_KEY }}
+    #       name: id_rsa
+    #       known_hosts: ${{ secrets.KNOWN_HOSTS }}
+    #   - name: Download secret settings file
+    #     run: scp ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json ./wow-market-watcher-b${{ github.run_number }}
+    #   - name: Deploy to Digital Ocean Web Server
+    #     run: |
+    #       ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "rm -rf /var/www/html/APIs/WoWMarketWatcher.API/*"
+    #       scp -r ./wow-market-watcher-b${{ github.run_number }}/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/WoWMarketWatcher.API
+    #       ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "sudo systemctl stop WoWMarketWatcher.API.service; sudo systemctl enable WoWMarketWatcher.API.service; sudo systemctl start WoWMarketWatcher.API.service; sudo systemctl daemon-reload"
+
+    # Deploy to digital ocean docker
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SERVER_SSH_KEY }}
           name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - name: Download secret settings file
-        run: scp ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json ./wow-market-watcher-b${{ github.run_number }}
-      - name: Deploy to Digital Ocean Web Server
-        run: |
-          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "rm -rf /var/www/html/APIs/WoWMarketWatcher.API/*"
-          scp -r ./wow-market-watcher-b${{ github.run_number }}/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/APIs/WoWMarketWatcher.API
-          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "sudo systemctl stop WoWMarketWatcher.API.service; sudo systemctl enable WoWMarketWatcher.API.service; sudo systemctl start WoWMarketWatcher.API.service; sudo systemctl daemon-reload"
-  
+      - name: Deploy to Digital Ocean Web Server Docker
+        run: ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}; docker pull rob893/wow-market-watcher-api:latest; docker stop wow-market-watcher-api-1; docker rm wow-market-watcher-api-1; docker run --restart=always -d -p 127.0.0.1:5003:5003 --name wow-market-watcher-api-1 -v /var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json:/app/appsettings.Secrets.json rob893/wow-market-watcher-api:latest"
+
   deploy-azure:
     name: Deploy to Azure App service
     if: github.event.inputs.deploy-azure == 'true'

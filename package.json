@@ -12,9 +12,12 @@
     "build-ui": "npm run clean-dist-ui && cd WoWMarketWatcher.UI && dotnet publish -c=Debug -o dist",
     "build-api-prod": "npm run clean-dist-api && cd WoWMarketWatcher.API && dotnet publish -c=Release -o dist",
     "build-ui-prod": "npm run clean-dist-ui && cd WoWMarketWatcher.UI && dotnet publish -c=Release -o dist",
+    "build-docker-prod": "docker build -f ./WoWMarketWatcher.API/Dockerfile -t rob893/wow-market-watcher-api:latest .",
+    "docker-push-prod": "docker push rob893/wow-market-watcher-api:latest",
     "download-secrets": "scp root@rwherber.com:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json ./WoWMarketWatcher.API",
     "upload-secrets": "scp ./WoWMarketWatcher.API/appsettings.Secrets.json root@rwherber.com:/var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API",
     "view-logs-digital-ocean": "ssh root@rwherber.com \"sudo journalctl -fu WoWMarketWatcher.API.service\"",
+    "view-logs-digital-ocean-docker": "ssh root@rwherber.com \"docker logs --since 24h wow-market-watcher-api-1\"",
     "status-digital-ocean": "ssh root@rwherber.com \"sudo systemctl status WoWMarketWatcher.API.service\"",
     "clean-digital-ocean": "ssh root@rwherber.com \"rm -rf /var/www/html/APIs/WoWMarketWatcher.API/*\"",
     "copy-dist-to-digital-ocean": "scp -r ./WoWMarketWatcher.API/dist/* root@rwherber.com:/var/www/html/APIs/WoWMarketWatcher.API",
@@ -22,6 +25,7 @@
     "restart-digital-ocean-service": "ssh root@rwherber.com \"sudo systemctl stop WoWMarketWatcher.API.service; sudo systemctl enable WoWMarketWatcher.API.service; sudo systemctl start WoWMarketWatcher.API.service; sudo systemctl daemon-reload\"",
     "update-settings-digital-ocean": "scp ./WoWMarketWatcher.API/appsettings.Secrets.json ./WoWMarketWatcher.API/appsettings.json ./WoWMarketWatcher.API/appsettings.Production.json ./WoWMarketWatcher.API/appsettings.Development.json root@rwherber.com:/var/www/html/APIs/WoWMarketWatcher.API && npm run restart-digital-ocean-service",
     "deploy-api-to-digital-ocean": "npm run clean-digital-ocean && npm run copy-dist-to-digital-ocean && npm run copy-service-file-to-digital-ocean && npm run restart-digital-ocean-service",
+    "deploy-api-to-digital-ocean-docker": "ssh root@rwherber.com \"docker pull rob893/wow-market-watcher-api:latest; docker stop wow-market-watcher-api-1; docker rm wow-market-watcher-api-1; docker run --restart=always -d -p 127.0.0.1:5003:5003 --name wow-market-watcher-api-1 -v /var/www/html/APIs/SettingsFiles/WoWMarketWatcher.API/appsettings.Secrets.json:/app/appsettings.Secrets.json rob893/wow-market-watcher-api:latest\"",
     "build-and-deploy-api-to-digital-ocean": "npm run build-api-prod && npm run clean-digital-ocean && npm run copy-dist-to-digital-ocean && npm run copy-service-file-to-digital-ocean && npm run restart-digital-ocean-service"
   }
 }

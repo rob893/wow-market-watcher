@@ -60,7 +60,6 @@ namespace WoWMarketWatcher.API.ApplicationStartup
             app.UseIpRateLimiting()
                 .UseExceptionHandler(builder => builder.UseMiddleware<GlobalExceptionHandlerMiddleware>())
                 .UseHsts()
-                // .UseHttpsRedirection()
                 .UseForwardedHeaders(new ForwardedHeadersOptions
                 {
                     ForwardedHeaders = ForwardedHeaders.All

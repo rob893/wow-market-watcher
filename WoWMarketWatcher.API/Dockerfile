@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
 EXPOSE 5003
 
+# Start app on port 5003 in production mode
 ENV ASPNETCORE_URLS=http://*:5003
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_PRINT_TELEMETRY_MESSAGE=false

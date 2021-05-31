@@ -80,7 +80,6 @@ namespace WoWMarketWatcher.API
                 {
                     webBuilder
                         .UseStartup<Startup>();
-                    // .UseUrls(new[] { "http://localhost:5003" });
                 });
         }
 
