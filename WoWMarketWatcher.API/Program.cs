@@ -9,10 +9,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.ApplicationStartup;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.API.Data;
+
 
 namespace WoWMarketWatcher.API
 {
+    using WoWMarketWatcher.API.Data;
+
     public class Program
     {
         public static void Main(string[] args)
@@ -78,7 +80,7 @@ namespace WoWMarketWatcher.API
                 {
                     webBuilder
                         .UseStartup<Startup>();
-                    //.UseUrls(new[] { "http://localhost:5003" });
+                    // .UseUrls(new[] { "http://localhost:5003" });
                 });
         }
 
