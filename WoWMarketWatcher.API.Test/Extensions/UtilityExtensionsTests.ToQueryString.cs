@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Test.TestUtilities;
 using Xunit;
 
+[assembly: CLSCompliant(false)]
 namespace WoWMarketWatcher.API.Test.Extensions
 {
     public class UtilityExtensionsTests

@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,16 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseAndConfigureSwagger(this IApplicationBuilder app, IConfiguration config)
         {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             app.UseMiddleware<SwaggerBasicAuthMiddleware>()
                 .UseSwagger()
                 .UseSwaggerUI(

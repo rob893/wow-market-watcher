@@ -9,13 +9,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.ApplicationStartup;
 using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.API.Data;
 
-
+[assembly: CLSCompliant(false)]
 namespace WoWMarketWatcher.API
 {
-    using WoWMarketWatcher.API.Data;
-
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -28,7 +27,7 @@ namespace WoWMarketWatcher.API
                     {
                         var scope = host.Services.CreateScope();
                         var serviceProvider = scope.ServiceProvider;
-                        var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+                        var logger = serviceProvider.GetRequiredService<ILogger>();
 
                         if (o.Password != null && o.Password == GetSeederPasswordFromConfiguration())
                         {

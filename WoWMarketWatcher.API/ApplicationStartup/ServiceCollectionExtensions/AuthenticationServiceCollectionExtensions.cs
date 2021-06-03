@@ -18,6 +18,16 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             services.Configure<AuthenticationSettings>(config.GetSection(ConfigurationKeys.Authentication));
 
             var authSettings = config.GetSection(ConfigurationKeys.Authentication).Get<AuthenticationSettings>();

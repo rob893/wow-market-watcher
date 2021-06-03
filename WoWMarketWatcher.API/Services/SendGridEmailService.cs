@@ -20,7 +20,7 @@ namespace WoWMarketWatcher.API.Services
         public SendGridEmailService(ISendGridClient client, IOptions<SendGridSettings> settings, ILogger<SendGridEmailService> logger)
         {
             this.client = client;
-            this.settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
+            this.settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
             this.logger = logger;
         }
 

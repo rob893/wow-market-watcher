@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using WoWMarketWatcher.API.Data;
@@ -9,6 +10,11 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             var builder = services.AddIdentityCore<User>(opt =>
             {
                 opt.Password.RequireDigit = false;

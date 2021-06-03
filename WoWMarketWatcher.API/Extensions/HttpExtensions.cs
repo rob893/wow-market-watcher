@@ -11,6 +11,11 @@ namespace WoWMarketWatcher.API.Extensions
     {
         public static bool TryGetCorrelationId(this IHeaderDictionary headers, [NotNullWhen(true)] out string? correlationId)
         {
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
             correlationId = null;
 
             if (headers.TryGetValue(AppHeaderNames.CorrelationId, out var value))
@@ -24,6 +29,11 @@ namespace WoWMarketWatcher.API.Extensions
 
         public static bool TryGetCorrelationId(this HttpHeaders headers, [NotNullWhen(true)] out string? correlationId)
         {
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
             correlationId = null;
 
             if (headers.TryGetValues(AppHeaderNames.CorrelationId, out var values) && values.Any())
@@ -37,6 +47,11 @@ namespace WoWMarketWatcher.API.Extensions
 
         public static string GetOrGenerateCorrelationId(this HttpHeaders headers)
         {
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
             if (headers.TryGetValues(AppHeaderNames.CorrelationId, out var values) && values.Any())
             {
                 return values.First();

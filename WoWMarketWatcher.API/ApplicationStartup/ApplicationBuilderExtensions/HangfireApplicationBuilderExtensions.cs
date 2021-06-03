@@ -19,6 +19,21 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseAndConfigureHangfire(this IApplicationBuilder app, IRecurringJobManager recurringJobs, IConfiguration config)
         {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (recurringJobs == null)
+            {
+                throw new ArgumentNullException(nameof(recurringJobs));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             var backgroundJobSettings = config.GetSection(ConfigurationKeys.BackgroundJobs).Get<BackgroundJobSettings>();
 
             app.UseHangfireServer(additionalProcesses: new[] { new ProcessMonitor(TimeSpan.FromSeconds(1.5)) });
@@ -84,11 +99,10 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 
                 var httpContext = context.GetHttpContext();
 
-                string authHeader = httpContext.Request.Headers["Authorization"];
-                if (authHeader != null && authHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+                if (httpContext.Request.Headers.TryGetValue("Authorization", out var authHeader) && authHeader.ToString().StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
                 {
                     // Get the encoded username and password
-                    var encodedUsernamePassword = authHeader.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries)[1]?.Trim();
+                    var encodedUsernamePassword = authHeader.ToString().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries)[1]?.Trim();
 
                     // Decode from Base64 to string
                     var decodedUsernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedUsernamePassword ?? ""));

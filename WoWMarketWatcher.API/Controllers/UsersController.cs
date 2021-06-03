@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -135,7 +136,12 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("{id}/roles")]
         public async Task<ActionResult<UserDto>> AddRolesAsync(int id, [FromBody] EditRoleRequest roleEditDto)
         {
-            if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Length == 0)
+            if (roleEditDto == null)
+            {
+                throw new ArgumentNullException(nameof(roleEditDto));
+            }
+
+            if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Count == 0)
             {
                 return this.BadRequest("At least one role must be specified.");
             }
@@ -177,7 +183,12 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpDelete("{id}/roles")]
         public async Task<ActionResult<UserDto>> RemoveRolesAsync(int id, [FromBody] EditRoleRequest roleEditDto)
         {
-            if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Length == 0)
+            if (roleEditDto == null)
+            {
+                throw new ArgumentNullException(nameof(roleEditDto));
+            }
+
+            if (roleEditDto.RoleNames == null || roleEditDto.RoleNames.Count == 0)
             {
                 return this.BadRequest("At least one role must be specified.");
             }

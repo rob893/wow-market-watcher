@@ -208,3 +208,14 @@ dotnet_naming_style.begins_with_i.capitalization = pascal_case
 # Disables
 
 dotnet_diagnostic.IDE0050.severity = none
+# Configure await is not needed for .NET Core/.NET 5+
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.CA2227.severity = none
+dotnet_diagnostic.CA1031.severity = none
+dotnet_diagnostic.CA1002.severity = none
+
+[/WoWMarketWatcher.API.Test/**]
+dotnet_diagnostic.CA1707.severity = none
+
+[*/Migrations/**]
+generated_code = true

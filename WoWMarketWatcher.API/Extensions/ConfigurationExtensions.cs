@@ -13,7 +13,7 @@ namespace WoWMarketWatcher.API.Extensions
             }
 
             var value = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT")?.Trim();
-            return string.IsNullOrWhiteSpace(value) ? throw new Exception($"'ASPNETCORE_ENVIRONMENT' is not defined in configuration.") : value;
+            return string.IsNullOrWhiteSpace(value) ? throw new ArgumentException($"'ASPNETCORE_ENVIRONMENT' is not defined in configuration.") : value;
         }
     }
 }

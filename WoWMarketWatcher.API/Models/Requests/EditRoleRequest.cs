@@ -1,9 +1,9 @@
-using System;
+using System.Collections.Generic;
 
 namespace WoWMarketWatcher.API.Models.Requests
 {
     public record EditRoleRequest
     {
-        public string[] RoleNames { get; init; } = Array.Empty<string>();
+        public List<string> RoleNames { get; init; } = new List<string>();
     }
 }

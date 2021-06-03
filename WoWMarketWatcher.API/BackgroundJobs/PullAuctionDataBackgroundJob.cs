@@ -52,7 +52,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             this.watchListRepository = watchListRepository ?? throw new ArgumentNullException(nameof(watchListRepository));
             this.timeSeriesRepository = timeSeriesRepository ?? throw new ArgumentNullException(nameof(timeSeriesRepository));
             this.connectedRealmRepository = connectedRealmRepository ?? throw new ArgumentNullException(nameof(connectedRealmRepository));
-            this.jobSettings = jobSettings.Value.PullAuctionDataBackgroundJob ?? throw new ArgumentNullException(nameof(jobSettings));
+            this.jobSettings = jobSettings?.Value.PullAuctionDataBackgroundJob ?? throw new ArgumentNullException(nameof(jobSettings));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

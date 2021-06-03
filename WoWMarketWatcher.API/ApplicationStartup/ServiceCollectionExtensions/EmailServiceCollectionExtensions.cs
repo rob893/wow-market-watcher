@@ -13,6 +13,16 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddEmailServices(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             services.Configure<SendGridSettings>(config.GetSection(ConfigurationKeys.SendGrid));
             var settings = config.GetSection(ConfigurationKeys.SendGrid).Get<SendGridSettings>();
 

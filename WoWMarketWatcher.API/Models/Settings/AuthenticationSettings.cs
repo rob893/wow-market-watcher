@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+
 namespace WoWMarketWatcher.API.Models.Settings
 {
     public record AuthenticationSettings
@@ -32,8 +34,8 @@ namespace WoWMarketWatcher.API.Models.Settings
         /// </summary>
         public List<string> GoogleOAuthAudiences { get; init; } = new List<string>();
 
-        public string ForgotPasswordCallbackUrl { get; init; } = default!;
+        public Uri ForgotPasswordCallbackUrl { get; init; } = default!;
 
-        public string ConfirmEmailCallbackUrl { get; init; } = default!;
+        public Uri ConfirmEmailCallbackUrl { get; init; } = default!;
     }
 }

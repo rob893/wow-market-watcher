@@ -27,6 +27,11 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
         public async Task RemoveOldData(PerformContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var sourceName = GetSourceName();
             var hangfireJobId = context.BackgroundJob.Id;
             var correlationId = $"{hangfireJobId}-{Guid.NewGuid()}";

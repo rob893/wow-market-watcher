@@ -4,35 +4,42 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
+[assembly: CLSCompliant(false)]
 namespace WowMarketWatcher.Bot
 {
-    class Program
+    public sealed class Program : IDisposable
     {
-        private readonly DiscordSocketClient _client;
-
-        // Discord.Net heavily utilizes TAP for async, so we create
-        // an asynchronous context from the beginning.
-        static void Main(string[] args)
-        {
-            new Program().MainAsync().GetAwaiter().GetResult();
-        }
+        private readonly DiscordSocketClient client;
 
         public Program()
         {
             // It is recommended to Dispose of a client when you are finished
             // using it, at the end of your app's lifetime.
-            _client = new DiscordSocketClient();
+            this.client = new DiscordSocketClient();
 
-            _client.Log += LogAsync;
-            _client.Ready += ReadyAsync;
-            _client.MessageReceived += MessageReceivedAsync;
+            this.client.Log += this.LogAsync;
+            this.client.Ready += this.ReadyAsync;
+            this.client.MessageReceived += this.MessageReceivedAsync;
+        }
+
+        // Discord.Net heavily utilizes TAP for async, so we create
+        // an asynchronous context from the beginning.
+        public static void Main(string[] _)
+        {
+            using var program = new Program();
+            program.MainAsync().GetAwaiter().GetResult();
+        }
+
+        public void Dispose()
+        {
+            this.client.Dispose();
         }
 
         public async Task MainAsync()
         {
             // Tokens should be considered secret data, and never hard-coded.
-            await _client.LoginAsync(TokenType.Bot, "");
-            await _client.StartAsync();
+            await this.client.LoginAsync(TokenType.Bot, "");
+            await this.client.StartAsync();
 
             // Block the program until it is closed.
             await Task.Delay(Timeout.Infinite);
@@ -48,7 +55,7 @@ namespace WowMarketWatcher.Bot
         // connection and it is now safe to access the cache.
         private Task ReadyAsync()
         {
-            Console.WriteLine($"{_client.CurrentUser} is connected!");
+            Console.WriteLine($"{this.client.CurrentUser} is connected!");
 
             return Task.CompletedTask;
         }
@@ -58,7 +65,7 @@ namespace WowMarketWatcher.Bot
         private async Task MessageReceivedAsync(SocketMessage message)
         {
             // The bot should never respond to itself.
-            if (message.Author.Id == _client.CurrentUser.Id)
+            if (message.Author.Id == this.client.CurrentUser.Id)
                 return;
 
             if (message.Content == "!ping")

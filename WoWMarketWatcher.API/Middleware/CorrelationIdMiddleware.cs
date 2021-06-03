@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,11 @@ namespace WoWMarketWatcher.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var sourceName = GetSourceName();
 
             if (context.Request.Headers.TryGetCorrelationId(out var correlationId))

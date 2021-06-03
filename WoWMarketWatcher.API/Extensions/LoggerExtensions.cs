@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
@@ -37,6 +38,16 @@ namespace WoWMarketWatcher.API.Extensions
 
         public static void Log(this ILogger logger, LogLevel logLevel, string sourceName, string correlationId, string message, IDictionary<string, object>? customProperties = null)
         {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
             if (customProperties == null)
             {
                 customProperties = new Dictionary<string, object>();

@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
@@ -21,6 +20,11 @@ namespace WoWMarketWatcher.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var error = context.Features.Get<IExceptionHandlerFeature>();
 
             if (error != null)
@@ -28,7 +32,7 @@ namespace WoWMarketWatcher.API.Middleware
                 var thrownException = error.Error;
 
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
                 var problemDetails = new ProblemDetailsWithErrors(thrownException, context.Response.StatusCode, context.Request);
 

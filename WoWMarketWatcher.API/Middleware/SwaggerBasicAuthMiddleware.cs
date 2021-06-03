@@ -19,11 +19,21 @@ namespace WoWMarketWatcher.API.Middleware
 
         public async Task InvokeAsync(HttpContext context, IOptions<SwaggerSettings> swaggerSettings)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (swaggerSettings == null)
+            {
+                throw new ArgumentNullException(nameof(swaggerSettings));
+            }
+
             var settings = swaggerSettings.Value;
             var authSettings = settings.AuthSettings;
 
             // Make sure we are hitting the swagger path
-            if (context.Request.Path.StartsWithSegments("/swagger"))
+            if (context.Request.Path.StartsWithSegments("/swagger", StringComparison.Ordinal))
             {
                 if (!settings.Enabled)
                 {
@@ -37,11 +47,10 @@ namespace WoWMarketWatcher.API.Middleware
                     return;
                 }
 
-                string authHeader = context.Request.Headers["Authorization"];
-                if (authHeader != null && authHeader.StartsWith("Basic ", StringComparison.Ordinal))
+                if (context.Request.Headers.TryGetValue("Authorization", out var authHeader) && authHeader.ToString().StartsWith("Basic ", StringComparison.Ordinal))
                 {
                     // Get the encoded username and password
-                    var encodedUsernamePassword = authHeader.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries)[1]?.Trim();
+                    var encodedUsernamePassword = authHeader.ToString().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries)[1]?.Trim();
 
                     // Decode from Base64 to string
                     var decodedUsernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedUsernamePassword ?? ""));
@@ -70,7 +79,7 @@ namespace WoWMarketWatcher.API.Middleware
             }
         }
 
-        public static bool IsAuthorized(string username, string password, SwaggerAuthSettings authSettings)
+        private static bool IsAuthorized(string username, string password, SwaggerAuthSettings authSettings)
         {
             // Check that username and password are correct
             return username.Equals(authSettings.Username, StringComparison.OrdinalIgnoreCase) && password.Equals(authSettings.Password, StringComparison.Ordinal);

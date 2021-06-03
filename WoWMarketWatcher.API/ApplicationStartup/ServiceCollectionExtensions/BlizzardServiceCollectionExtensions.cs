@@ -18,13 +18,23 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddBlizzardServices(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             services.Configure<BlizzardSettings>(config.GetSection(ConfigurationKeys.Blizzard));
 
             var settings = config.GetSection(ConfigurationKeys.Blizzard).Get<BlizzardSettings>();
 
             services.AddHttpClient(nameof(BlizzardService), c =>
             {
-                c.BaseAddress = new Uri(settings.BaseUrl);
+                c.BaseAddress = settings.BaseUrl;
             })
                 .AddPolicyHandler(HttpPolicyExtensions
                     .HandleTransientHttpError()

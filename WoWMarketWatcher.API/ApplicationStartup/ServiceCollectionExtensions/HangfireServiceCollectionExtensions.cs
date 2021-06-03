@@ -19,6 +19,16 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddHangfireServices(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             services.Configure<BackgroundJobSettings>(config.GetSection(ConfigurationKeys.BackgroundJobs));
 
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 10 });

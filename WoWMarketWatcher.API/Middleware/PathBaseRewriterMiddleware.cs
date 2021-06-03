@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,11 @@ namespace WoWMarketWatcher.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             if (context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var value))
             {
                 context.Request.PathBase = value.First();

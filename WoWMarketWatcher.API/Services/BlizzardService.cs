@@ -29,7 +29,7 @@ namespace WoWMarketWatcher.API.Services
         public BlizzardService(IHttpClientFactory httpClientFactory, IOptions<BlizzardSettings> settings, IMemoryCache cache, ILogger<BlizzardService> logger)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
+            this.settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -52,7 +52,7 @@ namespace WoWMarketWatcher.API.Services
 
             using var request = new HttpRequestMessage
             {
-                RequestUri = new Uri(this.settings.OAuthUrl),
+                RequestUri = this.settings.OAuthUrl,
                 Method = HttpMethod.Post,
                 Content = new FormUrlEncodedContent(new List<KeyValuePair<string?, string?>> { new KeyValuePair<string?, string?>("grant_type", "client_credentials") })
             };

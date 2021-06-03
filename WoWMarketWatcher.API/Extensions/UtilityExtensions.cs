@@ -17,6 +17,11 @@ namespace WoWMarketWatcher.API.Extensions
         public static bool IsValid<T>(this JsonPatchDocument<T> patchDoc, [NotNullWhen(false)] out List<string>? errors)
             where T : class, new()
         {
+            if (patchDoc == null)
+            {
+                throw new ArgumentNullException(nameof(patchDoc));
+            }
+
             errors = null;
 
             try
@@ -34,6 +39,11 @@ namespace WoWMarketWatcher.API.Extensions
 
         public static bool TryGetUserId(this ClaimsPrincipal principal, [NotNullWhen(true)] out int? userId)
         {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+
             userId = null;
 
             var nameIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
@@ -54,6 +64,11 @@ namespace WoWMarketWatcher.API.Extensions
 
         public static bool IsAdmin(this ClaimsPrincipal principal)
         {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+
             return principal.IsInRole(UserRoleName.Admin);
         }
 
@@ -173,7 +188,7 @@ namespace WoWMarketWatcher.API.Extensions
             }
             catch (Exception ex)
             {
-                return $"Exception - {ex?.Message}";
+                return $"Exception - {ex.Message}";
             }
         }
 
