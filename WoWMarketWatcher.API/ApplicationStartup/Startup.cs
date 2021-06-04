@@ -79,12 +79,12 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .UseAndConfigureHangfire(recurringJobs, this.Configuration)
                 .UseEndpoints(endpoints =>
                 {
-                    endpoints.MapHealthChecks(Settings.HealthCheckEndpoint, new HealthCheckOptions()
+                    endpoints.MapHealthChecks(ApplicationSettings.HealthCheckEndpoint, new HealthCheckOptions()
                     {
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                     });
 
-                    endpoints.MapHealthChecks(Settings.LivenessHealthCheckEndpoint, new HealthCheckOptions()
+                    endpoints.MapHealthChecks(ApplicationSettings.LivenessHealthCheckEndpoint, new HealthCheckOptions()
                     {
                         Predicate = (check) => !check.Tags.Contains(HealthCheckTags.Dependency),
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

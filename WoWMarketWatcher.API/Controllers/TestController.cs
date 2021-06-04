@@ -109,7 +109,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             var client = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
-            var res = await client.GetAsync($"http://localhost:5003/api/test{query}");
+            var res = await client.GetAsync(new Uri($"http://localhost:5003/api/test{query}"));
 
             return this.Ok();
         }

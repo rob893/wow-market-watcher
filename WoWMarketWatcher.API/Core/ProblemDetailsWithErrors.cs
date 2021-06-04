@@ -34,6 +34,11 @@ namespace WoWMarketWatcher.API.Core
 
         public ProblemDetailsWithErrors(IList<string> errors, int statusCode, HttpRequest? request = null)
         {
+            if (errors == null)
+            {
+                throw new ArgumentNullException(nameof(errors));
+            }
+
             this.SetProblemDetails(errors, statusCode, request);
         }
 
@@ -43,6 +48,11 @@ namespace WoWMarketWatcher.API.Core
 
         public ProblemDetailsWithErrors(IList<string> errors, HttpStatusCode statusCode, HttpRequest? request = null)
         {
+            if (errors == null)
+            {
+                throw new ArgumentNullException(nameof(errors));
+            }
+
             this.SetProblemDetails(errors, (int)statusCode, request);
         }
 
@@ -52,11 +62,15 @@ namespace WoWMarketWatcher.API.Core
 
         public ProblemDetailsWithErrors(Exception error, int statusCode, HttpRequest? request = null)
         {
+            if (error == null)
+            {
+                throw new ArgumentNullException(nameof(error));
+            }
+
             var errors = new List<string> { error.Message };
 
-            if (error is AggregateException)
+            if (error is AggregateException aggEx)
             {
-                var aggEx = error as AggregateException ?? throw new ArgumentException(null, nameof(error));
                 foreach (var innerException in aggEx.InnerExceptions)
                 {
                     errors.Add(innerException.Message);

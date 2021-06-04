@@ -23,7 +23,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
         protected Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddAfterExp { get; init; }
         protected Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddBeforeExp { get; init; }
 
-        public Repository(DataContext context, Func<TEntityKey, string> ConvertIdToBase64, Func<string, TEntityKey> ConvertBase64ToIdType,
+        protected Repository(DataContext context, Func<TEntityKey, string> ConvertIdToBase64, Func<string, TEntityKey> ConvertBase64ToIdType,
             Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddAfterExp, Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddBeforeExp)
         {
             this.Context = context;
@@ -56,6 +56,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         public void DeleteRange(IEnumerable<TEntity> entities)
         {
+            if (entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+
             foreach (var entity in entities)
             {
                 this.BeforeDelete(entity);
@@ -149,7 +154,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
         where TEntity : class, IIdentifiable<int>
         where TSearchParams : CursorPaginationParameters
     {
-        public Repository(DataContext context) : base(
+        protected Repository(DataContext context) : base(
             context,
             Id => Convert.ToBase64String(BitConverter.GetBytes(Id)),
             str =>

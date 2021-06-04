@@ -1,4 +1,5 @@
 
+using System;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,11 @@ namespace WoWMarketWatcher.API.Core
 
         public void Initialize(ITelemetry telemetry)
         {
+            if (telemetry == null)
+            {
+                throw new ArgumentNullException(nameof(telemetry));
+            }
+
             telemetry.Context.Cloud.RoleName = this.configuration[ConfigurationKeys.ApplicationInsightsCloudRoleName];
         }
     }

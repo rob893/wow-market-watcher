@@ -26,7 +26,12 @@ namespace WoWMarketWatcher.API.Utilities
 
         public static LogLevel LogLevelFromString(string logLevel)
         {
-            return (logLevel.ToUpperInvariant()) switch
+            if (logLevel == null)
+            {
+                throw new ArgumentNullException(nameof(logLevel));
+            }
+
+            return logLevel.ToUpperInvariant() switch
             {
                 "TRACE" => LogLevel.Trace,
                 "DEBUG" => LogLevel.Debug,

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,6 +34,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         protected override IQueryable<WoWItem> AddWhereClauses(IQueryable<WoWItem> query, WoWItemQueryParameters searchParams)
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             // MySQL does ignore string case by default. Forcing ignore case here adds large performance overhead
             if (searchParams.InventoryType != null)
             {

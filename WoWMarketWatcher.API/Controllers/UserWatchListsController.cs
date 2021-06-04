@@ -97,7 +97,7 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("{id}/items")]
         public async Task<ActionResult<WatchListDto>> AddItemToWatchListForUserAsync([FromRoute] int id, [FromBody] AddItemToWatchListRequest request)
         {
-            if (request.Id == null)
+            if (request == null || request.Id == null)
             {
                 return this.BadRequest($"Id is required.");
             }

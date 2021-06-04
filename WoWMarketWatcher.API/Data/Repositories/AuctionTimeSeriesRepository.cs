@@ -28,6 +28,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         protected override IQueryable<AuctionTimeSeriesEntry> AddWhereClauses(IQueryable<AuctionTimeSeriesEntry> query, AuctionTimeSeriesQueryParameters searchParams)
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             if (searchParams.StartDate != null)
             {
                 query = query.Where(entry => entry.Timestamp >= searchParams.StartDate.Value);

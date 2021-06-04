@@ -27,6 +27,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         public async Task<IdentityResult> CreateUserWithAsync(User user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             user.Created = DateTime.UtcNow;
             var created = await this.UserManager.CreateAsync(user);
             await this.UserManager.AddToRoleAsync(user, "User");
@@ -36,6 +41,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         public async Task<IdentityResult> CreateUserWithPasswordAsync(User user, string password)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             user.Created = DateTime.UtcNow;
             var created = await this.UserManager.CreateAsync(user, password);
             await this.UserManager.AddToRoleAsync(user, "User");

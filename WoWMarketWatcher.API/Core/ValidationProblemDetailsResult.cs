@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -11,6 +12,11 @@ namespace WoWMarketWatcher.API.Core
     {
         public async Task ExecuteResultAsync(ActionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var modelStateEntries = context.ModelState.Where(e => e.Value.Errors.Count > 0).ToArray();
             var errors = new List<string>();
 

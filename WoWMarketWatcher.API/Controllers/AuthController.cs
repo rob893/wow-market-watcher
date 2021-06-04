@@ -39,16 +39,22 @@ namespace WoWMarketWatcher.API.Controllers
 
         public AuthController(IUserRepository userRepository, IEmailService emailService, IOptions<AuthenticationSettings> authSettings, IMapper mapper)
         {
-            this.userRepository = userRepository;
-            this.emailService = emailService;
-            this.authSettings = authSettings.Value;
-            this.mapper = mapper;
+            this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            this.authSettings = authSettings?.Value ?? throw new ArgumentNullException(nameof(authSettings));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<LoginResponse>> RegisterAsync([FromBody] RegisterUserRequest userForRegisterDto)
         {
             var correlationId = this.GetOrGenerateCorrelationId();
+
+            if (userForRegisterDto == null)
+            {
+                return this.BadRequest();
+            }
+
             var user = this.mapper.Map<User>(userForRegisterDto);
 
             var result = await this.userRepository.CreateUserWithPasswordAsync(user, userForRegisterDto.Password);
@@ -86,6 +92,12 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
         {
             var correlationId = this.GetOrGenerateCorrelationId();
+
+            if (request == null)
+            {
+                return this.BadRequest();
+            }
+
             var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
 
             if (user == null)
@@ -104,6 +116,11 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("resetPassword")]
         public async Task<ActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
         {
+            if (request == null)
+            {
+                return this.BadRequest();
+            }
+
             var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
 
             if (user == null)
@@ -124,6 +141,11 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("confirmEmail")]
         public async Task<ActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
+            if (request == null)
+            {
+                return this.BadRequest();
+            }
+
             var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
 
             if (user == null)
@@ -149,6 +171,12 @@ namespace WoWMarketWatcher.API.Controllers
             try
             {
                 var correlationId = this.GetOrGenerateCorrelationId();
+
+                if (userForRegisterDto == null)
+                {
+                    return this.BadRequest();
+                }
+
                 var validatedToken = await GoogleJsonWebSignature.ValidateAsync(userForRegisterDto.IdToken, new GoogleJsonWebSignature.ValidationSettings { Audience = this.authSettings.GoogleOAuthAudiences });
 
                 var user = new User
@@ -217,37 +245,42 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> LoginAsync([FromBody] LoginRequest userForLoginDto)
         {
-            var user = await userRepository.GetByUsernameAsync(userForLoginDto.Username, user => user.RefreshTokens);
+            if (userForLoginDto == null)
+            {
+                return this.BadRequest();
+            }
+
+            var user = await this.userRepository.GetByUsernameAsync(userForLoginDto.Username, user => user.RefreshTokens);
 
             if (user == null)
             {
-                return Unauthorized("Invalid username or password.");
+                return this.Unauthorized("Invalid username or password.");
             }
 
-            var result = await userRepository.CheckPasswordAsync(user, userForLoginDto.Password);
+            var result = await this.userRepository.CheckPasswordAsync(user, userForLoginDto.Password);
 
             if (!result)
             {
-                return Unauthorized("Invalid username or password.");
+                return this.Unauthorized("Invalid username or password.");
             }
 
             user.RefreshTokens.RemoveAll(token => token.Expiration <= DateTime.UtcNow || token.DeviceId == userForLoginDto.DeviceId);
 
-            var token = GenerateJwtToken(user);
+            var token = this.GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshTokens.Add(new RefreshToken
             {
                 Token = refreshToken,
-                Expiration = DateTimeOffset.UtcNow.AddMinutes(authSettings.RefreshTokenExpirationTimeInMinutes),
+                Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
                 DeviceId = userForLoginDto.DeviceId
             });
 
-            await userRepository.SaveAllAsync();
+            await this.userRepository.SaveAllAsync();
 
-            var userToReturn = mapper.Map<UserDto>(user);
+            var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return Ok(new LoginResponse
+            return this.Ok(new LoginResponse
             {
                 Token = token,
                 RefreshToken = refreshToken,
@@ -260,18 +293,23 @@ namespace WoWMarketWatcher.API.Controllers
         {
             try
             {
+                if (userForLoginDto == null)
+                {
+                    return this.BadRequest();
+                }
+
                 var validatedToken = await GoogleJsonWebSignature.ValidateAsync(userForLoginDto.IdToken, new GoogleJsonWebSignature.ValidationSettings { Audience = this.authSettings.GoogleOAuthAudiences });
 
-                var user = await userRepository.GetByLinkedAccountAsync(validatedToken.Subject, LinkedAccountType.Google, user => user.RefreshTokens);
+                var user = await this.userRepository.GetByLinkedAccountAsync(validatedToken.Subject, LinkedAccountType.Google, user => user.RefreshTokens);
 
                 if (user == null)
                 {
-                    return NotFound("No account found for this Google account.");
+                    return this.NotFound("No account found for this Google account.");
                 }
 
                 user.RefreshTokens.RemoveAll(token => token.Expiration <= DateTime.UtcNow || token.DeviceId == userForLoginDto.DeviceId);
 
-                var token = GenerateJwtToken(user);
+                var token = this.GenerateJwtToken(user);
                 var refreshToken = GenerateRefreshToken();
 
                 user.RefreshTokens.Add(new RefreshToken
@@ -281,11 +319,11 @@ namespace WoWMarketWatcher.API.Controllers
                     DeviceId = userForLoginDto.DeviceId
                 });
 
-                await userRepository.SaveAllAsync();
+                await this.userRepository.SaveAllAsync();
 
-                var userToReturn = mapper.Map<UserDto>(user);
+                var userToReturn = this.mapper.Map<UserDto>(user);
 
-                return Ok(new LoginResponse
+                return this.Ok(new LoginResponse
                 {
                     Token = token,
                     RefreshToken = refreshToken,
@@ -294,30 +332,35 @@ namespace WoWMarketWatcher.API.Controllers
             }
             catch (InvalidJwtException)
             {
-                return Unauthorized("Invaid Id Token");
+                return this.Unauthorized("Invaid Id Token");
             }
             catch
             {
-                return InternalServerError("Unable to login with Google.");
+                return this.InternalServerError("Unable to login with Google.");
             }
         }
 
         [HttpPost("refreshToken")]
         public async Task<ActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest refreshTokenDto)
         {
+            if (refreshTokenDto == null)
+            {
+                return this.BadRequest();
+            }
+
             // Still validate the passed in token, but ignore its expiration date by setting validate lifetime to false
             var validationParameters = new TokenValidationParameters
             {
                 ClockSkew = TimeSpan.Zero,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings.APISecrect)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(this.authSettings.APISecrect)),
                 RequireSignedTokens = true,
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 RequireExpirationTime = true,
                 ValidateLifetime = false,
-                ValidAudience = authSettings.TokenAudience,
-                ValidIssuer = authSettings.TokenIssuer
+                ValidAudience = this.authSettings.TokenAudience,
+                ValidIssuer = this.authSettings.TokenIssuer
             };
 
             ClaimsPrincipal tokenClaims;
@@ -328,21 +371,21 @@ namespace WoWMarketWatcher.API.Controllers
             }
             catch (Exception e)
             {
-                return Unauthorized(e.Message);
+                return this.Unauthorized(e.Message);
             }
 
             var userIdClaim = tokenClaims.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
             {
-                return Unauthorized("Invalid token.");
+                return this.Unauthorized("Invalid token.");
             }
 
-            var user = await userRepository.GetByIdAsync(userId, user => user.RefreshTokens);
+            var user = await this.userRepository.GetByIdAsync(userId, user => user.RefreshTokens);
 
             if (user == null)
             {
-                return Unauthorized("Invalid token.");
+                return this.Unauthorized("Invalid token.");
             }
 
             user.RefreshTokens.RemoveAll(token => token.Expiration <= DateTime.UtcNow);
@@ -351,25 +394,25 @@ namespace WoWMarketWatcher.API.Controllers
 
             if (currentRefreshToken == null)
             {
-                await userRepository.SaveAllAsync();
-                return Unauthorized("Invalid token.");
+                await this.userRepository.SaveAllAsync();
+                return this.Unauthorized("Invalid token.");
             }
 
             user.RefreshTokens.Remove(currentRefreshToken);
 
-            var token = GenerateJwtToken(user);
+            var token = this.GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshTokens.Add(new RefreshToken
             {
                 Token = refreshToken,
-                Expiration = DateTimeOffset.UtcNow.AddMinutes(authSettings.RefreshTokenExpirationTimeInMinutes),
+                Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
                 DeviceId = refreshTokenDto.DeviceId
             });
 
-            await userRepository.SaveAllAsync();
+            await this.userRepository.SaveAllAsync();
 
-            return Ok(new
+            return this.Ok(new
             {
                 token,
                 refreshToken
@@ -414,11 +457,11 @@ namespace WoWMarketWatcher.API.Controllers
                 }
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings.APISecrect));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.authSettings.APISecrect));
 
             if (key.KeySize < 128)
             {
-                throw new Exception("API Secret must be longer");
+                throw new InvalidJwtException("API Secret must be longer");
             }
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);

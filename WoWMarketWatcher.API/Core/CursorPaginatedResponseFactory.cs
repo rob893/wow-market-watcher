@@ -52,6 +52,11 @@ namespace WoWMarketWatcher.API.Core
                 where TEntity : class, IIdentifiable<TEntityKey>
                 where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             return CreateFrom(
                 items,
                 items.StartCursor,
@@ -73,6 +78,16 @@ namespace WoWMarketWatcher.API.Core
                 where TSource : class, IIdentifiable<int>
                 where TDestination : class, IIdentifiable<int>
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (mappingFunction == null)
+            {
+                throw new ArgumentNullException(nameof(mappingFunction));
+            }
+
             var mappedItems = mappingFunction(items);
 
             return CreateFrom<TDestination, int>(
@@ -95,18 +110,33 @@ namespace WoWMarketWatcher.API.Core
                 where TSource : class, IIdentifiable<int>
                 where TDestination : class, IIdentifiable<int>
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             return CreateFrom(items, mappingFunction, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
         public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPagedList<TSource, int> items, CursorPaginationParameters searchParams)
             where TSource : class, IIdentifiable<int>
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             return CreateFrom(items, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
         public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPagedList<TSource, int> items, bool includeNodes = true, bool includeEdges = true)
             where TSource : class, IIdentifiable<int>
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             return CreateFrom<TSource, int>(
                 items,
                 items.StartCursor,
@@ -128,6 +158,11 @@ namespace WoWMarketWatcher.API.Core
                 where TSource : class, IIdentifiable<long>
                 where TDestination : class, IIdentifiable<long>
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             return CreateFrom(items, mappingFunction, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
@@ -140,6 +175,16 @@ namespace WoWMarketWatcher.API.Core
                 where TSource : class, IIdentifiable<long>
                 where TDestination : class, IIdentifiable<long>
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (mappingFunction == null)
+            {
+                throw new ArgumentNullException(nameof(mappingFunction));
+            }
+
             var mappedItems = mappingFunction(items);
 
             return CreateFrom<TDestination, long>(
@@ -158,12 +203,22 @@ namespace WoWMarketWatcher.API.Core
         public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPagedList<TSource, long> items, CursorPaginationParameters searchParams)
             where TSource : class, IIdentifiable<long>
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             return CreateFrom(items, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
         public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPagedList<TSource, long> items, bool includeNodes = true, bool includeEdges = true)
             where TSource : class, IIdentifiable<long>
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             return CreateFrom<TSource, long>(
                 items,
                 items.StartCursor,
@@ -181,6 +236,11 @@ namespace WoWMarketWatcher.API.Core
             where TEntity : class, IIdentifiable<TEntityKey>
             where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             return items.Select(item => new Edge<TEntity>
             {
                 Cursor = ConvertIdToBase64(item.Id),

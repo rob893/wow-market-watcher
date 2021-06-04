@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Models.QueryParameters;
@@ -10,6 +11,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         protected override IQueryable<Realm> AddWhereClauses(IQueryable<Realm> query, RealmQueryParameters searchParams)
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             if (searchParams.Name != null)
             {
                 query = query.Where(realm => realm.Name == searchParams.Name);

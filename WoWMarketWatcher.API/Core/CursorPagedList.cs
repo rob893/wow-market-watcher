@@ -22,6 +22,11 @@ namespace WoWMarketWatcher.API.Core
 
         public CursorPagedList(ICollection<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             this.HasNextPage = hasNextPage;
             this.HasPreviousPage = hasPreviousPage;
             this.StartCursor = startCursor;
@@ -36,6 +41,26 @@ namespace WoWMarketWatcher.API.Core
             where T : class, IIdentifiable<R>
             where R : IEquatable<R>, IComparable<R>
         {
+            if (ConvertBase64ToIdType == null)
+            {
+                throw new ArgumentNullException(nameof(ConvertBase64ToIdType));
+            }
+
+            if (AddAfterExp == null)
+            {
+                throw new ArgumentNullException(nameof(AddAfterExp));
+            }
+
+            if (AddBeforeExp == null)
+            {
+                throw new ArgumentNullException(nameof(AddBeforeExp));
+            }
+
+            if (ConvertIdToBase64 == null)
+            {
+                throw new ArgumentNullException(nameof(ConvertIdToBase64));
+            }
+
             if (first != null && last != null)
             {
                 throw new NotSupportedException($"Passing both `{nameof(first)}` and `{nameof(last)}` to paginate is not supported.");
@@ -131,7 +156,7 @@ namespace WoWMarketWatcher.API.Core
                 return new CursorPagedList<T, R>(items, hasNextPage, hasPreviousPage, startCursor, endCursor, totalCount);
             }
 
-            throw new Exception("Error creating cursor paged list.");
+            throw new InvalidOperationException("Error creating cursor paged list.");
         }
 
         public static Task<CursorPagedList<T, int>> CreateAsync<T>(IQueryable<T> source, int? first, string? after, int? last, string? before, bool includeTotal = false)
@@ -158,6 +183,11 @@ namespace WoWMarketWatcher.API.Core
         public static Task<CursorPagedList<T, int>> CreateAsync<T>(IQueryable<T> source, CursorPaginationParameters searchParams)
             where T : class, IIdentifiable<int>
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             return CreateAsync(source, searchParams.First, searchParams.After, searchParams.Last, searchParams.Before, searchParams.IncludeTotal);
         }
 
@@ -166,6 +196,11 @@ namespace WoWMarketWatcher.API.Core
             where T : class, IIdentifiable<R>
             where R : IEquatable<R>, IComparable<R>
         {
+            if (searchParams == null)
+            {
+                throw new ArgumentNullException(nameof(searchParams));
+            }
+
             return CreateAsync(source, searchParams.First, searchParams.After, searchParams.Last, searchParams.Before, searchParams.IncludeTotal, ConvertIdToBase64, ConvertBase64ToIdType, AddAfterExp, AddBeforeExp);
         }
     }

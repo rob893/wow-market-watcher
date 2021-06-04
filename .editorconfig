@@ -207,12 +207,27 @@ dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
 # Disables
 
+# Convert anonymous type to tuple.
+# Disabled because anonymous types are needed for composite keys.
 dotnet_diagnostic.IDE0050.severity = none
-# Configure await is not needed for .NET Core/.NET 5+
+# Do not directly await a Task.
+# Disabed due to configure await is not needed for .NET Core/.NET 5+ and having ConfigureAwait() everywhere is ugly.
 dotnet_diagnostic.CA2007.severity = none
+# Collection properties should be read only.
+# Disabled as Pocos with initializers are used.
 dotnet_diagnostic.CA2227.severity = none
+# Do not catch general exception types.
+# Disabled because I want to catch general exceptions.
 dotnet_diagnostic.CA1031.severity = none
+# Do not expose generic lists.
+# Disabled because I disagree with this.
 dotnet_diagnostic.CA1002.severity = none
+# Review SQL queries for security vulnerabilities.
+# Disabled because EF core is used for all user input queries. The only non-ef core query is create db if not exists which does not take in user input.
+dotnet_diagnostic.CA2100.severity = none
+# Specify StringComparison for clarity.
+# Disabled because using String comparison with MySQL ef core provider breaks ef core.
+dotnet_diagnostic.CA1307.severity = none
 
 [/WoWMarketWatcher.API.Test/**]
 dotnet_diagnostic.CA1707.severity = none
