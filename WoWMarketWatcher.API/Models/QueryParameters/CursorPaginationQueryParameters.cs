@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WoWMarketWatcher.API.Models.QueryParameters
 {
-    public record CursorPaginationParameters : IValidatableObject
+    public record CursorPaginationQueryParameters : IValidatableObject
     {
         [Range(1, 1000)]
         public int? First { get; init; }
@@ -13,7 +13,7 @@ namespace WoWMarketWatcher.API.Models.QueryParameters
         public string? Before { get; init; }
         public bool IncludeTotal { get; init; }
         public bool IncludeNodes { get; init; } = true;
-        public bool IncludeEdges { get; init; } = true;
+        public bool IncludeEdges { get; init; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

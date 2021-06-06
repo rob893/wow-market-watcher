@@ -3,22 +3,23 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class WatchListRepository : Repository<WatchList, CursorPaginationParameters>, IWatchListRepository
+    public class WatchListRepository : Repository<WatchList, CursorPaginationQueryParameters>, IWatchListRepository
     {
         public WatchListRepository(DataContext context) : base(context) { }
 
-        public Task<CursorPagedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationParameters searchParams)
+        public Task<CursorPaginatedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationQueryParameters searchParams)
         {
             var query = this.Context.WatchLists
                 .Where(list => list.UserId == userId);
 
             query = this.AddIncludes(query);
 
-            return CursorPagedList<WatchList, int>.CreateAsync(query, searchParams);
+            return query.ToCursorPaginatedListAsync(searchParams);
         }
 
         protected override IQueryable<WatchList> AddIncludes(IQueryable<WatchList> query)

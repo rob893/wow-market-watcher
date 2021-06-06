@@ -5,8 +5,8 @@ using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public interface IWatchListRepository : IRepository<WatchList, CursorPaginationParameters>
+    public interface IWatchListRepository : IRepository<WatchList, CursorPaginationQueryParameters>
     {
-        Task<CursorPagedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationParameters searchParams);
+        Task<CursorPaginatedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationQueryParameters searchParams);
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WoWMarketWatcher.API.Models.QueryParameters
 {
-    public record AuctionTimeSeriesQueryParameters : CursorPaginationParameters
+    public record AuctionTimeSeriesQueryParameters : CursorPaginationQueryParameters
     {
         public int? WoWItemId { get; init; }
         public int? ConnectedRealmId { get; init; }

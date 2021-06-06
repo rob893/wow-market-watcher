@@ -5,8 +5,8 @@ using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public interface IConnectedRealmRepository : IRepository<ConnectedRealm, CursorPaginationParameters>
+    public interface IConnectedRealmRepository : IRepository<ConnectedRealm, CursorPaginationQueryParameters>
     {
-        Task<CursorPagedList<Realm, int>> GetRealmsForConnectedRealmAsync(int connectedRealmId, RealmQueryParameters searchParams);
+        Task<CursorPaginatedList<Realm, int>> GetRealmsForConnectedRealmAsync(int connectedRealmId, RealmQueryParameters searchParams);
     }
 }

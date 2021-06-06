@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WoWMarketWatcher.API.Models;
 using WoWMarketWatcher.API.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
+using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Core
 {
@@ -32,7 +32,7 @@ namespace WoWMarketWatcher.API.Core
             {
                 Edges = includeEdges ? GetEdges(items, ConvertIdToBase64) : null,
                 Nodes = includeNodes ? items.ToList() : null,
-                PageInfo = new PageInfo
+                PageInfo = new CursorPaginatedResponsePageInfo
                 {
                     StartCursor = startCursor,
                     EndCursor = endCursor,
@@ -45,7 +45,7 @@ namespace WoWMarketWatcher.API.Core
         }
 
         public static CursorPaginatedResponse<TEntity, TEntityKey> CreateFrom<TEntity, TEntityKey>(
-            CursorPagedList<TEntity, TEntityKey> items,
+            CursorPaginatedList<TEntity, TEntityKey> items,
             Func<TEntityKey, string> ConvertIdToBase64,
             bool includeNodes = true,
             bool includeEdges = true)
@@ -71,7 +71,7 @@ namespace WoWMarketWatcher.API.Core
         }
 
         public static CursorPaginatedResponse<TDestination, int> CreateFrom<TSource, TDestination>(
-            CursorPagedList<TSource, int> items, Func<IEnumerable<TSource>,
+            CursorPaginatedList<TSource, int> items, Func<IEnumerable<TSource>,
             IEnumerable<TDestination>> mappingFunction,
             bool includeNodes = true,
             bool includeEdges = true)
@@ -104,9 +104,9 @@ namespace WoWMarketWatcher.API.Core
         }
 
         public static CursorPaginatedResponse<TDestination, int> CreateFrom<TSource, TDestination>(
-            CursorPagedList<TSource, int> items,
+            CursorPaginatedList<TSource, int> items,
             Func<IEnumerable<TSource>, IEnumerable<TDestination>> mappingFunction,
-            CursorPaginationParameters searchParams)
+            CursorPaginationQueryParameters searchParams)
                 where TSource : class, IIdentifiable<int>
                 where TDestination : class, IIdentifiable<int>
         {
@@ -118,7 +118,7 @@ namespace WoWMarketWatcher.API.Core
             return CreateFrom(items, mappingFunction, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
-        public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPagedList<TSource, int> items, CursorPaginationParameters searchParams)
+        public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPaginatedList<TSource, int> items, CursorPaginationQueryParameters searchParams)
             where TSource : class, IIdentifiable<int>
         {
             if (searchParams == null)
@@ -129,7 +129,7 @@ namespace WoWMarketWatcher.API.Core
             return CreateFrom(items, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
-        public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPagedList<TSource, int> items, bool includeNodes = true, bool includeEdges = true)
+        public static CursorPaginatedResponse<TSource, int> CreateFrom<TSource>(CursorPaginatedList<TSource, int> items, bool includeNodes = true, bool includeEdges = true)
             where TSource : class, IIdentifiable<int>
         {
             if (items == null)
@@ -151,10 +151,10 @@ namespace WoWMarketWatcher.API.Core
         }
 
         public static CursorPaginatedResponse<TDestination, long> CreateFrom<TSource, TDestination>(
-            CursorPagedList<TSource, long> items,
+            CursorPaginatedList<TSource, long> items,
             Func<IEnumerable<TSource>,
             IEnumerable<TDestination>> mappingFunction,
-            CursorPaginationParameters searchParams)
+            CursorPaginationQueryParameters searchParams)
                 where TSource : class, IIdentifiable<long>
                 where TDestination : class, IIdentifiable<long>
         {
@@ -167,7 +167,7 @@ namespace WoWMarketWatcher.API.Core
         }
 
         public static CursorPaginatedResponse<TDestination, long> CreateFrom<TSource, TDestination>(
-            CursorPagedList<TSource, long> items,
+            CursorPaginatedList<TSource, long> items,
             Func<IEnumerable<TSource>,
             IEnumerable<TDestination>> mappingFunction,
             bool includeNodes = true,
@@ -200,7 +200,7 @@ namespace WoWMarketWatcher.API.Core
                 includeEdges);
         }
 
-        public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPagedList<TSource, long> items, CursorPaginationParameters searchParams)
+        public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPaginatedList<TSource, long> items, CursorPaginationQueryParameters searchParams)
             where TSource : class, IIdentifiable<long>
         {
             if (searchParams == null)
@@ -211,7 +211,7 @@ namespace WoWMarketWatcher.API.Core
             return CreateFrom(items, searchParams.IncludeNodes, searchParams.IncludeEdges);
         }
 
-        public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPagedList<TSource, long> items, bool includeNodes = true, bool includeEdges = true)
+        public static CursorPaginatedResponse<TSource, long> CreateFrom<TSource>(CursorPaginatedList<TSource, long> items, bool includeNodes = true, bool includeEdges = true)
             where TSource : class, IIdentifiable<long>
         {
             if (items == null)
@@ -232,7 +232,7 @@ namespace WoWMarketWatcher.API.Core
                 includeEdges);
         }
 
-        private static IEnumerable<Edge<TEntity>> GetEdges<TEntity, TEntityKey>(IEnumerable<TEntity> items, Func<TEntityKey, string> ConvertIdToBase64)
+        private static IEnumerable<CursorPaginatedResponseEdge<TEntity>> GetEdges<TEntity, TEntityKey>(IEnumerable<TEntity> items, Func<TEntityKey, string> ConvertIdToBase64)
             where TEntity : class, IIdentifiable<TEntityKey>
             where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         {
@@ -241,7 +241,7 @@ namespace WoWMarketWatcher.API.Core
                 throw new ArgumentNullException(nameof(items));
             }
 
-            return items.Select(item => new Edge<TEntity>
+            return items.Select(item => new CursorPaginatedResponseEdge<TEntity>
             {
                 Cursor = ConvertIdToBase64(item.Id),
                 Node = item

@@ -6,7 +6,7 @@ using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
+using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -25,7 +25,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<CursorPaginatedResponse<ConnectedRealmDto>>> GetConnectedRealmsAsync([FromQuery] CursorPaginationParameters searchParams)
+        public async Task<ActionResult<CursorPaginatedResponse<ConnectedRealmDto>>> GetConnectedRealmsAsync([FromQuery] CursorPaginationQueryParameters searchParams)
         {
             var realms = await this.connectedRealmRepository.SearchAsync(searchParams);
             var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(realms, this.mapper.Map<IEnumerable<ConnectedRealmDto>>, searchParams);

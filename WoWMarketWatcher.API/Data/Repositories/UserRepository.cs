@@ -7,12 +7,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models;
 using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class UserRepository : Repository<User, CursorPaginationParameters>, IUserRepository
+    public class UserRepository : Repository<User, CursorPaginationQueryParameters>, IUserRepository
     {
         public UserManager<User> UserManager { get; init; }
 
@@ -94,11 +95,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return result.Succeeded;
         }
 
-        public Task<CursorPagedList<Role, int>> GetRolesAsync(CursorPaginationParameters searchParams)
+        public Task<CursorPaginatedList<Role, int>> GetRolesAsync(CursorPaginationQueryParameters searchParams)
         {
             IQueryable<Role> query = this.Context.Roles;
 
-            return CursorPagedList<Role, int>.CreateAsync(query, searchParams);
+            return query.ToCursorPaginatedListAsync(searchParams);
         }
 
         public Task<List<Role>> GetRolesAsync()

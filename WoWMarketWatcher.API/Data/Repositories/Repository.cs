@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models;
 using WoWMarketWatcher.API.Models.QueryParameters;
 
@@ -14,23 +15,18 @@ namespace WoWMarketWatcher.API.Data.Repositories
     public abstract class Repository<TEntity, TEntityKey, TSearchParams> : IRepository<TEntity, TEntityKey, TSearchParams>
         where TEntity : class, IIdentifiable<TEntityKey>
         where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
-        where TSearchParams : CursorPaginationParameters
+        where TSearchParams : CursorPaginationQueryParameters
     {
         public DataContext Context { get; protected init; }
 
         protected Func<TEntityKey, string> ConvertIdToBase64 { get; init; }
         protected Func<string, TEntityKey> ConvertBase64ToIdType { get; init; }
-        protected Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddAfterExp { get; init; }
-        protected Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddBeforeExp { get; init; }
 
-        protected Repository(DataContext context, Func<TEntityKey, string> ConvertIdToBase64, Func<string, TEntityKey> ConvertBase64ToIdType,
-            Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddAfterExp, Func<IQueryable<TEntity>, TEntityKey, IQueryable<TEntity>> AddBeforeExp)
+        protected Repository(DataContext context, Func<TEntityKey, string> ConvertIdToBase64, Func<string, TEntityKey> ConvertBase64ToIdType)
         {
             this.Context = context;
             this.ConvertIdToBase64 = ConvertIdToBase64;
             this.ConvertBase64ToIdType = ConvertBase64ToIdType;
-            this.AddAfterExp = AddAfterExp;
-            this.AddBeforeExp = AddBeforeExp;
         }
 
         public EntityEntry<TEntity> Entry(TEntity entity)
@@ -108,25 +104,33 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
-        public Task<CursorPagedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams)
+        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
             query = this.AddIncludes(query);
             query = this.AddWhereClauses(query, searchParams);
 
-            return CursorPagedList<TEntity, TEntityKey>.CreateAsync(query, searchParams, this.ConvertIdToBase64, this.ConvertBase64ToIdType, this.AddAfterExp, this.AddBeforeExp);
+            return query.ToCursorPaginatedListAsync(
+                item => item.Id,
+                this.ConvertIdToBase64,
+                this.ConvertBase64ToIdType,
+                searchParams);
         }
 
-        public Task<CursorPagedList<TEntity, TEntityKey>> SearchAsync(IQueryable<TEntity> query, TSearchParams searchParams)
+        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(IQueryable<TEntity> query, TSearchParams searchParams)
         {
             query = this.AddIncludes(query);
             query = this.AddWhereClauses(query, searchParams);
 
-            return CursorPagedList<TEntity, TEntityKey>.CreateAsync(query, searchParams, this.ConvertIdToBase64, this.ConvertBase64ToIdType, this.AddAfterExp, this.AddBeforeExp);
+            return query.ToCursorPaginatedListAsync(
+                item => item.Id,
+                this.ConvertIdToBase64,
+                this.ConvertBase64ToIdType,
+                searchParams);
         }
 
-        public Task<CursorPagedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, params Expression<Func<TEntity, object>>[] includes)
+        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -134,7 +138,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
             query = includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
             query = this.AddWhereClauses(query, searchParams);
 
-            return CursorPagedList<TEntity, TEntityKey>.CreateAsync(query, searchParams, this.ConvertIdToBase64, this.ConvertBase64ToIdType, this.AddAfterExp, this.AddBeforeExp);
+            return query.ToCursorPaginatedListAsync(
+                item => item.Id,
+                this.ConvertIdToBase64,
+                this.ConvertBase64ToIdType,
+                searchParams);
         }
 
         protected virtual IQueryable<TEntity> AddWhereClauses(IQueryable<TEntity> query, TSearchParams searchParams)
@@ -152,25 +160,22 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
     public abstract class Repository<TEntity, TSearchParams> : Repository<TEntity, int, TSearchParams>, IRepository<TEntity, int, TSearchParams>
         where TEntity : class, IIdentifiable<int>
-        where TSearchParams : CursorPaginationParameters
+        where TSearchParams : CursorPaginationQueryParameters
     {
         protected Repository(DataContext context) : base(
             context,
-            Id => Convert.ToBase64String(BitConverter.GetBytes(Id)),
+            Id => Id.ConvertToBase64(),
             str =>
             {
                 try
                 {
-                    return BitConverter.ToInt32(Convert.FromBase64String(str), 0);
+                    return str.ConvertToInt32FromBase64();
                 }
                 catch
                 {
                     throw new ArgumentException($"{str} is not a valid base 64 encoded int32.");
                 }
-            },
-            (source, afterId) => source.Where(item => item.Id > afterId),
-            (source, beforeId) => source.Where(item => item.Id < beforeId)
-        )
+            })
         { }
     }
 }

@@ -1,6 +1,6 @@
 namespace WoWMarketWatcher.API.Models.QueryParameters
 {
-    public record RealmQueryParameters : CursorPaginationParameters
+    public record RealmQueryParameters : CursorPaginationQueryParameters
     {
         public string? Name { get; init; }
         public string? NameLike { get; init; }

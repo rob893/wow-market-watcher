@@ -20,9 +20,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
                 {
                     throw new ArgumentException($"{str} is not a valid base 64 encoded int64.");
                 }
-            },
-            (source, afterId) => source.Where(item => item.Id > afterId),
-            (source, beforeId) => source.Where(item => item.Id < beforeId)
+            }
         )
         { }
 

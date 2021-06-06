@@ -1,6 +1,6 @@
 namespace WoWMarketWatcher.API.Models.QueryParameters
 {
-    public record WoWItemQueryParameters : CursorPaginationParameters
+    public record WoWItemQueryParameters : CursorPaginationQueryParameters
     {
         public string? Quality { get; init; }
         public string? ItemClass { get; init; }

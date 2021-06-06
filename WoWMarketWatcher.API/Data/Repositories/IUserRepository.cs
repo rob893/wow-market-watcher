@@ -10,7 +10,7 @@ using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public interface IUserRepository : IRepository<User, CursorPaginationParameters>
+    public interface IUserRepository : IRepository<User, CursorPaginationQueryParameters>
     {
         UserManager<User> UserManager { get; }
         Task<IdentityResult> CreateUserWithAsync(User user);
@@ -19,7 +19,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
         Task<User?> GetByLinkedAccountAsync(string id, LinkedAccountType accountType, params Expression<Func<User, object>>[] includes);
         Task<User> GetByUsernameAsync(string username, params Expression<Func<User, object>>[] includes);
         Task<bool> CheckPasswordAsync(User user, string password);
-        Task<CursorPagedList<Role, int>> GetRolesAsync(CursorPaginationParameters searchParams);
+        Task<CursorPaginatedList<Role, int>> GetRolesAsync(CursorPaginationQueryParameters searchParams);
         Task<List<Role>> GetRolesAsync();
     }
 }

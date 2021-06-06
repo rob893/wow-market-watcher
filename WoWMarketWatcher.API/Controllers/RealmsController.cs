@@ -6,7 +6,7 @@ using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Responses;
+using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Controllers
 {

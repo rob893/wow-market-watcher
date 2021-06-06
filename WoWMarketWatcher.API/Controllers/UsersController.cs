@@ -14,7 +14,7 @@ using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Requests;
-using WoWMarketWatcher.API.Models.Responses;
+using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Controllers
 {
@@ -33,7 +33,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<CursorPaginatedResponse<UserDto>>> GetUsersAsync([FromQuery] CursorPaginationParameters searchParams)
+        public async Task<ActionResult<CursorPaginatedResponse<UserDto>>> GetUsersAsync([FromQuery] CursorPaginationQueryParameters searchParams)
         {
             var users = await this.userRepository.SearchAsync(searchParams);
             var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(users, this.mapper.Map<IEnumerable<UserDto>>, searchParams);
@@ -124,7 +124,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpGet("roles")]
-        public async Task<ActionResult<CursorPaginatedResponse<RoleDto>>> GetRolesAsync([FromQuery] CursorPaginationParameters searchParams)
+        public async Task<ActionResult<CursorPaginatedResponse<RoleDto>>> GetRolesAsync([FromQuery] CursorPaginationQueryParameters searchParams)
         {
             var roles = await this.userRepository.GetRolesAsync(searchParams);
             var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(roles, this.mapper.Map<IEnumerable<RoleDto>>, searchParams);
