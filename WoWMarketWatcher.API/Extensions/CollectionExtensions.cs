@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.API.Models;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
 
@@ -94,6 +96,29 @@ namespace WoWMarketWatcher.API.Extensions
             if (queryParameters.First != null && queryParameters.Last != null)
             {
                 throw new NotSupportedException($"Passing both `{nameof(queryParameters.First)}` and `{nameof(queryParameters.Last)}` to paginate is not supported.");
+            }
+
+            if (src is CursorPaginatedList<TEntity, TEntityKey> cursorList)
+            {
+                return new CursorPaginatedResponse<TEntity, TEntityKey>
+                {
+                    Edges = queryParameters.IncludeEdges ? cursorList.Select(
+                        item => new CursorPaginatedResponseEdge<TEntity>
+                        {
+                            Cursor = keyConverter(keySelector(item)),
+                            Node = item
+                        }) : null,
+                    Nodes = queryParameters.IncludeNodes ? cursorList : null,
+                    PageInfo = new CursorPaginatedResponsePageInfo
+                    {
+                        StartCursor = cursorList.StartCursor,
+                        EndCursor = cursorList.EndCursor,
+                        HasNextPage = cursorList.HasNextPage,
+                        HasPreviousPage = cursorList.HasPreviousPage,
+                        PageCount = cursorList.PageCount,
+                        TotalCount = cursorList.TotalCount
+                    }
+                };
             }
 
             var srcList = src.ToList();
@@ -198,6 +223,46 @@ namespace WoWMarketWatcher.API.Extensions
                 keySelector,
                 key => key.ConvertToBase64(),
                 cursor => cursor.ConvertToStringFromBase64(),
+                queryParameters);
+        }
+
+        /// <summary>
+        /// Converts an IEnumerable to a CursorPaginatedResponse.
+        /// </summary>
+        /// <param name="src">The collection.</param>
+        /// <param name="keySelector">The key selector.</param>
+        /// <param name="queryParameters">The query parameters.</param>
+        /// <typeparam name="TEntity">Type of entity.</typeparam>
+        /// <returns>The CursorPaginatedResponse.</returns>
+        public static CursorPaginatedResponse<TEntity, long> ToCursorPaginatedResponse<TEntity>(
+            this IEnumerable<TEntity> src,
+            Func<TEntity, long> keySelector,
+            CursorPaginationQueryParameters queryParameters)
+            where TEntity : class
+        {
+            return src.ToCursorPaginatedResponse(
+                keySelector,
+                key => key.ConvertToBase64(),
+                cursor => cursor.ConvertToLongFromBase64(),
+                queryParameters);
+        }
+
+        /// <summary>
+        /// Converts an IEnumerable to a CursorPaginatedResponse.
+        /// </summary>
+        /// <param name="src">The collection.</param>
+        /// <param name="queryParameters">The query parameters.</param>
+        /// <typeparam name="TEntity">Type of entity.</typeparam>
+        /// <returns>The CursorPaginatedResponse.</returns>
+        public static CursorPaginatedResponse<TEntity, int> ToCursorPaginatedResponse<TEntity>(
+            this IEnumerable<TEntity> src,
+            CursorPaginationQueryParameters queryParameters)
+            where TEntity : class, IIdentifiable<int>
+        {
+            return src.ToCursorPaginatedResponse(
+                item => item.Id,
+                key => key.ConvertToBase64(),
+                cursor => cursor.ConvertToInt32FromBase64(),
                 queryParameters);
         }
     }

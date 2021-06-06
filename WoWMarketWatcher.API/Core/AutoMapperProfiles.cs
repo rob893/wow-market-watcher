@@ -6,6 +6,7 @@ using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.Requests;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
+using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Core
 {
@@ -13,11 +14,25 @@ namespace WoWMarketWatcher.API.Core
     {
         public AutoMapperProfiles()
         {
+            this.CreateCoreMaps();
             this.CreateUserMaps();
             this.CreateWoWItemMaps();
             this.CreateRealmMaps();
             this.CreateWatchListMaps();
             this.CreateAuctionTimeSeriesMaps();
+        }
+
+        private void CreateCoreMaps()
+        {
+            this.CreateMap(typeof(CursorPaginatedResponse<,>), typeof(CursorPaginatedResponse<,>))
+                .ForAllMembers(opts => opts.AllowNull());
+            this.CreateMap(typeof(CursorPaginatedResponse<,>), typeof(CursorPaginatedResponse<>))
+                .ForAllMembers(opts => opts.AllowNull());
+            this.CreateMap(typeof(CursorPaginatedResponse<>), typeof(CursorPaginatedResponse<,>))
+                .ForAllMembers(opts => opts.AllowNull());
+            this.CreateMap(typeof(CursorPaginatedResponse<>), typeof(CursorPaginatedResponse<>))
+                .ForAllMembers(opts => opts.AllowNull());
+            this.CreateMap(typeof(CursorPaginatedResponseEdge<>), typeof(CursorPaginatedResponseEdge<>));
         }
 
         private void CreateUserMaps()

@@ -42,7 +42,7 @@ namespace WoWMarketWatcher.API.Controllers
             }
 
             var lists = await this.watchListRepository.GetWatchListsForUserAsync(userId, searchParams);
-            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(lists, this.mapper.Map<IEnumerable<WatchListDto>>, searchParams);
+            var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<WatchListDto>>(lists.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
         }

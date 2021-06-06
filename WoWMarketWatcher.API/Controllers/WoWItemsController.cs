@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
@@ -33,7 +34,7 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult<CursorPaginatedResponse<WoWItemDto>>> GetWoWItemsAsync([FromQuery] WoWItemQueryParameters searchParams)
         {
             var items = await this.itemRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(items, this.mapper.Map<IEnumerable<WoWItemDto>>, searchParams);
+            var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<WoWItemDto>>(items.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
         }

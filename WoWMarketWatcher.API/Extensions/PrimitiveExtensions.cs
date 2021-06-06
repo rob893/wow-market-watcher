@@ -26,6 +26,23 @@ namespace WoWMarketWatcher.API.Extensions
         }
 
         /// <summary>
+        /// Converts a base64 string representing a long to a long.
+        /// </summary>
+        /// <param name="str">A valid base64 encoded long.</param>
+        /// <returns>The long value of the base64 encoded long.</returns>
+        public static long ConvertToLongFromBase64(this string str)
+        {
+            try
+            {
+                return BitConverter.ToInt64(Convert.FromBase64String(str), 0);
+            }
+            catch
+            {
+                throw new ArgumentException($"{str} is not a valid base 64 encoded int64.");
+            }
+        }
+
+        /// <summary>
         /// Converts a base64 string representing an string to a string.
         /// </summary>
         /// <param name="str">A valid base64 encoded string.</param>
@@ -84,6 +101,16 @@ namespace WoWMarketWatcher.API.Extensions
         /// <param name="i">The int to convert.</param>
         /// <returns>A base64 encoded string of the int.</returns>
         public static string ConvertToBase64(this int i)
+        {
+            return Convert.ToBase64String(BitConverter.GetBytes(i));
+        }
+
+        /// <summary>
+        /// Converts a long to a base64 string.
+        /// </summary>
+        /// <param name="i">The long to convert.</param>
+        /// <returns>A base64 encoded string of the long.</returns>
+        public static string ConvertToBase64(this long i)
         {
             return Convert.ToBase64String(BitConverter.GetBytes(i));
         }

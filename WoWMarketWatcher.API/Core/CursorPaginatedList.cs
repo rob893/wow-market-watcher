@@ -31,4 +31,12 @@ namespace WoWMarketWatcher.API.Core
             this.AddRange(items);
         }
     }
+
+    public class CursorPaginatedList<TEntity> : CursorPaginatedList<TEntity, int>
+        where TEntity : class
+    {
+        public CursorPaginatedList(ICollection<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount) :
+            base(items, hasNextPage, hasPreviousPage, startCursor, endCursor, totalCount)
+        { }
+    }
 }

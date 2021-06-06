@@ -35,7 +35,7 @@ namespace WoWMarketWatcher.API.Controllers
         public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsAsync([FromQuery] RealmQueryParameters searchParams)
         {
             var lists = await this.watchListRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(lists, this.mapper.Map<IEnumerable<WatchListDto>>, searchParams);
+            var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<WatchListDto>>(lists.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
         }

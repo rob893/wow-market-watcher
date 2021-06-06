@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
@@ -27,8 +28,8 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet]
         public async Task<ActionResult<CursorPaginatedResponse<AuctionTimeSeriesEntryDto, long>>> GetAuctionTimeSeriesAsync([FromQuery] AuctionTimeSeriesQueryParameters searchParams)
         {
-            var realms = await this.timeSeriesRepository.SearchAsync(searchParams);
-            var paginatedResponse = CursorPaginatedResponseFactory.CreateFrom(realms, this.mapper.Map<IEnumerable<AuctionTimeSeriesEntryDto>>, searchParams);
+            var timeSeriesEntries = await this.timeSeriesRepository.SearchAsync(searchParams);
+            var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<AuctionTimeSeriesEntryDto, long>>(timeSeriesEntries.ToCursorPaginatedResponse(entry => entry.Id, searchParams));
 
             return this.Ok(paginatedResponse);
         }
