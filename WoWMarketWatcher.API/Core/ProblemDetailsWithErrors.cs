@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -10,10 +11,6 @@ namespace WoWMarketWatcher.API.Core
 {
     public class ProblemDetailsWithErrors : ProblemDetails
     {
-        public IEnumerable<string> Errors { get; set; } = new List<string>();
-
-        public string CorrelationId { get; set; } = default!;
-
         private readonly Dictionary<int, string> errorTypes = new()
         {
             { StatusCodes.Status400BadRequest, "https://tools.ietf.org/html/rfc7231#section-6.5.1" },
@@ -99,13 +96,16 @@ namespace WoWMarketWatcher.API.Core
 
         private void SetProblemDetails(IList<string> errors, int statusCode, HttpRequest? request)
         {
-            this.Errors = errors;
+            var correlationId = request?.Headers.GetOrGenerateCorrelationId() ?? Guid.NewGuid().ToString();
+
             this.Detail = errors.Count > 0 ? errors[0] : "Unknown error.";
             this.Status = statusCode;
             this.Title = this.errorTitles.ContainsKey(statusCode) ? this.errorTitles[statusCode] : "There was an error.";
             this.Instance = request != null ? $"{request.Method}: {request.GetDisplayUrl()}" : "";
             this.Type = this.errorTypes.ContainsKey(statusCode) ? this.errorTypes[statusCode] : "https://tools.ietf.org/html/rfc7231";
-            this.CorrelationId = request?.Headers.GetOrGenerateCorrelationId() ?? Guid.NewGuid().ToString();
+            this.Extensions["correlationId"] = correlationId;
+            this.Extensions["errors"] = errors;
+            this.Extensions["traceId"] = Activity.Current?.Id ?? request?.HttpContext?.TraceIdentifier ?? correlationId;
         }
     }
 }

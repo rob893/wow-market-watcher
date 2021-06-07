@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace WoWMarketWatcher.API.Core
 {
@@ -29,12 +30,15 @@ namespace WoWMarketWatcher.API.Core
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-            var jsonOptions = new JsonSerializerOptions()
+            var jsonSettings = new JsonSerializerSettings
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                }
             };
 
-            await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, jsonOptions));
+            await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(problemDetails, jsonSettings));
         }
     }
 }

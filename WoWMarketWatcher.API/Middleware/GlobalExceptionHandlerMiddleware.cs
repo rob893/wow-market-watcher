@@ -1,9 +1,10 @@
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Polly.Timeout;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Extensions;
@@ -53,11 +54,6 @@ namespace WoWMarketWatcher.API.Middleware
 
                 var problemDetails = new ProblemDetailsWithErrors(thrownException, context.Response.StatusCode, context.Request);
 
-                var jsonOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
-
                 if (statusCode >= StatusCodes.Status500InternalServerError)
                 {
                     this.logger.LogError(sourceName, correlationId, thrownException.Message);
@@ -67,7 +63,15 @@ namespace WoWMarketWatcher.API.Middleware
                     this.logger.LogWarning(sourceName, correlationId, thrownException.Message);
                 }
 
-                await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, jsonOptions));
+                var jsonSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new CamelCaseNamingStrategy()
+                    }
+                };
+
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(problemDetails, jsonSettings));
             }
         }
     }
