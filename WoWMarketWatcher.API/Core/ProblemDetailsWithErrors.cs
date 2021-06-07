@@ -4,6 +4,7 @@ using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Core
 {
@@ -11,26 +12,27 @@ namespace WoWMarketWatcher.API.Core
     {
         public IEnumerable<string> Errors { get; set; } = new List<string>();
 
+        public string CorrelationId { get; set; } = default!;
+
         private readonly Dictionary<int, string> errorTypes = new()
         {
-            { 400, "https://tools.ietf.org/html/rfc7231#section-6.5.1" },
-            { 401, "https://tools.ietf.org/html/rfc7235#section-3.1" },
-            { 403, "https://tools.ietf.org/html/rfc7231#section-6.5.3" },
-            { 404, "https://tools.ietf.org/html/rfc7231#section-6.5.4" },
-            { 405, "https://tools.ietf.org/html/rfc7231#section-6.5.5" },
-            { 500, "https://tools.ietf.org/html/rfc7231#section-6.6.1" }
+            { StatusCodes.Status400BadRequest, "https://tools.ietf.org/html/rfc7231#section-6.5.1" },
+            { StatusCodes.Status401Unauthorized, "https://tools.ietf.org/html/rfc7235#section-3.1" },
+            { StatusCodes.Status403Forbidden, "https://tools.ietf.org/html/rfc7231#section-6.5.3" },
+            { StatusCodes.Status404NotFound, "https://tools.ietf.org/html/rfc7231#section-6.5.4" },
+            { StatusCodes.Status405MethodNotAllowed, "https://tools.ietf.org/html/rfc7231#section-6.5.5" },
+            { StatusCodes.Status500InternalServerError, "https://tools.ietf.org/html/rfc7231#section-6.6.1" }
         };
 
         private readonly Dictionary<int, string> errorTitles = new()
         {
-            { 400, "Bad Request" },
-            { 401, "Unauthorized" },
-            { 403, "Forbidden" },
-            { 404, "Not Found" },
-            { 405, "Method Not Allowed" },
-            { 500, "Internal Server Error" }
+            { StatusCodes.Status400BadRequest, "Bad Request" },
+            { StatusCodes.Status401Unauthorized, "Unauthorized" },
+            { StatusCodes.Status403Forbidden, "Forbidden" },
+            { StatusCodes.Status404NotFound, "Not Found" },
+            { StatusCodes.Status405MethodNotAllowed, "Method Not Allowed" },
+            { StatusCodes.Status500InternalServerError, "Internal Server Error" }
         };
-
 
         public ProblemDetailsWithErrors(IList<string> errors, int statusCode, HttpRequest? request = null)
         {
@@ -89,11 +91,11 @@ namespace WoWMarketWatcher.API.Core
             this.SetProblemDetails(errors, statusCode, request);
         }
 
-        public ProblemDetailsWithErrors(IList<string> errors, HttpRequest? request = null) : this(errors, 500, request) { }
+        public ProblemDetailsWithErrors(IList<string> errors, HttpRequest? request = null) : this(errors, StatusCodes.Status500InternalServerError, request) { }
 
-        public ProblemDetailsWithErrors(string error, HttpRequest? request = null) : this(new List<string> { error }, 500, request) { }
+        public ProblemDetailsWithErrors(string error, HttpRequest? request = null) : this(new List<string> { error }, StatusCodes.Status500InternalServerError, request) { }
 
-        public ProblemDetailsWithErrors(Exception error, HttpRequest? request = null) : this(error, 500, request) { }
+        public ProblemDetailsWithErrors(Exception error, HttpRequest? request = null) : this(error, StatusCodes.Status500InternalServerError, request) { }
 
         private void SetProblemDetails(IList<string> errors, int statusCode, HttpRequest? request)
         {
@@ -103,6 +105,7 @@ namespace WoWMarketWatcher.API.Core
             this.Title = this.errorTitles.ContainsKey(statusCode) ? this.errorTitles[statusCode] : "There was an error.";
             this.Instance = request != null ? $"{request.Method}: {request.GetDisplayUrl()}" : "";
             this.Type = this.errorTypes.ContainsKey(statusCode) ? this.errorTypes[statusCode] : "https://tools.ietf.org/html/rfc7231";
+            this.CorrelationId = request?.Headers.GetOrGenerateCorrelationId() ?? Guid.NewGuid().ToString();
         }
     }
 }

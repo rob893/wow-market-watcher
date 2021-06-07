@@ -4,7 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Polly.Timeout;
 using WoWMarketWatcher.API.Core;
+using WoWMarketWatcher.API.Extensions;
+
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Middleware
 {
@@ -15,7 +19,7 @@ namespace WoWMarketWatcher.API.Middleware
 
         public GlobalExceptionHandlerMiddleware(RequestDelegate _, ILogger<GlobalExceptionHandlerMiddleware> logger)
         {
-            this.logger = logger;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -29,10 +33,23 @@ namespace WoWMarketWatcher.API.Middleware
 
             if (error != null)
             {
+                var sourceName = GetSourceName();
                 var thrownException = error.Error;
+                var correlationId = context.Request.Headers.GetOrGenerateCorrelationId();
+                var statusCode = StatusCodes.Status500InternalServerError;
+
+                switch (thrownException)
+                {
+                    case TimeoutRejectedException:
+                    case TimeoutException:
+                        statusCode = StatusCodes.Status504GatewayTimeout;
+                        break;
+                    default:
+                        break;
+                }
 
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                context.Response.StatusCode = statusCode;
 
                 var problemDetails = new ProblemDetailsWithErrors(thrownException, context.Response.StatusCode, context.Request);
 
@@ -41,7 +58,14 @@ namespace WoWMarketWatcher.API.Middleware
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
 
-                this.logger.LogError(thrownException.Message);
+                if (statusCode >= StatusCodes.Status500InternalServerError)
+                {
+                    this.logger.LogError(sourceName, correlationId, thrownException.Message);
+                }
+                else
+                {
+                    this.logger.LogWarning(sourceName, correlationId, thrownException.Message);
+                }
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, jsonOptions));
             }

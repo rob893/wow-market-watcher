@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
@@ -37,14 +35,14 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet("{id}", Name = "GetAuctionTimeSeriesEntryAsync")]
         public async Task<ActionResult<AuctionTimeSeriesEntryDto>> GetAuctionTimeSeriesEntryAsync([FromRoute] int id)
         {
-            var realm = await this.timeSeriesRepository.GetByIdAsync(id);
+            var entry = await this.timeSeriesRepository.GetByIdAsync(id);
 
-            if (realm == null)
+            if (entry == null)
             {
                 return this.NotFound($"Time series entry with id {id} does not exist.");
             }
 
-            var mapped = this.mapper.Map<AuctionTimeSeriesEntryDto>(realm);
+            var mapped = this.mapper.Map<AuctionTimeSeriesEntryDto>(entry);
 
             return this.Ok(mapped);
         }

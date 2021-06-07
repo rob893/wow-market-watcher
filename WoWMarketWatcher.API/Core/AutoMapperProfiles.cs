@@ -33,6 +33,9 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap(typeof(CursorPaginatedResponse<>), typeof(CursorPaginatedResponse<>))
                 .ForAllMembers(opts => opts.AllowNull());
             this.CreateMap(typeof(CursorPaginatedResponseEdge<>), typeof(CursorPaginatedResponseEdge<>));
+
+            this.CreateMap(typeof(JsonPatchDocument<>), typeof(JsonPatchDocument<>));
+            this.CreateMap(typeof(Operation<>), typeof(Operation<>));
         }
 
         private void CreateUserMaps()
@@ -44,8 +47,6 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap<UserPreference, UserPreferenceDto>();
             this.CreateMap<Role, RoleDto>();
             this.CreateMap<LinkedAccount, LinkedAccountDto>();
-            this.CreateMap<JsonPatchDocument<UpdateUserRequest>, JsonPatchDocument<User>>();
-            this.CreateMap<Operation<UpdateUserRequest>, Operation<User>>();
         }
 
         private void CreateWoWItemMaps()
@@ -71,8 +72,6 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap<WatchList, WatchListDto>();
             this.CreateMap<CreateWatchListRequest, WatchList>();
             this.CreateMap<CreateWatchListForUserRequest, WatchList>();
-            this.CreateMap<JsonPatchDocument<UpdateWatchListRequest>, JsonPatchDocument<WatchList>>();
-            this.CreateMap<Operation<UpdateWatchListRequest>, Operation<WatchList>>();
         }
 
         private void CreateAuctionTimeSeriesMaps()

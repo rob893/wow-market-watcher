@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using WoWMarketWatcher.API.Constants;
 
 namespace WoWMarketWatcher.API.Middleware
 {
@@ -25,7 +26,7 @@ namespace WoWMarketWatcher.API.Middleware
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var value))
+            if (context.Request.Headers.TryGetValue(AppHeaderNames.ForwardedPrefix, out var value))
             {
                 context.Request.PathBase = value.First();
             }

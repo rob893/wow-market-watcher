@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,29 +16,18 @@ namespace WoWMarketWatcher.API.Core
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var modelStateEntries = context.ModelState.Where(e => e.Value.Errors.Count > 0).ToArray();
-            var errors = new List<string>();
+            var errors = context.ModelState
+                .Where(e => e.Value.Errors.Count > 0)
+                .SelectMany(entry => entry.Value.Errors.Select(e => $"{entry.Key}: {e.ErrorMessage}"))
+                .ToList();
 
-            if (modelStateEntries.Any())
-            {
-                foreach (var modelStateEntry in modelStateEntries)
-                {
-                    foreach (var modelStateError in modelStateEntry.Value.Errors)
-                    {
-                        var error = modelStateError.ErrorMessage;
-
-                        errors.Add(error);
-                    }
-                }
-            }
-
-            var problemDetails = new ProblemDetailsWithErrors(errors, 400, context.HttpContext.Request)
+            var problemDetails = new ProblemDetailsWithErrors(errors, StatusCodes.Status400BadRequest, context.HttpContext.Request)
             {
                 Title = "One or more validation errors occurred."
             };
 
             context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = 400;
+            context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
             var jsonOptions = new JsonSerializerOptions()
             {

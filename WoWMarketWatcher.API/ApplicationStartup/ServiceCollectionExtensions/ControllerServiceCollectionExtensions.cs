@@ -26,7 +26,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             })
             .ConfigureApiBehaviorOptions(options =>
             {
-                options.InvalidModelStateResponseFactory = ctx => new ValidationProblemDetailsResult();
+                options.InvalidModelStateResponseFactory = _ => new ValidationProblemDetailsResult();
             })
             .AddNewtonsoftJson(options =>
             {

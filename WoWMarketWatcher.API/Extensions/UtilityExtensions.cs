@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Web;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;

@@ -10,6 +10,7 @@ using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
+
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions

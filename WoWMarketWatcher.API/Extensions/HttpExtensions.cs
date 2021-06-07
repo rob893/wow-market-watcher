@@ -59,5 +59,20 @@ namespace WoWMarketWatcher.API.Extensions
 
             return Guid.NewGuid().ToString();
         }
+
+        public static string GetOrGenerateCorrelationId(this IHeaderDictionary headers)
+        {
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
+            if (headers.TryGetValue(AppHeaderNames.CorrelationId, out var value))
+            {
+                return value.First();
+            }
+
+            return Guid.NewGuid().ToString();
+        }
     }
 }

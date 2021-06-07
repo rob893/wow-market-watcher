@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
@@ -9,12 +10,12 @@ namespace WoWMarketWatcher.API.Data.Repositories
     {
         public AuctionTimeSeriesRepository(DataContext context) : base(
             context,
-            Id => Convert.ToBase64String(BitConverter.GetBytes(Id)),
+            Id => Id.ConvertToBase64(),
             str =>
             {
                 try
                 {
-                    return BitConverter.ToInt64(Convert.FromBase64String(str), 0);
+                    return str.ConvertToLongFromBase64();
                 }
                 catch
                 {

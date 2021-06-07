@@ -52,17 +52,29 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 
                     options.Events = new JwtBearerEvents
                     {
-                        // Add custom responses when token validation fails.
                         OnChallenge = context =>
                         {
-                            // Skip the default logic.
                             context.HandleResponse();
-                            context.Response.StatusCode = 401;
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                             context.Response.ContentType = "application/json";
 
                             var errorMessage = string.IsNullOrWhiteSpace(context.ErrorDescription) ? context.Error : $"{context.Error}. {context.ErrorDescription}.";
 
-                            var problem = new ProblemDetailsWithErrors(errorMessage ?? "Invalid token", 401, context.Request);
+                            var problem = new ProblemDetailsWithErrors(errorMessage ?? "Invalid token", StatusCodes.Status401Unauthorized, context.Request);
+
+                            var settings = new JsonSerializerSettings
+                            {
+                                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                            };
+
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(problem, settings));
+                        },
+                        OnForbidden = context =>
+                        {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            context.Response.ContentType = "application/json";
+
+                            var problem = new ProblemDetailsWithErrors("Forbidden", StatusCodes.Status403Forbidden, context.Request);
 
                             var settings = new JsonSerializerSettings
                             {
@@ -75,7 +87,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                         {
                             if (context.Exception is SecurityTokenExpiredException)
                             {
-                                context.Response.Headers.Add("X-Token-Expired", "true");
+                                context.Response.Headers.Add(AppHeaderNames.TokenExpired, "true");
                             }
 
                             return Task.CompletedTask;
