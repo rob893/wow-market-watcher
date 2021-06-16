@@ -16,7 +16,7 @@
       "serverReadyAction": {
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+https?://\\S+",
-        "uriFormat": "https://localhost:5001/swagger"
+        "uriFormat": "http://localhost:5003/swagger"
       },
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -36,7 +36,8 @@
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "http://localhost:5003/swagger"
       },
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Production"
