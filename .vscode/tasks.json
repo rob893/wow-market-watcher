@@ -71,7 +71,15 @@
       "type": "docker-run",
       "label": "docker-run: debug",
       "dependsOn": ["docker-build: debug"],
-      "dockerRun": {},
+      "dockerRun": {
+        "ports": [
+          {
+            "containerPort": 5003,
+            "hostPort": 5003,
+            "protocol": "tcp"
+          }
+        ]
+      },
       "netCore": {
         "appProject": "${workspaceFolder}/WoWMarketWatcher.API/WoWMarketWatcher.API.csproj",
         "enableDebugging": true
@@ -81,7 +89,15 @@
       "type": "docker-run",
       "label": "docker-run: release",
       "dependsOn": ["docker-build: release"],
-      "dockerRun": {},
+      "dockerRun": {
+        "ports": [
+          {
+            "containerPort": 5003,
+            "hostPort": 5003,
+            "protocol": "tcp"
+          }
+        ]
+      },
       "netCore": {
         "appProject": "${workspaceFolder}/WoWMarketWatcher.API/WoWMarketWatcher.API.csproj"
       }
