@@ -26,7 +26,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup
             this.Configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // This method gets called by the runtime. Use this method to add services to the DI container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllerServices()
