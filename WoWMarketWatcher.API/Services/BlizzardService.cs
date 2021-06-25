@@ -144,6 +144,14 @@ namespace WoWMarketWatcher.API.Services
             return total;
         }
 
+        public Task<BlizzardWoWTokenResponse> GetWoWTokenPriceAsync(string correlationId)
+        {
+            return this.SendRequestAsync<BlizzardWoWTokenResponse>(
+                HttpMethod.Get,
+                "data/wow/token/index?locale=en_US&namespace=dynamic-us",
+                correlationId);
+        }
+
         private async Task<T> SendRequestAsync<T>(HttpMethod method, string url, string correlationId, bool isRetry = false)
         {
             var sourceName = GetSourceName();

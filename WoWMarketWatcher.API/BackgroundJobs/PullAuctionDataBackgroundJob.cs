@@ -37,6 +37,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
         private string hangfireJobId = string.Empty;
         private string correlationId = string.Empty;
+        private long wowTokenPrice;
 
         public PullAuctionDataBackgroundJob(
             IBlizzardService blizzardService,
@@ -76,6 +77,15 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             this.logMetadata[LogMetadataFields.BackgroundJobName] = nameof(PullAuctionDataBackgroundJob);
 
             this.logger.LogInformation(this.hangfireJobId, sourceName, this.correlationId, $"{nameof(PullAuctionDataBackgroundJob)} started.", this.logMetadata);
+
+            try
+            {
+                this.wowTokenPrice = (await this.blizzardService.GetWoWTokenPriceAsync(this.correlationId)).Price;
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(this.hangfireJobId, sourceName, this.correlationId, $"Unable to get WoW token price. {e.Message}");
+            }
 
             try
             {
@@ -217,7 +227,11 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             var auctionData = await this.blizzardService.GetAuctionsAsync(connectedRealmId, this.correlationId);
 
-            var newItemIdsFromRealm = auctionData.Auctions.Select(auc => auc.Item.Id).Where(id => !this.currentItemIds.Contains(id)).ToHashSet();
+            var newItemIdsFromRealm = auctionData.Auctions
+                .Select(auc => auc.Item.Id)
+                .Append(ApplicationSettings.WoWTokenId) // To ensure WoW Token item is always in DB as it will never be returned from auction house data.
+                .Where(id => !this.currentItemIds.Contains(id))
+                .ToHashSet();
 
             this.logger.LogDebug(this.hangfireJobId, sourceName, this.correlationId, $"Found {newItemIdsFromRealm.Count} untracked items from auction data from connected realm {connectedRealmId}.", this.logMetadata);
 
@@ -339,7 +353,29 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 value.Price99Percentile = sortedPrices.Percentile(0.99, true);
             }
 
-            return itemIdAuctionMap.Values.ToList();
+            var auctionEntries = itemIdAuctionMap.Values.ToList();
+
+            // Always add wow token price if we were able to obtain it.
+            if (this.wowTokenPrice != default)
+            {
+                auctionEntries.Add(new AuctionTimeSeriesEntry
+                {
+                    WoWItemId = ApplicationSettings.WoWTokenId,
+                    ConnectedRealmId = connectedRealmId,
+                    Timestamp = utcNow,
+                    TotalAvailableForAuction = 1,
+                    AveragePrice = this.wowTokenPrice,
+                    MinPrice = this.wowTokenPrice,
+                    MaxPrice = this.wowTokenPrice,
+                    Price25Percentile = this.wowTokenPrice,
+                    Price50Percentile = this.wowTokenPrice,
+                    Price75Percentile = this.wowTokenPrice,
+                    Price95Percentile = this.wowTokenPrice,
+                    Price99Percentile = this.wowTokenPrice
+                });
+            }
+
+            return auctionEntries;
         }
 
         private async Task<IEnumerable<WoWItem>> HandleChunkedItemRequestsAsync(IEnumerable<IEnumerable<int>> chunkedItemIds)

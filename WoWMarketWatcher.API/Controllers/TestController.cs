@@ -46,6 +46,14 @@ namespace WoWMarketWatcher.API.Controllers
             return this.Ok(item);
         }
 
+        [HttpGet("blizz/wowTokenPrice")]
+        public async Task<ActionResult<BlizzardWoWTokenResponse>> GetWowToken()
+        {
+            var token = await this.blizzardService.GetWoWTokenPriceAsync(Guid.NewGuid().ToString());
+
+            return this.Ok(token);
+        }
+
         [HttpGet("misc")]
         public async Task<ActionResult> GetMisc()
         {

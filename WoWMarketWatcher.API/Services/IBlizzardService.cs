@@ -12,5 +12,6 @@ namespace WoWMarketWatcher.API.Services
         Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds, string correlationId);
         Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync(string correlationId, int pageNumber = 1, int pageSize = 100);
         Task<IEnumerable<BlizzardConnectedRealm>> GetAllConnectedRealmsAsync(string correlationId);
+        Task<BlizzardWoWTokenResponse> GetWoWTokenPriceAsync(string correlationId);
     }
 }
