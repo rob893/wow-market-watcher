@@ -78,6 +78,8 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             this.logger.LogInformation(this.hangfireJobId, sourceName, this.correlationId, $"{nameof(PullAuctionDataBackgroundJob)} started.", this.logMetadata);
 
+            await this.EnsureWoWTokenItemExists();
+
             try
             {
                 this.wowTokenPrice = (await this.blizzardService.GetWoWTokenPriceAsync(this.correlationId)).Price;
@@ -229,7 +231,6 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             var newItemIdsFromRealm = auctionData.Auctions
                 .Select(auc => auc.Item.Id)
-                .Append(ApplicationSettings.WoWTokenId) // To ensure WoW Token item is always in DB as it will never be returned from auction house data.
                 .Where(id => !this.currentItemIds.Contains(id))
                 .ToHashSet();
 
@@ -247,6 +248,38 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             this.logger.LogInformation(this.hangfireJobId, sourceName, this.correlationId, $"Processing auction data for connected realm {connectedRealmId} complete in {stopwatch.ElapsedMilliseconds}ms. {numberAuctionEntriesAdded} auction entries added and {newItemIdsFromRealm.Count} new items found.", this.logMetadata);
 
             return numberAuctionEntriesAdded;
+        }
+
+        private async Task EnsureWoWTokenItemExists()
+        {
+            var wowToken = await this.itemRepository.GetByIdAsync(ApplicationSettings.WoWTokenId);
+
+            if (wowToken != null)
+            {
+                return;
+            }
+
+            var wowTokenItem = await this.blizzardService.GetWoWItemAsync(ApplicationSettings.WoWTokenId, this.correlationId);
+
+            this.itemRepository.Add(new WoWItem
+            {
+                Id = wowTokenItem.Id,
+                Name = wowTokenItem.Name,
+                IsEquippable = wowTokenItem.IsEquippable,
+                IsStackable = wowTokenItem.IsStackable,
+                Level = wowTokenItem.Level,
+                RequiredLevel = wowTokenItem.RequiredLevel,
+                SellPrice = wowTokenItem.SellPrice,
+                PurchaseQuantity = wowTokenItem.PurchaseQuantity,
+                PurchasePrice = wowTokenItem.PurchasePrice,
+                ItemClass = wowTokenItem.ItemClass.Name,
+                ItemSubclass = wowTokenItem.ItemSubclass.Name,
+                Quality = wowTokenItem.Quality.Name,
+                InventoryType = wowTokenItem.InventoryType.Name,
+                MaxCount = wowTokenItem.MaxCount
+            });
+
+            await this.itemRepository.SaveChangesAsync();
         }
 
         private async Task<int> ProcessNewItemsAsync()
