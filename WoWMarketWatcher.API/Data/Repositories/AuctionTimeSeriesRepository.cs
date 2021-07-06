@@ -32,6 +32,16 @@ namespace WoWMarketWatcher.API.Data.Repositories
                 throw new ArgumentNullException(nameof(searchParams));
             }
 
+            if (searchParams.WoWItemId != null)
+            {
+                query = query.Where(entry => entry.WoWItemId == searchParams.WoWItemId.Value);
+            }
+
+            if (searchParams.ConnectedRealmId != null)
+            {
+                query = query.Where(entry => entry.ConnectedRealmId == searchParams.ConnectedRealmId.Value);
+            }
+
             if (searchParams.StartDate != null)
             {
                 query = query.Where(entry => entry.Timestamp >= searchParams.StartDate.Value);
@@ -40,16 +50,6 @@ namespace WoWMarketWatcher.API.Data.Repositories
             if (searchParams.EndDate != null)
             {
                 query = query.Where(entry => entry.Timestamp <= searchParams.EndDate.Value);
-            }
-
-            if (searchParams.ConnectedRealmId != null)
-            {
-                query = query.Where(entry => entry.ConnectedRealmId == searchParams.ConnectedRealmId.Value);
-            }
-
-            if (searchParams.WoWItemId != null)
-            {
-                query = query.Where(entry => entry.WoWItemId == searchParams.WoWItemId.Value);
             }
 
             return query;
