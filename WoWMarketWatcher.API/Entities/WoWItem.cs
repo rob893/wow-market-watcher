@@ -19,7 +19,6 @@ namespace WoWMarketWatcher.API.Entities
         public string Quality { get; init; } = default!;
         public string InventoryType { get; init; } = default!;
         public int MaxCount { get; init; }
-        public List<AuctionTimeSeriesEntry> AuctionTimeSeries { get; init; } = new List<AuctionTimeSeriesEntry>();
         public List<WatchList> WatchedIn { get; init; } = new List<WatchList>();
     }
 }

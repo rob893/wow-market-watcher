@@ -7,9 +7,7 @@ namespace WoWMarketWatcher.API.Entities
     {
         public long Id { get; init; }
         public int WoWItemId { get; init; }
-        public WoWItem WoWItem { get; init; } = default!;
         public int ConnectedRealmId { get; init; }
-        public ConnectedRealm ConnectedRealm { get; init; } = default!;
         public DateTime Timestamp { get; init; }
         public long TotalAvailableForAuction { get; set; }
         public long AveragePrice { get; set; }

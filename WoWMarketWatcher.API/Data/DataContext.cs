@@ -66,7 +66,6 @@ namespace WoWMarketWatcher.API.Data
                 linkedAccount.Property(account => account.LinkedAccountType).HasConversion<string>();
             });
 
-            builder.Entity<AuctionTimeSeriesEntry>().HasIndex(entry => entry.WoWItemId); // Needed for foreign key constraint although duplicated by composite key.
             builder.Entity<AuctionTimeSeriesEntry>().HasIndex(entry => new { entry.WoWItemId, entry.ConnectedRealmId, entry.Timestamp });
         }
     }
