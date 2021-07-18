@@ -66,7 +66,11 @@ namespace WoWMarketWatcher.API.Data
                 linkedAccount.Property(account => account.LinkedAccountType).HasConversion<string>();
             });
 
-            builder.Entity<AuctionTimeSeriesEntry>().HasIndex(entry => new { entry.WoWItemId, entry.ConnectedRealmId, entry.Timestamp });
+            builder.Entity<AuctionTimeSeriesEntry>()
+                .HasIndex(entry => new { entry.WoWItemId, entry.ConnectedRealmId, entry.Timestamp });
+
+            builder.Entity<AuctionTimeSeriesEntry>()
+                .HasIndex(entry => entry.Timestamp);
         }
     }
 }

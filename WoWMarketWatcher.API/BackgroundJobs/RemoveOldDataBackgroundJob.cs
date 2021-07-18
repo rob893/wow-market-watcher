@@ -49,21 +49,38 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                 this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Searching for all entries that were created before {deleteBefore}.", metadata);
 
-                var entriesToDelete = await this.timeSeriesRepository.EntitySetAsNoTracking().Where(entry => entry.Timestamp < deleteBefore).ToListAsync();
+                var limit = 10000;
+                var hasMoreToDelete = false;
+                var totalDeleted = 0;
 
-                if (entriesToDelete.Count == 0)
+                do
                 {
-                    this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(RemoveOldDataBackgroundJob)} complete. No entries need to be deleted.", metadata);
-                    return;
+                    var entriesToDelete = await this.timeSeriesRepository.EntitySetAsNoTracking().Where(entry => entry.Timestamp < deleteBefore).Take(limit + 1).ToListAsync();
+
+                    if (entriesToDelete.Count == 0)
+                    {
+                        this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(RemoveOldDataBackgroundJob)} complete. {totalDeleted} old auction entries were successfully deleted.", metadata);
+                        return;
+                    }
+
+                    if (entriesToDelete.Count > limit)
+                    {
+                        hasMoreToDelete = true;
+                        entriesToDelete.RemoveAt(entriesToDelete.Count - 1);
+                    }
+
+                    this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Deleting {entriesToDelete.Count} entries.", metadata);
+
+                    this.timeSeriesRepository.DeleteRange(entriesToDelete);
+
+                    var deleted = await this.timeSeriesRepository.SaveChangesAsync();
+                    totalDeleted += deleted;
+
+                    this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{deleted} entries deleted. More to delete: {hasMoreToDelete}", metadata);
                 }
+                while (hasMoreToDelete);
 
-                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Found {entriesToDelete.Count} entries scheduled for deletion.", metadata);
-
-                this.timeSeriesRepository.DeleteRange(entriesToDelete);
-
-                var numberOfEntriesDeleted = await this.timeSeriesRepository.SaveChangesAsync();
-
-                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(RemoveOldDataBackgroundJob)} complete. {numberOfEntriesDeleted} old auction entries were successfully deleted.", metadata);
+                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(RemoveOldDataBackgroundJob)} complete. {totalDeleted} old auction entries were successfully deleted.", metadata);
             }
             catch (OperationCanceledException ex)
             {
