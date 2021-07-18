@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Version>1.0.1</Version>
     <RootNamespace>WoWMarketWatcher.API</RootNamespace>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -9,7 +11,18 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <AssemblyName>WoWMarketWatcher.API</AssemblyName>
+    <Product>WoW Market Watcher</Product>
+    <Authors>Robert Herber</Authors>
+    <Company>Robert Herber</Company>
+    <Description>Collects WoW auction data.</Description>
+    <Copyright>Copyright (c) 2021 Robert Herber. All rights reserved.</Copyright>
+    <PackageReleaseNotes>
+        1.0.0 - Initial Release.
+        1.0.1 - Update ATH index and health checks.
+    </PackageReleaseNotes>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Hangfire" Version="5.0.1" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
@@ -42,6 +55,7 @@
     <PackageReference Include="SendGrid" Version="9.24.1" />
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.0" />
   </ItemGroup>
+
   <ItemGroup>
     <Content Update="appsettings.Local.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
