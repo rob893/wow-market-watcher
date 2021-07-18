@@ -29,7 +29,7 @@ namespace WoWMarketWatcher.API.Core
                 }
 
                 var entry = await this.timeSeriesRepository.EntitySetAsNoTracking()
-                    .Where(entry => entry.Timestamp < DateTime.UtcNow.AddHours(-12))
+                    .Where(entry => entry.Timestamp > DateTime.UtcNow.AddHours(-12))
                     .FirstOrDefaultAsync(cancellationToken);
 
                 if (entry == null)

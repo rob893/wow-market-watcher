@@ -55,7 +55,12 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                 do
                 {
-                    var entriesToDelete = await this.timeSeriesRepository.EntitySetAsNoTracking().Where(entry => entry.Timestamp < deleteBefore).Take(limit + 1).ToListAsync();
+                    var entriesToDelete = await this.timeSeriesRepository
+                        .EntitySetAsNoTracking()
+                        .Where(entry => entry.Timestamp < deleteBefore)
+                        .OrderBy(entry => entry.Id)
+                        .Take(limit + 1)
+                        .ToListAsync();
 
                     if (entriesToDelete.Count == 0)
                     {

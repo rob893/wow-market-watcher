@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9</LangVersion>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <RootNamespace>WoWMarketWatcher.API</RootNamespace>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -19,7 +19,8 @@
     <Copyright>Copyright (c) 2021 Robert Herber. All rights reserved.</Copyright>
     <PackageReleaseNotes>
         1.0.0 - Initial Release.
-        1.0.1 - Update ATH index and health checks.
+        1.0.1 - Update ATS index and health checks.
+        1.0.2 - Fix issue with ATS health check. 
     </PackageReleaseNotes>
   </PropertyGroup>
 
