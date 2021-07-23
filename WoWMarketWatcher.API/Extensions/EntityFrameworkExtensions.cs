@@ -166,8 +166,8 @@ namespace WoWMarketWatcher.API.Extensions
 
             return src.ToCursorPaginatedListAsync(
                 item => item.Id,
-                key => key.ConvertToBase64(),
-                cursor => cursor.ConvertToInt32FromBase64(),
+                key => key.ConvertToBase64Url(),
+                cursor => cursor.ConvertToInt32FromBase64Url(),
                 queryParameters.First,
                 queryParameters.Last,
                 queryParameters.After,

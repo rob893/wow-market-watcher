@@ -153,7 +153,7 @@ namespace WoWMarketWatcher.API.Controllers
                 return this.BadRequest("Unable to confirm email.");
             }
 
-            var decoded = request.Token.ConvertToStringFromBase64();
+            var decoded = request.Token.ConvertToStringFromBase64Url();
 
             var confirmResult = await this.userRepository.UserManager.ConfirmEmailAsync(user, decoded);
 
@@ -486,7 +486,7 @@ namespace WoWMarketWatcher.API.Controllers
         private async Task SendConfirmEmailLink(User user, string correlationId)
         {
             var emailToken = await this.userRepository.UserManager.GenerateEmailConfirmationTokenAsync(user);
-            var encoded = emailToken.ConvertToBase64();
+            var encoded = emailToken.ConvertToBase64Url();
             var confLink = $"{this.authSettings.ConfirmEmailCallbackUrl}?token={encoded}&email={user.Email}";
             await this.emailService.SendEmailAsync(correlationId, user.Email, "Confirm your email", $"Please click {confLink} to confirm email");
         }

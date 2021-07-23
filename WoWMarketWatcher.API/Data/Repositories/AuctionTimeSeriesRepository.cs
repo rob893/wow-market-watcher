@@ -10,12 +10,12 @@ namespace WoWMarketWatcher.API.Data.Repositories
     {
         public AuctionTimeSeriesRepository(DataContext context) : base(
             context,
-            Id => Id.ConvertToBase64(),
+            Id => Id.ConvertToBase64Url(),
             str =>
             {
                 try
                 {
-                    return str.ConvertToLongFromBase64();
+                    return str.ConvertToLongFromBase64Url();
                 }
                 catch
                 {

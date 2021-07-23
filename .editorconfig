@@ -228,6 +228,13 @@ dotnet_diagnostic.CA2100.severity = none
 # Specify StringComparison for clarity.
 # Disabled because using String comparison with MySQL ef core provider breaks ef core.
 dotnet_diagnostic.CA1307.severity = none
+# URI return values should not be strings.
+# Disabled because it thinks having url in function name should raise this.
+dotnet_diagnostic.CA1055.severity = none
+# Do not use insecure randomness.
+# Disabled because I don't need secure randomness.
+dotnet_diagnostic.CA5394.severity = none
+
 
 [/WoWMarketWatcher.API.Test/**]
 dotnet_diagnostic.CA1707.severity = none

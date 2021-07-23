@@ -164,12 +164,12 @@ namespace WoWMarketWatcher.API.Data.Repositories
     {
         protected Repository(DataContext context) : base(
             context,
-            Id => Id.ConvertToBase64(),
+            Id => Id.ConvertToBase64Url(),
             str =>
             {
                 try
                 {
-                    return str.ConvertToInt32FromBase64();
+                    return str.ConvertToInt32FromBase64Url();
                 }
                 catch
                 {
