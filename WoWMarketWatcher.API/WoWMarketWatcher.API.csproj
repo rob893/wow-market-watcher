@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9</LangVersion>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <RootNamespace>WoWMarketWatcher.API</RootNamespace>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -21,6 +21,7 @@
         1.0.0 - Initial Release.
         1.0.1 - Update ATS index and health checks.
         1.0.2 - Fix issue with ATS health check. 
+        1.0.3 - Update data types to take up less room. 
     </PackageReleaseNotes>
   </PropertyGroup>
 
@@ -46,10 +47,10 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.1.4" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.52.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.53.0" />
     <PackageReference Include="Hangfire.JobsLogger" Version="0.2.1" />
     <PackageReference Include="Hangfire.Heartbeat" Version="0.5.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.17.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.18.0" />
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
     <PackageReference Include="AspNetCoreRateLimit" Version="4.0.1" />
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.24" />
