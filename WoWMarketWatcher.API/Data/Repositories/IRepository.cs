@@ -28,7 +28,6 @@ namespace WoWMarketWatcher.API.Data.Repositories
         Task<TEntity> GetByIdAsync(TEntityKey id);
         Task<TEntity> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes);
         Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams);
-        Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(IQueryable<TEntity> query, TSearchParams searchParams);
         Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, params Expression<Func<TEntity, object>>[] includes);
     }
 

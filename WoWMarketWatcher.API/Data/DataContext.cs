@@ -79,6 +79,11 @@ namespace WoWMarketWatcher.API.Data
                 condition.Property(c => c.Metric).HasConversion<string>();
                 condition.Property(c => c.Operator).HasConversion<string>();
             });
+
+            builder.Entity<AlertAction>(condition =>
+            {
+                condition.Property(c => c.Type).HasConversion<string>();
+            });
         }
     }
 }

@@ -20,6 +20,7 @@ namespace WoWMarketWatcher.API.Core
             this.CreateRealmMaps();
             this.CreateWatchListMaps();
             this.CreateAuctionTimeSeriesMaps();
+            this.CreateAlertMaps();
         }
 
         private void CreateCoreMaps()
@@ -72,6 +73,16 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap<WatchList, WatchListDto>();
             this.CreateMap<CreateWatchListRequest, WatchList>();
             this.CreateMap<CreateWatchListForUserRequest, WatchList>();
+        }
+
+        private void CreateAlertMaps()
+        {
+            this.CreateMap<Alert, AlertDto>();
+            this.CreateMap<AlertCondition, AlertConditionDto>();
+            this.CreateMap<AlertAction, AlertActionDto>();
+            this.CreateMap<CreateAlertRequest, Alert>();
+            this.CreateMap<CreateAlertActionRequest, AlertAction>();
+            this.CreateMap<CreateAlertConditionRequest, AlertCondition>();
         }
 
         private void CreateAuctionTimeSeriesMaps()

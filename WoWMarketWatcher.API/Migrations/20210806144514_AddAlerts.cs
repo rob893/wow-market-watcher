@@ -49,6 +49,30 @@ namespace WoWMarketWatcher.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "AlertAction",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AlertId = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Target = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AlertAction", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AlertAction_Alerts_AlertId",
+                        column: x => x.AlertId,
+                        principalTable: "Alerts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "AlertCondition",
                 columns: table => new
                 {
@@ -77,6 +101,11 @@ namespace WoWMarketWatcher.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AlertAction_AlertId",
+                table: "AlertAction",
+                column: "AlertId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AlertCondition_AlertId",
                 table: "AlertCondition",
                 column: "AlertId");
@@ -99,6 +128,9 @@ namespace WoWMarketWatcher.API.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AlertAction");
+
             migrationBuilder.DropTable(
                 name: "AlertCondition");
 

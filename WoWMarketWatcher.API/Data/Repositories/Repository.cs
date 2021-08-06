@@ -118,18 +118,6 @@ namespace WoWMarketWatcher.API.Data.Repositories
                 searchParams);
         }
 
-        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(IQueryable<TEntity> query, TSearchParams searchParams)
-        {
-            query = this.AddIncludes(query);
-            query = this.AddWhereClauses(query, searchParams);
-
-            return query.ToCursorPaginatedListAsync(
-                item => item.Id,
-                this.ConvertIdToBase64,
-                this.ConvertBase64ToIdType,
-                searchParams);
-        }
-
         public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();

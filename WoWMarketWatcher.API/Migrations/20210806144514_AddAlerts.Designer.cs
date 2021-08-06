@@ -9,7 +9,7 @@ using WoWMarketWatcher.API.Data;
 namespace WoWMarketWatcher.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210806043650_AddAlerts")]
+    [Migration("20210806144514_AddAlerts")]
     partial class AddAlerts
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,6 +157,32 @@ namespace WoWMarketWatcher.API.Migrations
                     b.HasIndex("WoWItemId");
 
                     b.ToTable("Alerts");
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.AlertAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AlertId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Target")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlertId");
+
+                    b.ToTable("AlertAction");
                 });
 
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.AlertCondition", b =>
@@ -654,7 +680,7 @@ namespace WoWMarketWatcher.API.Migrations
                         .IsRequired();
 
                     b.HasOne("WoWMarketWatcher.API.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Alerts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -670,6 +696,17 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Navigation("User");
 
                     b.Navigation("WoWItem");
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Entities.AlertAction", b =>
+                {
+                    b.HasOne("WoWMarketWatcher.API.Entities.Alert", "Alert")
+                        .WithMany("Actions")
+                        .HasForeignKey("AlertId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Alert");
                 });
 
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.AlertCondition", b =>
@@ -767,6 +804,8 @@ namespace WoWMarketWatcher.API.Migrations
 
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.Alert", b =>
                 {
+                    b.Navigation("Actions");
+
                     b.Navigation("Conditions");
                 });
 
@@ -782,6 +821,8 @@ namespace WoWMarketWatcher.API.Migrations
 
             modelBuilder.Entity("WoWMarketWatcher.API.Entities.User", b =>
                 {
+                    b.Navigation("Alerts");
+
                     b.Navigation("LinkedAccounts");
 
                     b.Navigation("Preferences")

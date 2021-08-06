@@ -21,12 +21,14 @@ namespace WoWMarketWatcher.API.Entities
 
         public UserPreference Preferences { get; set; } = default!;
 
-        public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+        public List<RefreshToken> RefreshTokens { get; set; } = new();
 
-        public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public List<UserRole> UserRoles { get; set; } = new();
 
-        public List<LinkedAccount> LinkedAccounts { get; set; } = new List<LinkedAccount>();
+        public List<LinkedAccount> LinkedAccounts { get; set; } = new();
 
-        public List<WatchList> WatchLists { get; set; } = new List<WatchList>();
+        public List<WatchList> WatchLists { get; set; } = new();
+
+        public List<Alert> Alerts { get; set; } = new();
     }
 }

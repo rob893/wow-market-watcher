@@ -5,13 +5,13 @@ using WoWMarketWatcher.API.Models;
 
 namespace WoWMarketWatcher.API.Entities
 {
-    public class Alert : IIdentifiable<int>
+    public class Alert : IIdentifiable<int>, IOwnedByUser<int>
     {
         public int Id { get; init; }
 
-        public int UserId { get; init; }
+        public int UserId { get; set; }
 
-        public User User { get; init; } = default!;
+        public User User { get; set; } = default!;
 
         public int WoWItemId { get; set; }
 
@@ -29,9 +29,31 @@ namespace WoWMarketWatcher.API.Entities
 
         public List<AlertCondition> Conditions { get; init; } = new();
 
+        public List<AlertAction> Actions { get; init; } = new();
+
         public DateTime LastEvaluated { get; set; }
 
         public DateTime? LastFired { get; set; }
+    }
+
+    public class AlertAction : IIdentifiable<int>
+    {
+        public int Id { get; init; }
+
+        public int AlertId { get; init; }
+
+        public Alert Alert { get; init; } = default!;
+
+        [MaxLength(30)]
+        public AlertActionType Type { get; set; }
+
+        [MaxLength(50)]
+        public string Target { get; set; } = default!;
+    }
+
+    public enum AlertActionType
+    {
+        Email
     }
 
     public class AlertCondition : IIdentifiable<int>

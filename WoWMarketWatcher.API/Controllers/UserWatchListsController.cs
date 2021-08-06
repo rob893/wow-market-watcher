@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
@@ -34,7 +32,7 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsForUserAsync([FromRoute] int userId, [FromQuery] RealmQueryParameters searchParams)
+        public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsForUserAsync([FromRoute] int userId, [FromQuery] CursorPaginationQueryParameters searchParams)
         {
             if (!this.IsUserAuthorizedForResource(userId))
             {
