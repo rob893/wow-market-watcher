@@ -18,6 +18,7 @@ namespace WoWMarketWatcher.API.Data
         public DbSet<WoWItem> WoWItems => this.Set<WoWItem>();
         public DbSet<AuctionTimeSeriesEntry> AuctionTimeSeries => this.Set<AuctionTimeSeriesEntry>();
         public DbSet<WatchList> WatchLists => this.Set<WatchList>();
+        public DbSet<Alert> Alerts => this.Set<Alert>();
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
@@ -71,6 +72,13 @@ namespace WoWMarketWatcher.API.Data
 
             builder.Entity<AuctionTimeSeriesEntry>()
                 .HasIndex(entry => entry.Timestamp);
+
+            builder.Entity<AlertCondition>(condition =>
+            {
+                condition.Property(c => c.AggregationType).HasConversion<string>();
+                condition.Property(c => c.Metric).HasConversion<string>();
+                condition.Property(c => c.Operator).HasConversion<string>();
+            });
         }
     }
 }
