@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data;
-using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Models.Settings;

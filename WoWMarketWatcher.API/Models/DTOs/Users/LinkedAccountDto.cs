@@ -1,3 +1,5 @@
+using WoWMarketWatcher.API.Models.Entities;
+
 namespace WoWMarketWatcher.API.Models.DTOs.Users
 {
     public record LinkedAccountDto : IIdentifiable<string>, IOwnedByUser<int>

@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using WoWMarketWatcher.API.Models;
 
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public class WoWItem : IIdentifiable<int>
     {
@@ -39,6 +38,6 @@ namespace WoWMarketWatcher.API.Entities
 
         public int MaxCount { get; init; }
 
-        public List<WatchList> WatchedIn { get; init; } = new List<WatchList>();
+        public List<WatchList> WatchedIn { get; init; } = new();
     }
 }

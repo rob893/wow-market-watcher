@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public class UserRole : IdentityUserRole<int>
     {

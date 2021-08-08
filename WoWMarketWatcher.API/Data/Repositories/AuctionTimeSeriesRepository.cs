@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.QueryParameters;
 

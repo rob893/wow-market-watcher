@@ -1,8 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using WoWMarketWatcher.API.Models;
 
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public class RefreshToken : IOwnedByUser<int>
     {

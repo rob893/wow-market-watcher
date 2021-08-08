@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using WoWMarketWatcher.API.Models;
 
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public class WatchList : IIdentifiable<int>, IOwnedByUser<int>
     {
@@ -22,6 +21,6 @@ namespace WoWMarketWatcher.API.Entities
         [MaxLength(4000)]
         public string? Description { get; set; }
 
-        public List<WoWItem> WatchedItems { get; set; } = new List<WoWItem>();
+        public List<WoWItem> WatchedItems { get; set; } = new();
     }
 }

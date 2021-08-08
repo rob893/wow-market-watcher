@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs.Users;
 using WoWMarketWatcher.API.Models.QueryParameters;

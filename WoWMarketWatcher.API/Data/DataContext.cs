@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.Data
 {

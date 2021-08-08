@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.Models.Requests.Alerts
 {

@@ -1,0 +1,37 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace WoWMarketWatcher.API.Models.Entities
+{
+    public class Alert : IIdentifiable<int>, IOwnedByUser<int>
+    {
+        public int Id { get; init; }
+
+        public int UserId { get; set; }
+
+        public User User { get; set; } = default!;
+
+        public int WoWItemId { get; set; }
+
+        public WoWItem WoWItem { get; set; } = default!;
+
+        public int ConnectedRealmId { get; set; }
+
+        public ConnectedRealm ConnectedRealm { get; set; } = default!;
+
+        [MaxLength(255)]
+        public string Name { get; set; } = default!;
+
+        [MaxLength(4000)]
+        public string? Description { get; set; }
+
+        public List<AlertCondition> Conditions { get; init; } = new();
+
+        public List<AlertAction> Actions { get; init; } = new();
+
+        public DateTime LastEvaluated { get; set; }
+
+        public DateTime? LastFired { get; set; }
+    }
+}

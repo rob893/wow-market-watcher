@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using WoWMarketWatcher.API.Models;
 
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public class User : IdentityUser<int>, IIdentifiable<int>
     {

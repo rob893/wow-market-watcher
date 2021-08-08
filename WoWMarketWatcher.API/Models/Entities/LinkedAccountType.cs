@@ -1,4 +1,4 @@
-namespace WoWMarketWatcher.API.Models
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public enum LinkedAccountType
     {

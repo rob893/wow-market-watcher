@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using WoWMarketWatcher.API.Models;
 
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public class LinkedAccount : IIdentifiable<string>, IOwnedByUser<int>
     {

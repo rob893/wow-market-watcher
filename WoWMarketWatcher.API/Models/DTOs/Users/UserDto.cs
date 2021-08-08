@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.Models.DTOs.Users
 {

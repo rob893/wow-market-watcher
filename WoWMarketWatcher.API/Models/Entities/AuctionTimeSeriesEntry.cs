@@ -1,7 +1,6 @@
 using System;
-using WoWMarketWatcher.API.Models;
 
-namespace WoWMarketWatcher.API.Entities
+namespace WoWMarketWatcher.API.Models.Entities
 {
     public class AuctionTimeSeriesEntry : IIdentifiable<long>
     {

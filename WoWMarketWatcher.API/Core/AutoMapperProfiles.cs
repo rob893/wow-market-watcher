@@ -2,7 +2,7 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
-using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.DTOs.Alerts;
 using WoWMarketWatcher.API.Models.DTOs.Realms;

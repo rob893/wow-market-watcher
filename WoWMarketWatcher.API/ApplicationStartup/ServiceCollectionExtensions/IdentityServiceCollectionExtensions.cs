@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using WoWMarketWatcher.API.Data;
-using WoWMarketWatcher.API.Entities;
+using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {
