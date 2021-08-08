@@ -11,7 +11,7 @@ using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers.V1
 {
-    [Route("api/wow/[controller]")]
+    [Route("api/v{version:apiVersion}/wow/auctionTimeSeries")]
     [ApiVersion("1")]
     [ApiController]
     public sealed class AuctionTimeSeriesController : ServiceControllerBase

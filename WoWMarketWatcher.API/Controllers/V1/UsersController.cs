@@ -17,7 +17,7 @@ using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/users")]
     [ApiVersion("1")]
     [ApiController]
     public sealed class UsersController : ServiceControllerBase

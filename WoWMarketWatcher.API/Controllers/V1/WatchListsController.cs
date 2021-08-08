@@ -16,7 +16,7 @@ using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/watchLists")]
     [ApiVersion("1")]
     [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
     [ApiController]

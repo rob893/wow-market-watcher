@@ -26,9 +26,9 @@ using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers.V1
 {
-    [AllowAnonymous]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/auth")]
     [ApiVersion("1")]
+    [AllowAnonymous]
     [ApiController]
     public sealed class AuthController : ServiceControllerBase
     {

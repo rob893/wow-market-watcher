@@ -14,7 +14,7 @@ using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers.V1
 {
-    [Route("api/wow/items")]
+    [Route("api/v{version:apiVersion}/wow/items")]
     [ApiVersion("1")]
     [ApiController]
     public sealed class WoWItemsController : ServiceControllerBase

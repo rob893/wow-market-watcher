@@ -19,10 +19,10 @@ using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Controllers.V1
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Route("api/v{version:apiVersion}/test")]
     [ApiVersion("1")]
     [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
+    [ApiController]
     public sealed class TestController : ServiceControllerBase
     {
         private readonly Counter counter;
