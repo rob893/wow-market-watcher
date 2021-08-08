@@ -16,8 +16,6 @@ namespace WoWMarketWatcher.API.Constants
 
         public const string HangfireDashboardPassword = "Hangfire:Dashboard:Password";
 
-        public const string SwaggerEndpoint = "Swagger:SwaggerEndpoint";
-
         public const string SendGrid = "SendGrid";
 
         public const string SwaggerHangfireEndpoint = "Swagger:HangfireEndpoint";

@@ -2,8 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
-using WoWMarketWatcher.API.Constants;
+using Microsoft.Extensions.DependencyInjection;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Middleware;
 
@@ -26,10 +27,17 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
             app.UseMiddleware<SwaggerBasicAuthMiddleware>()
                 .UseSwagger()
                 .UseSwaggerUI(
-                    c =>
+                    options =>
                     {
-                        c.SwaggerEndpoint(config[ConfigurationKeys.SwaggerEndpoint], FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
-                        c.DocumentTitle = $"WoW Market Watcher - {config.GetEnvironment()}";
+                        var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+
+                        foreach (var description in provider.ApiVersionDescriptions)
+                        {
+                            options.SwaggerEndpoint(
+                                $"/swagger/{description.GroupName}/swagger.json",
+                                $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName} {description.GroupName}");
+                            options.DocumentTitle = $"WoW Market Watcher - {config.GetEnvironment()}";
+                        }
                     });
 
             return app;

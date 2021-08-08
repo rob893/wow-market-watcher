@@ -67,8 +67,22 @@ namespace WoWMarketWatcher.API.Services
         private static bool EvaluateCondition(AlertCondition condition, IEnumerable<AuctionTimeSeriesEntry> auctionTimeSeries)
         {
             var entriesToEvaluate = auctionTimeSeries.Where(entry => entry.Timestamp >= DateTime.UtcNow.AddHours(-condition.AggregationTimeGranularityInHours));
+            var aggregation = AggregateMetricValues(condition.AggregationType, entriesToEvaluate.Select(entry => GetMetricValue(condition.Metric, entry)));
 
-            return entriesToEvaluate.Any(entry => CompareMetric(condition.Operator, GetMetricValue(condition.Metric, entry), condition.Threshold));
+            return CompareMetric(condition.Operator, aggregation, condition.Threshold);
+        }
+
+        private static long AggregateMetricValues(AlertConditionAggregationType type, IEnumerable<long> metricValues)
+        {
+            return type switch
+            {
+                AlertConditionAggregationType.Sum => metricValues.Sum(),
+                AlertConditionAggregationType.Count => metricValues.Count(),
+                AlertConditionAggregationType.Average => (long)metricValues.Average(),
+                AlertConditionAggregationType.Min => metricValues.Min(),
+                AlertConditionAggregationType.Max => metricValues.Max(),
+                _ => throw new ArgumentException($"Aggregation type {type} is not supported.", nameof(type)),
+            };
         }
 
         private static long GetMetricValue(AlertConditionMetric metric, AuctionTimeSeriesEntry entry)

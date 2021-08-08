@@ -14,9 +14,10 @@ using WoWMarketWatcher.API.Models.Requests.WatchLists;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
 using WoWMarketWatcher.API.Services;
 
-namespace WoWMarketWatcher.API.Controllers
+namespace WoWMarketWatcher.API.Controllers.V1
 {
     [Route("api/[controller]")]
+    [ApiVersion("1")]
     [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
     [ApiController]
     public sealed class WatchListsController : ServiceControllerBase

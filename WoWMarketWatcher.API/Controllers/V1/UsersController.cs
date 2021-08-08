@@ -15,9 +15,10 @@ using WoWMarketWatcher.API.Models.Requests.Users;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
 using WoWMarketWatcher.API.Services;
 
-namespace WoWMarketWatcher.API.Controllers
+namespace WoWMarketWatcher.API.Controllers.V1
 {
     [Route("api/[controller]")]
+    [ApiVersion("1")]
     [ApiController]
     public sealed class UsersController : ServiceControllerBase
     {

@@ -1,9 +1,7 @@
 using AspNetCoreRateLimit;
 using Hangfire;
-using HealthChecks.UI.Client;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions;
 using WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions;
-using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Middleware;
 using WoWMarketWatcher.API.Services;
@@ -70,31 +67,12 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .UseMiddleware<PathBaseRewriterMiddleware>()
                 .UseMiddleware<CorrelationIdMiddleware>()
                 .UseRouting()
-                .UseCors(header =>
-                    header.WithOrigins(this.configuration.GetSection(ConfigurationKeys.CorsAllowedOrigins).Get<string[]>() ?? new[] { "*" })
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .WithExposedHeaders(this.configuration.GetSection(ConfigurationKeys.CorsExposedHeaders).Get<string[]>() ?? new[] { AppHeaderNames.TokenExpired, AppHeaderNames.CorrelationId })
-                )
+                .UseAndConfigureCors(this.configuration)
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseAndConfigureSwagger(this.configuration)
                 .UseAndConfigureHangfire(recurringJobs, this.configuration)
-                .UseEndpoints(endpoints =>
-                {
-                    endpoints.MapHealthChecks(ApplicationSettings.HealthCheckEndpoint, new HealthCheckOptions()
-                    {
-                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                    });
-
-                    endpoints.MapHealthChecks(ApplicationSettings.LivenessHealthCheckEndpoint, new HealthCheckOptions()
-                    {
-                        Predicate = (check) => !check.Tags.Contains(HealthCheckTags.Dependency),
-                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                    });
-
-                    endpoints.MapControllers();
-                });
+                .UseAndConfigureEndpoints(this.configuration);
         }
     }
 }

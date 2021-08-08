@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Settings;
@@ -28,36 +31,48 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 
             services.Configure<SwaggerSettings>(config.GetSection(ConfigurationKeys.Swagger));
 
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc(
-                    "v1",
-                    new OpenApiInfo
-                    {
-                        Version = "v1",
-                        Title = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName,
-                        Description = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName} - {config.GetEnvironment()} ({Assembly.GetExecutingAssembly().GetName().Version})",
-                        License = new OpenApiLicense
+                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    options.SwaggerDoc(
+                        description.GroupName,
+                        new OpenApiInfo
                         {
-                            Name = "Hangfire Dashboard",
-                            Url = new Uri(config[ConfigurationKeys.SwaggerHangfireEndpoint])
-                        },
-                        Contact = new OpenApiContact
-                        {
-                            Name = "Health Checks UI",
-                            Url = new Uri("https://rwherber.com/health-checker/healthchecks-ui")
-                        }
-                    });
+                            Version = description.GroupName,
+                            Title = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName,
+                            Description = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName} - {config.GetEnvironment()} ({Assembly.GetExecutingAssembly().GetName().Version})",
+                            License = new OpenApiLicense
+                            {
+                                Name = "Hangfire Dashboard",
+                                Url = new Uri(config[ConfigurationKeys.SwaggerHangfireEndpoint])
+                            },
+                            Contact = new OpenApiContact
+                            {
+                                Name = "Health Checks UI",
+                                Url = new Uri("https://rwherber.com/health-checker/healthchecks-ui")
+                            }
+                        });
+                }
+
+                // Remove version parameter from ui
+                options.OperationFilter<RemoveVersionParameterFilter>();
+                // Replace {version} with actual version in routes in swagger doc
+                options.DocumentFilter<ReplaceVersionWithExactValueInPathFilter>();
+                options.CustomSchemaIds(id => id.FullName);
+                options.EnableAnnotations();
 
                 // Add the security token option to swagger
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -74,13 +89,43 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-                c.SwaggerGeneratorOptions.DescribeAllParametersInCamelCase = true;
+                options.IncludeXmlComments(xmlPath);
+                options.SwaggerGeneratorOptions.DescribeAllParametersInCamelCase = true;
+
+                //options.Cus
             });
 
             services.AddSwaggerGenNewtonsoftSupport();
 
             return services;
+        }
+
+        private class RemoveVersionParameterFilter : IOperationFilter
+        {
+            public void Apply(OpenApiOperation operation, OperationFilterContext context)
+            {
+                var versionParameter = operation.Parameters.FirstOrDefault(p => p.Name == "version");
+
+                if (versionParameter == null)
+                {
+                    return;
+                }
+
+                operation.Parameters.Remove(versionParameter);
+            }
+        }
+
+        private class ReplaceVersionWithExactValueInPathFilter : IDocumentFilter
+        {
+            public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+            {
+                var paths = new OpenApiPaths();
+                foreach (var path in swaggerDoc.Paths)
+                {
+                    paths.Add(path.Key.Replace("v{version}", swaggerDoc.Info.Version), path.Value);
+                }
+                swaggerDoc.Paths = paths;
+            }
         }
     }
 }

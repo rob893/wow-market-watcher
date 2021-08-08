@@ -1,6 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,6 +18,23 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             {
                 throw new ArgumentNullException(nameof(services));
             }
+
+            services.AddVersionedApiExplorer(
+                options =>
+                {
+                    options.AssumeDefaultVersionWhenUnspecified = true;
+                    options.DefaultApiVersion = ApiVersion.Default;
+                    options.GroupNameFormat = "'v'VVV";
+                });
+
+            services.AddApiVersioning(
+                options =>
+                {
+                    options.AssumeDefaultVersionWhenUnspecified = true;
+                    options.ReportApiVersions = true;
+                    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+                    options.DefaultApiVersion = ApiVersion.Default;
+                });
 
             services.AddControllers(options =>
             {

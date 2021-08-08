@@ -17,10 +17,11 @@ using WoWMarketWatcher.API.Services;
 
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
-namespace WoWMarketWatcher.API.Controllers
+namespace WoWMarketWatcher.API.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1")]
     [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
     public sealed class TestController : ServiceControllerBase
     {

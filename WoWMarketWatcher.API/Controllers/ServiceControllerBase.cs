@@ -38,61 +38,61 @@ namespace WoWMarketWatcher.API.Controllers
         }
 
         [NonAction]
-        public BadRequestObjectResult BadRequest(string errorMessage)
+        public BadRequestObjectResult BadRequest(string errorMessage = "Bad request.")
         {
-            return base.BadRequest(new ProblemDetailsWithErrors(errorMessage, StatusCodes.Status400BadRequest, this.Request));
+            return this.BadRequest(new List<string> { errorMessage });
         }
 
         [NonAction]
-        public BadRequestObjectResult BadRequest(IList<string> errorMessages)
+        public BadRequestObjectResult BadRequest(IEnumerable<string> errorMessages)
         {
             return base.BadRequest(new ProblemDetailsWithErrors(errorMessages, StatusCodes.Status400BadRequest, this.Request));
         }
 
         [NonAction]
-        public UnauthorizedObjectResult Unauthorized(string errorMessage)
+        public UnauthorizedObjectResult Unauthorized(string errorMessage = "Unauthorized.")
         {
-            return base.Unauthorized(new ProblemDetailsWithErrors(errorMessage, StatusCodes.Status401Unauthorized, this.Request));
+            return this.Unauthorized(new List<string> { errorMessage });
         }
 
         [NonAction]
-        public UnauthorizedObjectResult Unauthorized(IList<string> errorMessages)
+        public UnauthorizedObjectResult Unauthorized(IEnumerable<string> errorMessages)
         {
             return base.Unauthorized(new ProblemDetailsWithErrors(errorMessages, StatusCodes.Status401Unauthorized, this.Request));
         }
 
         [NonAction]
-        public ObjectResult Forbidden(string errorMessage)
+        public ObjectResult Forbidden(string errorMessage = "Forbidden.")
         {
-            return base.StatusCode(StatusCodes.Status403Forbidden, new ProblemDetailsWithErrors(errorMessage, StatusCodes.Status403Forbidden, this.Request));
+            return this.Forbidden(new List<string> { errorMessage });
         }
 
         [NonAction]
-        public ObjectResult Forbidden(IList<string> errorMessages)
+        public ObjectResult Forbidden(IEnumerable<string> errorMessages)
         {
             return base.StatusCode(StatusCodes.Status403Forbidden, new ProblemDetailsWithErrors(errorMessages, StatusCodes.Status403Forbidden, this.Request));
         }
 
         [NonAction]
-        public NotFoundObjectResult NotFound(string errorMessage)
+        public NotFoundObjectResult NotFound(string errorMessage = "Resource not found.")
         {
-            return base.NotFound(new ProblemDetailsWithErrors(errorMessage, StatusCodes.Status404NotFound, this.Request));
+            return this.NotFound(new List<string> { errorMessage });
         }
 
         [NonAction]
-        public NotFoundObjectResult NotFound(IList<string> errorMessages)
+        public NotFoundObjectResult NotFound(IEnumerable<string> errorMessages)
         {
             return base.NotFound(new ProblemDetailsWithErrors(errorMessages, StatusCodes.Status404NotFound, this.Request));
         }
 
         [NonAction]
-        public ObjectResult InternalServerError(string errorMessage)
+        public ObjectResult InternalServerError(string errorMessage = "Internal server error.")
         {
-            return base.StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetailsWithErrors(errorMessage, StatusCodes.Status500InternalServerError, this.Request));
+            return this.InternalServerError(new List<string> { errorMessage });
         }
 
         [NonAction]
-        public ObjectResult InternalServerError(IList<string> errorMessages)
+        public ObjectResult InternalServerError(IEnumerable<string> errorMessages)
         {
             return base.StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetailsWithErrors(errorMessages, StatusCodes.Status500InternalServerError, this.Request));
         }

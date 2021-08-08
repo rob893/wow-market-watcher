@@ -234,6 +234,9 @@ dotnet_diagnostic.CA1055.severity = none
 # Do not use insecure randomness.
 # Disabled because I don't need secure randomness.
 dotnet_diagnostic.CA5394.severity = none
+# Avoid uninstantiated internal classes.
+# Disabled as many internal classes are created through reflection.
+dotnet_diagnostic.CA1812.severity = none
 
 
 [/WoWMarketWatcher.API.Test/**]

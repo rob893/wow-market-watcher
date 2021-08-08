@@ -24,10 +24,11 @@ using WoWMarketWatcher.API.Models.Responses.Auth;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
 
-namespace WoWMarketWatcher.API.Controllers
+namespace WoWMarketWatcher.API.Controllers.V1
 {
     [AllowAnonymous]
     [Route("api/[controller]")]
+    [ApiVersion("1")]
     [ApiController]
     public sealed class AuthController : ServiceControllerBase
     {
