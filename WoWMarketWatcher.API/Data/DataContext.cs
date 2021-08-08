@@ -6,21 +6,29 @@ using WoWMarketWatcher.API.Entities;
 
 namespace WoWMarketWatcher.API.Data
 {
-    public class DataContext : IdentityDbContext<User, Role, int,
+    public sealed class DataContext : IdentityDbContext<User, Role, int,
         IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>,
         IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
-        public DbSet<RefreshToken> RefreshTokens => this.Set<RefreshToken>();
-        public DbSet<UserPreference> UserPreferences => this.Set<UserPreference>();
-        public DbSet<LinkedAccount> LinkedAccounts => this.Set<LinkedAccount>();
-        public DbSet<ConnectedRealm> ConnectedRealms => this.Set<ConnectedRealm>();
-        public DbSet<Realm> Realms => this.Set<Realm>();
-        public DbSet<WoWItem> WoWItems => this.Set<WoWItem>();
-        public DbSet<AuctionTimeSeriesEntry> AuctionTimeSeries => this.Set<AuctionTimeSeriesEntry>();
-        public DbSet<WatchList> WatchLists => this.Set<WatchList>();
-        public DbSet<Alert> Alerts => this.Set<Alert>();
-
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+        public DbSet<RefreshToken> RefreshTokens => this.Set<RefreshToken>();
+
+        public DbSet<UserPreference> UserPreferences => this.Set<UserPreference>();
+
+        public DbSet<LinkedAccount> LinkedAccounts => this.Set<LinkedAccount>();
+
+        public DbSet<ConnectedRealm> ConnectedRealms => this.Set<ConnectedRealm>();
+
+        public DbSet<Realm> Realms => this.Set<Realm>();
+
+        public DbSet<WoWItem> WoWItems => this.Set<WoWItem>();
+
+        public DbSet<AuctionTimeSeriesEntry> AuctionTimeSeries => this.Set<AuctionTimeSeriesEntry>();
+
+        public DbSet<WatchList> WatchLists => this.Set<WatchList>();
+
+        public DbSet<Alert> Alerts => this.Set<Alert>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

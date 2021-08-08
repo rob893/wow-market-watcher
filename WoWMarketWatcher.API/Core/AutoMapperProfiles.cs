@@ -15,7 +15,7 @@ using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Core
 {
-    public class AutoMapperProfiles : Profile
+    public sealed class AutoMapperProfiles : Profile
     {
         public AutoMapperProfiles()
         {

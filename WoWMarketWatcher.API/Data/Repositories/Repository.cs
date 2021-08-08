@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models;
@@ -17,22 +16,18 @@ namespace WoWMarketWatcher.API.Data.Repositories
         where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         where TSearchParams : CursorPaginationQueryParameters
     {
-        public DataContext Context { get; protected init; }
-
-        protected Func<TEntityKey, string> ConvertIdToBase64 { get; init; }
-        protected Func<string, TEntityKey> ConvertBase64ToIdType { get; init; }
-
-        protected Repository(DataContext context, Func<TEntityKey, string> ConvertIdToBase64, Func<string, TEntityKey> ConvertBase64ToIdType)
+        protected Repository(DataContext context, Func<TEntityKey, string> convertIdToBase64, Func<string, TEntityKey> convertBase64ToIdType)
         {
-            this.Context = context;
-            this.ConvertIdToBase64 = ConvertIdToBase64;
-            this.ConvertBase64ToIdType = ConvertBase64ToIdType;
+            this.Context = context ?? throw new ArgumentNullException(nameof(context));
+            this.ConvertIdToBase64 = convertIdToBase64 ?? throw new ArgumentNullException(nameof(convertIdToBase64));
+            this.ConvertBase64ToIdType = convertBase64ToIdType ?? throw new ArgumentNullException(nameof(convertBase64ToIdType));
         }
 
-        public EntityEntry<TEntity> Entry(TEntity entity)
-        {
-            return this.Context.Entry(entity);
-        }
+        protected DataContext Context { get; }
+
+        protected Func<TEntityKey, string> ConvertIdToBase64 { get; }
+
+        protected Func<string, TEntityKey> ConvertBase64ToIdType { get; }
 
         public void Add(TEntity entity)
         {
@@ -44,13 +39,13 @@ namespace WoWMarketWatcher.API.Data.Repositories
             this.Context.Set<TEntity>().AddRange(entities);
         }
 
-        public void Delete(TEntity entity)
+        public void Remove(TEntity entity)
         {
-            this.BeforeDelete(entity);
+            this.BeforeRemove(entity);
             this.Context.Set<TEntity>().Remove(entity);
         }
 
-        public void DeleteRange(IEnumerable<TEntity> entities)
+        public void RemoveRange(IEnumerable<TEntity> entities)
         {
             if (entities == null)
             {
@@ -59,20 +54,10 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
             foreach (var entity in entities)
             {
-                this.BeforeDelete(entity);
+                this.BeforeRemove(entity);
             }
 
             this.Context.Set<TEntity>().RemoveRange(entities);
-        }
-
-        public IQueryable<TEntity> EntitySetAsNoTracking()
-        {
-            return this.Context.Set<TEntity>().AsNoTracking();
-        }
-
-        public IQueryable<TEntity> EntitySet()
-        {
-            return this.Context.Set<TEntity>();
         }
 
         public async Task<bool> SaveAllAsync()
@@ -156,7 +141,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query;
         }
 
-        protected virtual void BeforeDelete(TEntity entity) { }
+        protected virtual void BeforeRemove(TEntity entity) { }
 
         protected virtual IQueryable<TEntity> AddIncludes(IQueryable<TEntity> query)
         {

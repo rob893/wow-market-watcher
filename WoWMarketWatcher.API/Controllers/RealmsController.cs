@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -6,21 +7,23 @@ using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs.Realms;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/wow/[controller]")]
     [ApiController]
-    public class RealmsController : ServiceControllerBase
+    public sealed class RealmsController : ServiceControllerBase
     {
         private readonly IRealmRepository realmRepository;
+
         private readonly IMapper mapper;
 
-
-        public RealmsController(IRealmRepository realmRepository, IMapper mapper)
+        public RealmsController(IRealmRepository realmRepository, IMapper mapper, ICorrelationIdService correlationIdService)
+            : base(correlationIdService)
         {
-            this.realmRepository = realmRepository;
-            this.mapper = mapper;
+            this.realmRepository = realmRepository ?? throw new ArgumentNullException(nameof(realmRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]

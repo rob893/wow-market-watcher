@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -6,21 +7,23 @@ using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/wow/[controller]")]
     [ApiController]
-    public class AuctionTimeSeriesController : ServiceControllerBase
+    public sealed class AuctionTimeSeriesController : ServiceControllerBase
     {
         private readonly IAuctionTimeSeriesRepository timeSeriesRepository;
+
         private readonly IMapper mapper;
 
-
-        public AuctionTimeSeriesController(IAuctionTimeSeriesRepository timeSeriesRepository, IMapper mapper)
+        public AuctionTimeSeriesController(IAuctionTimeSeriesRepository timeSeriesRepository, IMapper mapper, ICorrelationIdService correlationIdService)
+            : base(correlationIdService)
         {
-            this.timeSeriesRepository = timeSeriesRepository;
-            this.mapper = mapper;
+            this.timeSeriesRepository = timeSeriesRepository ?? throw new ArgumentNullException(nameof(timeSeriesRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]

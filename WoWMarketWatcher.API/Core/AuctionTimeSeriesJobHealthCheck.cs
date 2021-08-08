@@ -4,31 +4,31 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Data;
 
 namespace WoWMarketWatcher.API.Core
 {
-    public class AuctionTimeSeriesJobHealthCheck : IHealthCheck
+    public sealed class AuctionTimeSeriesJobHealthCheck : IHealthCheck
     {
-        private readonly IAuctionTimeSeriesRepository timeSeriesRepository;
+        private readonly DataContext dbContext;
 
-        public AuctionTimeSeriesJobHealthCheck(IAuctionTimeSeriesRepository timeSeriesRepository)
+        public AuctionTimeSeriesJobHealthCheck(DataContext dbContext)
         {
-            this.timeSeriesRepository = timeSeriesRepository;
+            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try
             {
-                var canConnect = await this.timeSeriesRepository.Context.Database.CanConnectAsync(cancellationToken);
+                var canConnect = await this.dbContext.Database.CanConnectAsync(cancellationToken);
 
                 if (!canConnect)
                 {
                     return HealthCheckResult.Unhealthy("Cannot connect to database.");
                 }
 
-                var entry = await this.timeSeriesRepository.EntitySetAsNoTracking()
+                var entry = await this.dbContext.AuctionTimeSeries.AsNoTracking()
                     .Where(entry => entry.Timestamp > DateTime.UtcNow.AddHours(-12))
                     .FirstOrDefaultAsync(cancellationToken);
 

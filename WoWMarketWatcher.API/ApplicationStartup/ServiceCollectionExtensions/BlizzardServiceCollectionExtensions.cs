@@ -43,8 +43,9 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                     .WaitAndRetryAsync(5, (retryAttempt) => TimeSpan.FromMilliseconds(retryAttempt * 300), onRetry: (outcome, timespan, retryAttempt, context) =>
                     {
                         var sourceName = GetSourceName();
-                        var logger = services.BuildServiceProvider().GetRequiredService<ILogger<BlizzardService>>();
-                        var correlationId = outcome.Result?.RequestMessage?.Headers.GetOrGenerateCorrelationId() ?? context.CorrelationId.ToString() ?? Guid.NewGuid().ToString();
+                        var serviceProvider = services.BuildServiceProvider();
+                        var logger = serviceProvider.GetRequiredService<ILogger<BlizzardService>>();
+                        var correlationId = serviceProvider.GetRequiredService<ICorrelationIdService>().CorrelationId;
 
                         if (outcome.Exception is TimeoutRejectedException)
                         {

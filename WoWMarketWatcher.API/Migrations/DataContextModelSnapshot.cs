@@ -210,8 +210,8 @@ namespace WoWMarketWatcher.API.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
 
-                    b.Property<int>("Threshold")
-                        .HasColumnType("int");
+                    b.Property<long>("Threshold")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

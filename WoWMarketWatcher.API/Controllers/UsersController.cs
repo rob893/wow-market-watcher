@@ -13,21 +13,23 @@ using WoWMarketWatcher.API.Models.DTOs.Users;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Requests.Users;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ServiceControllerBase
+    public sealed class UsersController : ServiceControllerBase
     {
         private readonly IUserRepository userRepository;
+
         private readonly IMapper mapper;
 
-
-        public UsersController(IUserRepository userRepository, IMapper mapper)
+        public UsersController(IUserRepository userRepository, IMapper mapper, ICorrelationIdService correlationIdService)
+            : base(correlationIdService)
         {
-            this.userRepository = userRepository;
-            this.mapper = mapper;
+            this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -69,7 +71,7 @@ namespace WoWMarketWatcher.API.Controllers
                 return this.Unauthorized("You can only delete your own user.");
             }
 
-            this.userRepository.Delete(user);
+            this.userRepository.Remove(user);
             var saveResults = await this.userRepository.SaveAllAsync();
 
             if (!saveResults)

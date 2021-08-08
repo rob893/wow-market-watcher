@@ -75,7 +75,7 @@ namespace WoWMarketWatcher.API.Entities
 
         public int AggregationTimeGranularityInHours { get; set; }
 
-        public int Threshold { get; set; }
+        public long Threshold { get; set; }
     }
 
     public enum AlertConditionMetric

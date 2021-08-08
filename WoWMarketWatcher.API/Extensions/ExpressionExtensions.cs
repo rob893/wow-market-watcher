@@ -33,6 +33,7 @@ namespace WoWMarketWatcher.API.Extensions
         private class ParameterReplacer : ExpressionVisitor
         {
             private readonly ParameterExpression source;
+
             private readonly Expression target;
 
             public ParameterReplacer(ParameterExpression source, Expression target)

@@ -9,35 +9,42 @@ using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.Constants;
-using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Data;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Services;
+
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs
 {
-    public class PullRealmDataBackgroundJob
+    public sealed class PullRealmDataBackgroundJob
     {
         private readonly IBlizzardService blizzardService;
-        private readonly IConnectedRealmRepository connectedRealmRepository;
-        private readonly IRealmRepository realmRepository;
+
+        private readonly DataContext dbContext;
+
         private readonly IMapper mapper;
+
+        private readonly ICorrelationIdService correlationIdService;
+
         private readonly ILogger<PullRealmDataBackgroundJob> logger;
 
         public PullRealmDataBackgroundJob(
             IBlizzardService blizzardService,
-            IConnectedRealmRepository connectedRealmRepository,
-            IRealmRepository realmRepository,
+            DataContext dbContext,
             IMapper mapper,
+            ICorrelationIdService correlationIdService,
             ILogger<PullRealmDataBackgroundJob> logger)
         {
             this.blizzardService = blizzardService ?? throw new ArgumentNullException(nameof(blizzardService));
-            this.connectedRealmRepository = connectedRealmRepository ?? throw new ArgumentNullException(nameof(connectedRealmRepository));
-            this.realmRepository = realmRepository ?? throw new ArgumentNullException(nameof(realmRepository));
+            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.correlationIdService = correlationIdService ?? throw new ArgumentNullException(nameof(correlationIdService));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
+        private string CorrelationId => this.correlationIdService.CorrelationId;
 
         public async Task PullRealmData(PerformContext context)
         {
@@ -48,34 +55,34 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             var sourceName = GetSourceName();
             var hangfireJobId = context.BackgroundJob.Id;
-            var correlationId = $"{hangfireJobId}-{Guid.NewGuid()}";
+            this.correlationIdService.CorrelationId = $"{hangfireJobId}-{Guid.NewGuid()}";
 
             // Can't use tags yet. Issue with Pomelo ef core MySQL connector
             // context.AddTags(nameof(PullRealmDataBackgroundJob));
 
             var metadata = new Dictionary<string, object> { { LogMetadataFields.BackgroundJobName, nameof(PullRealmDataBackgroundJob) } };
 
-            this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(PullRealmDataBackgroundJob)} started.", metadata);
+            this.logger.LogInformation(hangfireJobId, sourceName, this.CorrelationId, $"{nameof(PullRealmDataBackgroundJob)} started.", metadata);
 
             try
             {
                 var totalEntriesUpdated = 0;
 
-                var currentConnectedRealms = (await this.connectedRealmRepository.EntitySet().ToListAsync()).ToDictionary(x => x.Id);
-                var currentRealms = (await this.realmRepository.EntitySet().ToListAsync()).ToDictionary(r => r.Id);
+                var currentConnectedRealms = (await this.dbContext.ConnectedRealms.ToListAsync()).ToDictionary(x => x.Id);
+                var currentRealms = (await this.dbContext.Realms.ToListAsync()).ToDictionary(r => r.Id);
 
-                var blizzardRealms = await this.blizzardService.GetAllConnectedRealmsAsync(correlationId);
+                var blizzardRealms = await this.blizzardService.GetAllConnectedRealmsAsync();
 
-                this.logger.LogDebug(hangfireJobId, sourceName, correlationId, $"Starting to process connected realms.", metadata);
+                this.logger.LogDebug(hangfireJobId, sourceName, this.CorrelationId, $"Starting to process connected realms.", metadata);
                 foreach (var connectedRealm in blizzardRealms)
                 {
                     try
                     {
                         if (!currentConnectedRealms.ContainsKey(connectedRealm.Id))
                         {
-                            this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Connected realm {connectedRealm.Id} not in database. Adding it.", metadata);
-                            this.connectedRealmRepository.Add(this.mapper.Map<ConnectedRealm>(connectedRealm));
-                            totalEntriesUpdated += await this.connectedRealmRepository.SaveChangesAsync();
+                            this.logger.LogInformation(hangfireJobId, sourceName, this.CorrelationId, $"Connected realm {connectedRealm.Id} not in database. Adding it.", metadata);
+                            this.dbContext.ConnectedRealms.Add(this.mapper.Map<ConnectedRealm>(connectedRealm));
+                            totalEntriesUpdated += await this.dbContext.SaveChangesAsync();
                             continue;
                         }
 
@@ -87,13 +94,23 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                         {
                             if (string.IsNullOrWhiteSpace(connectedRealm.Population.Name.EnUS))
                             {
-                                this.logger.LogWarning(hangfireJobId, sourceName, correlationId, $"Population for connected realm {connectedRealm.Id} of '{connectedRealm.Population.Name.EnUS}' pulled from Blizzard is null or white space. Skipping.", metadata);
+                                this.logger.LogWarning(
+                                    hangfireJobId,
+                                    sourceName,
+                                    this.CorrelationId,
+                                    $"Population for connected realm {connectedRealm.Id} of '{connectedRealm.Population.Name.EnUS}' pulled from Blizzard is null or white space. Skipping.",
+                                    metadata);
                             }
                             else
                             {
-                                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Population for connected realm {connectedRealm.Id} has changed from {currentConnectedRealm.Population} to {connectedRealm.Population.Name.EnUS}. Updating it.", metadata);
+                                this.logger.LogInformation(
+                                    hangfireJobId,
+                                    sourceName,
+                                    this.CorrelationId,
+                                    $"Population for connected realm {connectedRealm.Id} has changed from {currentConnectedRealm.Population} to {connectedRealm.Population.Name.EnUS}. Updating it.",
+                                    metadata);
                                 currentConnectedRealm.Population = connectedRealm.Population.Name.EnUS;
-                                totalEntriesUpdated += await this.connectedRealmRepository.SaveChangesAsync();
+                                totalEntriesUpdated += await this.dbContext.SaveChangesAsync();
                             }
                         }
 
@@ -101,9 +118,14 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                         {
                             if (!pulledRealms.ContainsKey(realmId))
                             {
-                                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Realm {realmId} in database for connected realm {connectedRealm.Id} but not in Blizzard response. Removing it.", metadata);
-                                this.realmRepository.Delete(currentRealmsForConnectedRealm[realmId]);
-                                totalEntriesUpdated += await this.realmRepository.SaveChangesAsync();
+                                this.logger.LogInformation(
+                                    hangfireJobId,
+                                    sourceName,
+                                    this.CorrelationId,
+                                    $"Realm {realmId} in database for connected realm {connectedRealm.Id} but not in Blizzard response. Removing it.",
+                                    metadata);
+                                this.dbContext.Realms.Remove(currentRealmsForConnectedRealm[realmId]);
+                                totalEntriesUpdated += await this.dbContext.SaveChangesAsync();
                                 currentRealms.Remove(realmId);
                             }
                         }
@@ -112,42 +134,47 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                         {
                             if (!currentRealmsForConnectedRealm.ContainsKey(realmId))
                             {
-                                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"Realm {realmId} not in database for connected realm {connectedRealm.Id}. Adding it.", metadata);
+                                this.logger.LogInformation(
+                                    hangfireJobId,
+                                    sourceName,
+                                    this.CorrelationId,
+                                    $"Realm {realmId} not in database for connected realm {connectedRealm.Id}. Adding it.",
+                                    metadata);
 
                                 if (currentRealms.ContainsKey(realmId))
                                 {
                                     var realm = currentRealms[realmId];
                                     realm.ConnectedRealm = currentConnectedRealm;
                                     realm.ConnectedRealmId = currentConnectedRealm.Id;
-                                    totalEntriesUpdated += await this.realmRepository.SaveChangesAsync();
+                                    totalEntriesUpdated += await this.dbContext.SaveChangesAsync();
                                 }
                                 else
                                 {
                                     var newRealm = this.mapper.Map<Realm>(pulledRealms[realmId]);
                                     newRealm.ConnectedRealm = currentConnectedRealm;
                                     newRealm.ConnectedRealmId = currentConnectedRealm.Id;
-                                    this.realmRepository.Add(newRealm);
-                                    totalEntriesUpdated += await this.realmRepository.SaveChangesAsync();
+                                    this.dbContext.Realms.Add(newRealm);
+                                    totalEntriesUpdated += await this.dbContext.SaveChangesAsync();
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        this.logger.LogError(hangfireJobId, sourceName, correlationId, $"Unable to process connected realm {connectedRealm.Id}. Reason: {ex}", metadata);
+                        this.logger.LogError(hangfireJobId, sourceName, this.CorrelationId, $"Unable to process connected realm {connectedRealm.Id}. Reason: {ex}", metadata);
                     }
                 }
-                this.logger.LogDebug(hangfireJobId, sourceName, correlationId, $"Processing connected realms complete.", metadata);
+                this.logger.LogDebug(hangfireJobId, sourceName, this.CorrelationId, $"Processing connected realms complete.", metadata);
 
-                this.logger.LogInformation(hangfireJobId, sourceName, correlationId, $"{nameof(PullRealmDataBackgroundJob)} complete. {totalEntriesUpdated} entries updated.", metadata);
+                this.logger.LogInformation(hangfireJobId, sourceName, this.CorrelationId, $"{nameof(PullRealmDataBackgroundJob)} complete. {totalEntriesUpdated} entries updated.", metadata);
             }
             catch (OperationCanceledException ex)
             {
-                this.logger.LogWarning(hangfireJobId, sourceName, correlationId, $"{nameof(PullRealmDataBackgroundJob)} canceled. Reason: {ex}", metadata);
+                this.logger.LogWarning(hangfireJobId, sourceName, this.CorrelationId, $"{nameof(PullRealmDataBackgroundJob)} canceled. Reason: {ex}", metadata);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(hangfireJobId, sourceName, correlationId, $"{nameof(PullRealmDataBackgroundJob)} failed. Reason: {ex}", metadata);
+                this.logger.LogError(hangfireJobId, sourceName, this.CorrelationId, $"{nameof(PullRealmDataBackgroundJob)} failed. Reason: {ex}", metadata);
                 throw new BackgroundJobClientException(ex.Message, ex);
             }
         }

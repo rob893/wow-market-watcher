@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WoWMarketWatcher.API.Models.QueryParameters
 {
-    // TODO: Handle url encode/decode (cursors with + for example break)
     public record CursorPaginationQueryParameters : IValidatableObject
     {
         [Range(1, 1000)]

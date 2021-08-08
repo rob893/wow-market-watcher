@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,18 +10,19 @@ using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Data
 {
-    public class DatabaseSeeder : IDatabaseSeeder
+    public sealed class DatabaseSeeder : IDatabaseSeeder
     {
         private readonly DataContext context;
-        private readonly UserManager<User> userManager;
-        private readonly RoleManager<Role> roleManager;
 
+        private readonly UserManager<User> userManager;
+
+        private readonly RoleManager<Role> roleManager;
 
         public DatabaseSeeder(DataContext context, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
-            this.context = context;
-            this.userManager = userManager;
-            this.roleManager = roleManager;
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            this.roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
         public void SeedDatabase(bool seedData, bool clearCurrentData, bool applyMigrations, bool dropDatabase)

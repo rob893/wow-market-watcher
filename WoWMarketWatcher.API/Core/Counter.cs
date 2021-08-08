@@ -1,6 +1,6 @@
 namespace WoWMarketWatcher.API.Core
 {
-    public class Counter
+    public sealed class Counter
     {
         public int Count { get; set; }
     }

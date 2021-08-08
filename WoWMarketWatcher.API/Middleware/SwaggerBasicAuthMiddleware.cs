@@ -8,7 +8,7 @@ using WoWMarketWatcher.API.Models.Settings;
 
 namespace WoWMarketWatcher.API.Middleware
 {
-    public class SwaggerBasicAuthMiddleware
+    public sealed class SwaggerBasicAuthMiddleware
     {
         private readonly RequestDelegate next;
 

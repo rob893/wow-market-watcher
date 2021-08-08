@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.API.Services;
 
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
@@ -12,7 +13,7 @@ namespace WoWMarketWatcher.API.Middleware
     /// <summary>
     /// This middleware adds the correlation id passed in the request into the response.
     /// </summary>
-    public class CorrelationIdMiddleware
+    public sealed class CorrelationIdMiddleware
     {
         private readonly RequestDelegate next;
 
@@ -20,15 +21,20 @@ namespace WoWMarketWatcher.API.Middleware
 
         public CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger)
         {
-            this.next = next;
-            this.logger = logger;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, ICorrelationIdService correlationIdService)
         {
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
+            }
+
+            if (correlationIdService == null)
+            {
+                throw new ArgumentNullException(nameof(correlationIdService));
             }
 
             var sourceName = GetSourceName();
@@ -43,6 +49,8 @@ namespace WoWMarketWatcher.API.Middleware
             {
                 this.logger.LogDebug(sourceName, correlationId, "Correlation id found in request headers. It will be added to the response headers.");
             }
+
+            correlationIdService.CorrelationId = correlationId;
 
             context.Response.OnStarting(() =>
             {

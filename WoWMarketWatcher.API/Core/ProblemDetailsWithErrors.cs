@@ -9,7 +9,7 @@ using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Core
 {
-    public class ProblemDetailsWithErrors : ProblemDetails
+    public sealed class ProblemDetailsWithErrors : ProblemDetails
     {
         private readonly Dictionary<int, string> errorTypes = new()
         {

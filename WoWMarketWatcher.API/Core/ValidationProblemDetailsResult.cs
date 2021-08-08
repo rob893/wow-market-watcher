@@ -8,7 +8,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace WoWMarketWatcher.API.Core
 {
-    public class ValidationProblemDetailsResult : IActionResult
+    public sealed class ValidationProblemDetailsResult : IActionResult
     {
         public async Task ExecuteResultAsync(ActionContext context)
         {

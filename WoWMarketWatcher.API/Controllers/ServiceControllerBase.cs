@@ -5,11 +5,21 @@ using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     public abstract class ServiceControllerBase : ControllerBase
     {
+        private readonly ICorrelationIdService correlationIdService;
+
+        protected ServiceControllerBase(ICorrelationIdService correlationIdService)
+        {
+            this.correlationIdService = correlationIdService ?? throw new ArgumentNullException(nameof(correlationIdService));
+        }
+
+        protected string CorrelationId => this.correlationIdService.CorrelationId;
+
         [NonAction]
         public bool IsUserAuthorizedForResource(IOwnedByUser<int> resource, bool isAdminAuthorized = true)
         {
@@ -85,16 +95,6 @@ namespace WoWMarketWatcher.API.Controllers
         public ObjectResult InternalServerError(IList<string> errorMessages)
         {
             return base.StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetailsWithErrors(errorMessages, StatusCodes.Status500InternalServerError, this.Request));
-        }
-
-        internal string GetOrGenerateCorrelationId()
-        {
-            if (this.HttpContext.Request.Headers.TryGetCorrelationId(out var correlationId))
-            {
-                return correlationId;
-            }
-
-            return Guid.NewGuid().ToString();
         }
     }
 }

@@ -11,6 +11,7 @@ using MySqlConnector;
 using WoWMarketWatcher.API.BackgroundJobs;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Models.Settings;
+
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions

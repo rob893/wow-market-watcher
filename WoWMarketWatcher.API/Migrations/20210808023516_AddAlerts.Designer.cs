@@ -9,7 +9,7 @@ using WoWMarketWatcher.API.Data;
 namespace WoWMarketWatcher.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210806144514_AddAlerts")]
+    [Migration("20210808023516_AddAlerts")]
     partial class AddAlerts
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -212,8 +212,8 @@ namespace WoWMarketWatcher.API.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
 
-                    b.Property<int>("Threshold")
-                        .HasColumnType("int");
+                    b.Property<long>("Threshold")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

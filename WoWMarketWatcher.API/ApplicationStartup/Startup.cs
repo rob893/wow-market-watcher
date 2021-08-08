@@ -14,16 +14,17 @@ using WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Middleware;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {
-    public class Startup
+    public sealed class Startup
     {
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration configuration;
 
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            this.configuration = configuration;
         }
 
         // This method gets called by the runtime. Use this method to add services to the DI container.
@@ -31,20 +32,22 @@ namespace WoWMarketWatcher.API.ApplicationStartup
         {
             services.AddControllerServices()
                 .AddLogging()
-                .AddRateLimitingServices(this.Configuration)
+                .AddRateLimitingServices(this.configuration)
                 .AddApplicationInsightsTelemetry()
-                .AddDatabaseServices(this.Configuration)
-                .AddAuthenticationServices(this.Configuration)
+                .AddDatabaseServices(this.configuration)
+                .AddAuthenticationServices(this.configuration)
                 .AddIdentityServices()
                 .AddRepositoryServices()
                 .AddSingleton<Counter>()
                 .AddSingleton<ITelemetryInitializer, ApplicationInsightsTelemetryInitializer>()
-                .AddHangfireServices(this.Configuration)
-                .AddSwaggerServices(this.Configuration)
-                .AddEmailServices(this.Configuration)
+                .AddScoped<ICorrelationIdService, CorrelationIdService>()
+                .AddScoped<IAlertService, AlertService>()
+                .AddHangfireServices(this.configuration)
+                .AddSwaggerServices(this.configuration)
+                .AddEmailServices(this.configuration)
                 .AddAutoMapper(typeof(Startup))
                 .AddHealthCheckServices()
-                .AddBlizzardServices(this.Configuration)
+                .AddBlizzardServices(this.configuration)
                 .AddMemoryCache()
                 .AddCors();
         }
@@ -68,15 +71,15 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .UseMiddleware<CorrelationIdMiddleware>()
                 .UseRouting()
                 .UseCors(header =>
-                    header.WithOrigins(this.Configuration.GetSection(ConfigurationKeys.CorsAllowedOrigins).Get<string[]>() ?? new[] { "*" })
+                    header.WithOrigins(this.configuration.GetSection(ConfigurationKeys.CorsAllowedOrigins).Get<string[]>() ?? new[] { "*" })
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .WithExposedHeaders(this.Configuration.GetSection(ConfigurationKeys.CorsExposedHeaders).Get<string[]>() ?? new[] { AppHeaderNames.TokenExpired, AppHeaderNames.CorrelationId })
+                        .WithExposedHeaders(this.configuration.GetSection(ConfigurationKeys.CorsExposedHeaders).Get<string[]>() ?? new[] { AppHeaderNames.TokenExpired, AppHeaderNames.CorrelationId })
                 )
                 .UseAuthentication()
                 .UseAuthorization()
-                .UseAndConfigureSwagger(this.Configuration)
-                .UseAndConfigureHangfire(recurringJobs, this.Configuration)
+                .UseAndConfigureSwagger(this.configuration)
+                .UseAndConfigureHangfire(recurringJobs, this.configuration)
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapHealthChecks(ApplicationSettings.HealthCheckEndpoint, new HealthCheckOptions()

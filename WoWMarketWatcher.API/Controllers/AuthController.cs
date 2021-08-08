@@ -29,15 +29,23 @@ namespace WoWMarketWatcher.API.Controllers
     [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ServiceControllerBase
+    public sealed class AuthController : ServiceControllerBase
     {
         private readonly IUserRepository userRepository;
+
         private readonly AuthenticationSettings authSettings;
+
         private readonly IEmailService emailService;
+
         private readonly IMapper mapper;
 
-
-        public AuthController(IUserRepository userRepository, IEmailService emailService, IOptions<AuthenticationSettings> authSettings, IMapper mapper)
+        public AuthController(
+            IUserRepository userRepository,
+            IEmailService emailService,
+            IOptions<AuthenticationSettings> authSettings,
+            IMapper mapper,
+            ICorrelationIdService correlationIdService)
+                : base(correlationIdService)
         {
             this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
@@ -48,8 +56,6 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<LoginResponse>> RegisterAsync([FromBody] RegisterUserRequest userForRegisterDto)
         {
-            var correlationId = this.GetOrGenerateCorrelationId();
-
             if (userForRegisterDto == null)
             {
                 return this.BadRequest();
@@ -76,7 +82,7 @@ namespace WoWMarketWatcher.API.Controllers
 
             await this.userRepository.SaveAllAsync();
 
-            await this.SendConfirmEmailLink(user, correlationId);
+            await this.SendConfirmEmailLink(user);
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 
@@ -91,8 +97,6 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost("forgotPassword")]
         public async Task<ActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
         {
-            var correlationId = this.GetOrGenerateCorrelationId();
-
             if (request == null)
             {
                 return this.BadRequest();
@@ -108,7 +112,7 @@ namespace WoWMarketWatcher.API.Controllers
             var token = await this.userRepository.UserManager.GeneratePasswordResetTokenAsync(user);
 
             var confLink = $"{this.authSettings.ForgotPasswordCallbackUrl}?token={token}&email={user.Email}";
-            await this.emailService.SendEmailAsync(correlationId, user.Email, "Reset your password", $"Please click {confLink} to reset your password");
+            await this.emailService.SendEmailAsync(user.Email, "Reset your password", $"Please click {confLink} to reset your password");
 
             return this.NoContent();
         }
@@ -170,8 +174,6 @@ namespace WoWMarketWatcher.API.Controllers
         {
             try
             {
-                var correlationId = this.GetOrGenerateCorrelationId();
-
                 if (userForRegisterDto == null)
                 {
                     return this.BadRequest();
@@ -203,7 +205,7 @@ namespace WoWMarketWatcher.API.Controllers
 
                 if (!validatedToken.EmailVerified)
                 {
-                    await this.SendConfirmEmailLink(user, correlationId);
+                    await this.SendConfirmEmailLink(user);
                 }
 
                 var token = this.GenerateJwtToken(user);
@@ -483,12 +485,12 @@ namespace WoWMarketWatcher.API.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        private async Task SendConfirmEmailLink(User user, string correlationId)
+        private async Task SendConfirmEmailLink(User user)
         {
             var emailToken = await this.userRepository.UserManager.GenerateEmailConfirmationTokenAsync(user);
             var encoded = emailToken.ConvertToBase64Url();
             var confLink = $"{this.authSettings.ConfirmEmailCallbackUrl}?token={encoded}&email={user.Email}";
-            await this.emailService.SendEmailAsync(correlationId, user.Email, "Confirm your email", $"Please click {confLink} to confirm email");
+            await this.emailService.SendEmailAsync(user.Email, "Confirm your email", $"Please click {confLink} to confirm email");
         }
     }
 }

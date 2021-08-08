@@ -86,7 +86,7 @@ namespace WoWMarketWatcher.API.Migrations
                     AggregationType = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     AggregationTimeGranularityInHours = table.Column<int>(type: "int", nullable: false),
-                    Threshold = table.Column<int>(type: "int", nullable: false)
+                    Threshold = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {

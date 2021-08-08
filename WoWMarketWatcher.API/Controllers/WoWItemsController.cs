@@ -10,23 +10,26 @@ using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/wow/items")]
     [ApiController]
-    public class WoWItemsController : ServiceControllerBase
+    public sealed class WoWItemsController : ServiceControllerBase
     {
         private readonly IWoWItemRepository itemRepository;
+
         private readonly IMapper mapper;
+
         private readonly IMemoryCache cache;
 
-
-        public WoWItemsController(IWoWItemRepository itemRepository, IMapper mapper, IMemoryCache cache)
+        public WoWItemsController(IWoWItemRepository itemRepository, IMapper mapper, IMemoryCache cache, ICorrelationIdService correlationIdService)
+            : base(correlationIdService)
         {
-            this.itemRepository = itemRepository;
-            this.mapper = mapper;
-            this.cache = cache;
+            this.itemRepository = itemRepository ?? throw new ArgumentNullException(nameof(itemRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
         [HttpGet]

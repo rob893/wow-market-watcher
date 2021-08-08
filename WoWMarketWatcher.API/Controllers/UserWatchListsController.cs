@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -8,28 +9,36 @@ using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Requests;
 using WoWMarketWatcher.API.Models.Requests.WatchLists;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/users/{userId}/watchLists")]
     [ApiController]
-    public class UserWatchListsController : ServiceControllerBase
+    public sealed class UserWatchListsController : ServiceControllerBase
     {
         private readonly IWatchListRepository watchListRepository;
+
         private readonly IWoWItemRepository itemRepository;
+
         private readonly IConnectedRealmRepository realmRepository;
+
         private readonly IMapper mapper;
 
-
-        public UserWatchListsController(IWatchListRepository watchListRepository, IWoWItemRepository itemRepository, IConnectedRealmRepository realmRepository, IMapper mapper)
+        public UserWatchListsController(
+            IWatchListRepository watchListRepository,
+            IWoWItemRepository itemRepository,
+            IConnectedRealmRepository realmRepository,
+            IMapper mapper,
+            ICorrelationIdService correlationIdService)
+                : base(correlationIdService)
         {
-            this.watchListRepository = watchListRepository;
-            this.itemRepository = itemRepository;
-            this.realmRepository = realmRepository;
-            this.mapper = mapper;
+            this.watchListRepository = watchListRepository ?? throw new ArgumentNullException(nameof(watchListRepository));
+            this.itemRepository = itemRepository ?? throw new ArgumentNullException(nameof(itemRepository));
+            this.realmRepository = realmRepository ?? throw new ArgumentNullException(nameof(realmRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -113,7 +122,7 @@ namespace WoWMarketWatcher.API.Controllers
                 return this.Forbidden("You are not authorized to delete this resource.");
             }
 
-            this.watchListRepository.Delete(watchList);
+            this.watchListRepository.Remove(watchList);
             var saveResults = await this.watchListRepository.SaveAllAsync();
 
             return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the resource.");

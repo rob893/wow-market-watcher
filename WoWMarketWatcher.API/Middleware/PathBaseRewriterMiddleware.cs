@@ -10,7 +10,7 @@ namespace WoWMarketWatcher.API.Middleware
     /// This middleware rewrites the request path base to whatever is in the X-Forwarded-Prefix.
     /// Useful if the app is running behind a reverse proxy or load balancer.
     /// </summary>
-    public class PathBaseRewriterMiddleware
+    public sealed class PathBaseRewriterMiddleware
     {
         private readonly RequestDelegate next;
 

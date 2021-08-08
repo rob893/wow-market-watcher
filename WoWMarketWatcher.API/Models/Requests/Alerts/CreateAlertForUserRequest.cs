@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using WoWMarketWatcher.API.Entities;
 
 namespace WoWMarketWatcher.API.Models.Requests.Alerts
 {

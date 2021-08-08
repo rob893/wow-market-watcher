@@ -7,30 +7,38 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Settings;
+
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Services
 {
-    public class SendGridEmailService : IEmailService
+    public sealed class SendGridEmailService : IEmailService
     {
         private readonly ISendGridClient client;
+
         private readonly SendGridSettings settings;
+
+        private readonly ICorrelationIdService correlationIdService;
+
         private readonly ILogger<SendGridEmailService> logger;
 
-        public SendGridEmailService(ISendGridClient client, IOptions<SendGridSettings> settings, ILogger<SendGridEmailService> logger)
+        public SendGridEmailService(ISendGridClient client, IOptions<SendGridSettings> settings, ICorrelationIdService correlationIdService, ILogger<SendGridEmailService> logger)
         {
-            this.client = client;
+            this.client = client ?? throw new ArgumentNullException(nameof(client));
             this.settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
-            this.logger = logger;
+            this.correlationIdService = correlationIdService ?? throw new ArgumentNullException(nameof(correlationIdService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task SendEmailAsync(string correlationId, string toEmail, string subject, string message)
+        private string CorrelationId => this.correlationIdService.CorrelationId;
+
+        public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
             var sourceName = GetSourceName();
 
             if (!this.settings.Enabled)
             {
-                this.logger.LogInformation(sourceName, correlationId, "Email sending is disabled. Returning.");
+                this.logger.LogInformation(sourceName, this.CorrelationId, "Email sending is disabled. Returning.");
                 return;
             }
 
@@ -48,11 +56,11 @@ namespace WoWMarketWatcher.API.Services
             if (!res.IsSuccessStatusCode)
             {
                 var content = await res.Body.ReadAsStringAsync();
-                this.logger.LogError(sourceName, correlationId, $"Unable to send email. Status: {res.StatusCode}. Reason: {content}");
+                this.logger.LogError(sourceName, this.CorrelationId, $"Unable to send email. Status: {res.StatusCode}. Reason: {content}");
                 throw new HttpRequestException(content);
             }
 
-            this.logger.LogInformation(sourceName, correlationId, "Sending email successful.");
+            this.logger.LogInformation(sourceName, this.CorrelationId, "Sending email successful.");
         }
     }
 }

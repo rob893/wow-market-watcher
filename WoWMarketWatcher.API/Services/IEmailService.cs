@@ -4,6 +4,6 @@ namespace WoWMarketWatcher.API.Services
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(string correlationId, string toEmail, string subject, string message);
+        Task SendEmailAsync(string toEmail, string subject, string message);
     }
 }

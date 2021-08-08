@@ -1,35 +1,35 @@
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Constants;
-using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Requests;
 using WoWMarketWatcher.API.Models.Requests.WatchLists;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.Controllers
 {
     [Route("api/[controller]")]
     [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
     [ApiController]
-    public class WatchListsController : ServiceControllerBase
+    public sealed class WatchListsController : ServiceControllerBase
     {
         private readonly IWatchListRepository watchListRepository;
+
         private readonly IMapper mapper;
 
-
-        public WatchListsController(IWatchListRepository watchListRepository, IMapper mapper)
+        public WatchListsController(IWatchListRepository watchListRepository, IMapper mapper, ICorrelationIdService correlationIdService)
+            : base(correlationIdService)
         {
-            this.watchListRepository = watchListRepository;
-            this.mapper = mapper;
+            this.watchListRepository = watchListRepository ?? throw new ArgumentNullException(nameof(watchListRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -84,7 +84,7 @@ namespace WoWMarketWatcher.API.Controllers
                 return this.NotFound($"No resource with Id {id} found.");
             }
 
-            this.watchListRepository.Delete(watchList);
+            this.watchListRepository.Remove(watchList);
             var saveResults = await this.watchListRepository.SaveAllAsync();
 
             return !saveResults ? this.BadRequest("Failed to delete the income.") : this.NoContent();

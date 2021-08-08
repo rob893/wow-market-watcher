@@ -14,6 +14,7 @@ using WoWMarketWatcher.API.Data;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Services;
+
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Controllers
@@ -21,27 +22,65 @@ namespace WoWMarketWatcher.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = AuthorizationPolicyName.RequireAdminRole)]
-    public class TestController : ServiceControllerBase
+    public sealed class TestController : ServiceControllerBase
     {
         private readonly Counter counter;
+
         private readonly IBlizzardService blizzardService;
+
         private readonly ILogger<TestController> logger;
+
         private readonly DataContext dbContext;
+
+        private readonly IAlertService alertService;
+
         private readonly IHttpClientFactory httpClientFactory;
 
-        public TestController(Counter counter, IBlizzardService blizzardService, ILogger<TestController> logger, DataContext dbContext, IHttpClientFactory httpClientFactory)
+        public TestController(
+            Counter counter,
+            IBlizzardService blizzardService,
+            ILogger<TestController> logger,
+            DataContext dbContext,
+            IAlertService alertService,
+            IHttpClientFactory httpClientFactory,
+            ICorrelationIdService correlationIdService)
+                : base(correlationIdService)
         {
-            this.counter = counter;
-            this.blizzardService = blizzardService;
-            this.logger = logger;
-            this.dbContext = dbContext;
-            this.httpClientFactory = httpClientFactory;
+            this.counter = counter ?? throw new ArgumentNullException(nameof(counter));
+            this.blizzardService = blizzardService ?? throw new ArgumentNullException(nameof(blizzardService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            this.alertService = alertService ?? throw new ArgumentNullException(nameof(alertService));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        }
+
+        [HttpPost("alerts/evaluate")]
+        public async Task<ActionResult<int>> EvaludateAlertsAsync()
+        {
+            var alerts = await this.dbContext.Alerts
+                .Include(alert => alert.Actions)
+                .Include(alert => alert.Conditions)
+                .ToListAsync();
+
+            var alertsTriggered = 0;
+
+            foreach (var alert in alerts)
+            {
+                var fired = await this.alertService.EvaluateAlertAsync(alert);
+
+                if (fired)
+                {
+                    alertsTriggered++;
+                }
+            }
+
+            return this.Ok(alertsTriggered);
         }
 
         [HttpGet("blizz/items/{id}")]
         public async Task<ActionResult<BlizzardWoWItem>> GetItem([FromRoute] int id)
         {
-            var item = await this.blizzardService.GetWoWItemAsync(id, Guid.NewGuid().ToString());
+            var item = await this.blizzardService.GetWoWItemAsync(id);
 
             return this.Ok(item);
         }
@@ -49,7 +88,7 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet("blizz/wowTokenPrice")]
         public async Task<ActionResult<BlizzardWoWTokenResponse>> GetWowToken()
         {
-            var token = await this.blizzardService.GetWoWTokenPriceAsync(Guid.NewGuid().ToString());
+            var token = await this.blizzardService.GetWoWTokenPriceAsync();
 
             return this.Ok(token);
         }
@@ -57,7 +96,7 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpGet("misc")]
         public async Task<ActionResult> GetMisc()
         {
-            var items = await this.blizzardService.GetAllConnectedRealmsAsync(Guid.NewGuid().ToString());
+            var items = await this.blizzardService.GetAllConnectedRealmsAsync();
 
             return this.Ok(items);
         }
@@ -66,11 +105,10 @@ namespace WoWMarketWatcher.API.Controllers
         public ActionResult<BlizzardWoWItem> TestLogger()
         {
             var sourceName = GetSourceName();
-            var correlationId = Guid.NewGuid().ToString();
 
-            this.logger.LogInformation(sourceName, correlationId, $"TEST ASDF");
+            this.logger.LogInformation(sourceName, this.CorrelationId, $"TEST ASDF");
 
-            return this.Ok(new { correlationId });
+            return this.Ok(new { this.CorrelationId });
         }
 
         [HttpPost("auctionTimeSeries/download")]

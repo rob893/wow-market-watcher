@@ -7,13 +7,13 @@ using WoWMarketWatcher.API.Constants;
 
 namespace WoWMarketWatcher.API.Core
 {
-    public class ApplicationInsightsTelemetryInitializer : ITelemetryInitializer
+    public sealed class ApplicationInsightsTelemetryInitializer : ITelemetryInitializer
     {
         private readonly IConfiguration configuration;
 
         public ApplicationInsightsTelemetryInitializer(IConfiguration configuration)
         {
-            this.configuration = configuration;
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void Initialize(ITelemetry telemetry)

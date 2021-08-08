@@ -13,7 +13,7 @@ using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Middleware
 {
-    public class GlobalExceptionHandlerMiddleware
+    public sealed class GlobalExceptionHandlerMiddleware
     {
         private readonly ILogger<GlobalExceptionHandlerMiddleware> logger;
 

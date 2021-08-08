@@ -1,19 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace WoWMarketWatcher.API.Core
 {
-    public class CursorPaginatedList<TEntity, TEntityKey> : List<TEntity>, IList<TEntity>
+    public sealed class CursorPaginatedList<TEntity, TEntityKey> : IEnumerable<TEntity>
         where TEntity : class
         where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
     {
-        public bool HasNextPage { get; set; }
-        public bool HasPreviousPage { get; set; }
-        public string? StartCursor { get; set; }
-        public string? EndCursor { get; set; }
-        public int? TotalCount { get; set; }
-        public int PageCount { get; set; }
-
+        private readonly List<TEntity> items;
 
         public CursorPaginatedList(ICollection<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount)
         {
@@ -28,15 +23,29 @@ namespace WoWMarketWatcher.API.Core
             this.EndCursor = endCursor;
             this.TotalCount = totalCount;
             this.PageCount = items.Count;
-            this.AddRange(items);
+            this.items = new List<TEntity>(items);
         }
-    }
 
-    public class CursorPaginatedList<TEntity> : CursorPaginatedList<TEntity, int>
-        where TEntity : class
-    {
-        public CursorPaginatedList(ICollection<TEntity> items, bool hasNextPage, bool hasPreviousPage, string? startCursor, string? endCursor, int? totalCount) :
-            base(items, hasNextPage, hasPreviousPage, startCursor, endCursor, totalCount)
-        { }
+        public bool HasNextPage { get; }
+
+        public bool HasPreviousPage { get; }
+
+        public string? StartCursor { get; }
+
+        public string? EndCursor { get; }
+
+        public int? TotalCount { get; }
+
+        public int PageCount { get; }
+
+        public IEnumerator<TEntity> GetEnumerator()
+        {
+            return this.items.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.items.GetEnumerator();
+        }
     }
 }
