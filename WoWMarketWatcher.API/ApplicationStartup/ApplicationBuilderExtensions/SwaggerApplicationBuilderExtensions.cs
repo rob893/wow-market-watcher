@@ -33,8 +33,9 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 
                         foreach (var description in provider.ApiVersionDescriptions)
                         {
+                            options.RoutePrefix = "swagger";
                             options.SwaggerEndpoint(
-                                $"/swagger/{description.GroupName}/swagger.json",
+                                $"{description.GroupName}/swagger.json",
                                 $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName} {description.GroupName}");
                             options.DocumentTitle = $"WoW Market Watcher - {config.GetEnvironment()}";
                         }
