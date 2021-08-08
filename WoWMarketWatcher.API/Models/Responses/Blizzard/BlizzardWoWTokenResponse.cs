@@ -6,6 +6,7 @@ namespace WoWMarketWatcher.API.Models.Responses.Blizzard
     {
         [JsonProperty("last_updated_timestamp")]
         public long LastUpdatedTimestamp { get; init; }
+
         public long Price { get; init; }
     }
 }

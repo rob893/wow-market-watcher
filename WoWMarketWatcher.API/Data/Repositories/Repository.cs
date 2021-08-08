@@ -85,6 +85,15 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return this.Context.SaveChangesAsync();
         }
 
+        public Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition)
+        {
+            IQueryable<TEntity> query = this.Context.Set<TEntity>();
+
+            query = this.AddIncludes(query);
+
+            return query.OrderBy(e => e.Id).FirstOrDefaultAsync(condition);
+        }
+
         public Task<TEntity> GetByIdAsync(TEntityKey id)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
@@ -102,6 +111,15 @@ namespace WoWMarketWatcher.API.Data.Repositories
             query = includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
+        }
+
+        public Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition)
+        {
+            IQueryable<TEntity> query = this.Context.Set<TEntity>();
+
+            query = this.AddIncludes(query);
+
+            return query.Where(condition).ToListAsync();
         }
 
         public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams)

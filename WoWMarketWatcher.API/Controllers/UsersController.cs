@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,13 +6,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Constants;
-using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
-using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.API.Models.DTOs.Users;
 using WoWMarketWatcher.API.Models.QueryParameters;
-using WoWMarketWatcher.API.Models.Requests;
+using WoWMarketWatcher.API.Models.Requests.Users;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Controllers

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WoWMarketWatcher.API.Models.Requests
+namespace WoWMarketWatcher.API.Models.Requests.WatchLists
 {
     public record AddItemToWatchListRequest
     {

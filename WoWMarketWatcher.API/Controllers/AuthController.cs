@@ -18,9 +18,9 @@ using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models;
-using WoWMarketWatcher.API.Models.DTOs;
-using WoWMarketWatcher.API.Models.Requests;
-using WoWMarketWatcher.API.Models.Responses;
+using WoWMarketWatcher.API.Models.DTOs.Users;
+using WoWMarketWatcher.API.Models.Requests.Auth;
+using WoWMarketWatcher.API.Models.Responses.Auth;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
 

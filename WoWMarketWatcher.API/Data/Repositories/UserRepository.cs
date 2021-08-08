@@ -13,7 +13,7 @@ using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class UserRepository : Repository<User, CursorPaginationQueryParameters>, IUserRepository
+    public sealed class UserRepository : Repository<User, CursorPaginationQueryParameters>, IUserRepository
     {
         public UserManager<User> UserManager { get; init; }
 

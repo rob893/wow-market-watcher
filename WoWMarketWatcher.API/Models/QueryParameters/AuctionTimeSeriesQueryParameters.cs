@@ -7,10 +7,13 @@ namespace WoWMarketWatcher.API.Models.QueryParameters
     {
         [Required]
         public int? WoWItemId { get; init; }
+
         [Required]
         public int? ConnectedRealmId { get; init; }
+
         [Required]
         public DateTime? StartDate { get; init; }
+
         public DateTime? EndDate { get; init; }
     }
 }

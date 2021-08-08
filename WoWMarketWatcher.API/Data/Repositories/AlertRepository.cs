@@ -8,7 +8,7 @@ using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class AlertRepository : Repository<Alert, CursorPaginationQueryParameters>, IAlertRepository
+    public sealed class AlertRepository : Repository<Alert, CursorPaginationQueryParameters>, IAlertRepository
     {
         public AlertRepository(DataContext context) : base(context) { }
 

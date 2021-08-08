@@ -8,7 +8,7 @@ using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class WatchListRepository : Repository<WatchList, CursorPaginationQueryParameters>, IWatchListRepository
+    public sealed class WatchListRepository : Repository<WatchList, CursorPaginationQueryParameters>, IWatchListRepository
     {
         public WatchListRepository(DataContext context) : base(context) { }
 

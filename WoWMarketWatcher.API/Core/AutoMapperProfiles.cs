@@ -4,7 +4,12 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using WoWMarketWatcher.API.Entities;
 using WoWMarketWatcher.API.Models.DTOs;
-using WoWMarketWatcher.API.Models.Requests;
+using WoWMarketWatcher.API.Models.DTOs.Alerts;
+using WoWMarketWatcher.API.Models.DTOs.Realms;
+using WoWMarketWatcher.API.Models.DTOs.Users;
+using WoWMarketWatcher.API.Models.Requests.Alerts;
+using WoWMarketWatcher.API.Models.Requests.Auth;
+using WoWMarketWatcher.API.Models.Requests.WatchLists;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
 
@@ -80,9 +85,10 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap<Alert, AlertDto>();
             this.CreateMap<AlertCondition, AlertConditionDto>();
             this.CreateMap<AlertAction, AlertActionDto>();
-            this.CreateMap<CreateAlertRequest, Alert>();
+            this.CreateMap<CreateAlertForUserRequest, Alert>();
             this.CreateMap<CreateAlertActionRequest, AlertAction>();
             this.CreateMap<CreateAlertConditionRequest, AlertCondition>();
+            this.CreateMap<PutAlertActionRequest, AlertAction>();
         }
 
         private void CreateAuctionTimeSeriesMaps()

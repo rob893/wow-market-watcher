@@ -9,6 +9,7 @@ using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Requests;
+using WoWMarketWatcher.API.Models.Requests.WatchLists;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
 
 namespace WoWMarketWatcher.API.Controllers
@@ -68,6 +69,11 @@ namespace WoWMarketWatcher.API.Controllers
         [HttpPost]
         public async Task<ActionResult<WatchListDto>> CreateWatchListForUserAsync([FromRoute] int userId, [FromBody] CreateWatchListForUserRequest request)
         {
+            if (!this.IsUserAuthorizedForResource(userId))
+            {
+                return this.Forbidden("You are not authorized to access this resource.");
+            }
+
             var newWatchList = this.mapper.Map<WatchList>(request);
             newWatchList.UserId = userId;
 
@@ -90,6 +96,63 @@ namespace WoWMarketWatcher.API.Controllers
             var mapped = this.mapper.Map<WatchListDto>(newWatchList);
 
             return this.CreatedAtRoute("GetWatchListForUserAsync", new { id = mapped.Id, userId }, mapped);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteWatchListForUserAsync([FromRoute] int id)
+        {
+            var watchList = await this.watchListRepository.GetByIdAsync(id);
+
+            if (watchList == null)
+            {
+                return this.NotFound($"No resource with Id {id} found.");
+            }
+
+            if (!this.IsUserAuthorizedForResource(watchList))
+            {
+                return this.Forbidden("You are not authorized to delete this resource.");
+            }
+
+            this.watchListRepository.Delete(watchList);
+            var saveResults = await this.watchListRepository.SaveAllAsync();
+
+            return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<WatchListDto>> UpdateWatchListAsync([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateWatchListRequest> requestPatchDoc)
+        {
+            if (requestPatchDoc == null || requestPatchDoc.Operations.Count == 0)
+            {
+                return this.BadRequest("A JSON patch document with at least 1 operation is required.");
+            }
+
+            var watchList = await this.watchListRepository.GetByIdAsync(id);
+
+            if (watchList == null)
+            {
+                return this.NotFound($"No expense with Id {id} found.");
+            }
+
+            if (!this.IsUserAuthorizedForResource(watchList))
+            {
+                return this.Forbidden("You are not authorized to update this resource.");
+            }
+
+            if (!requestPatchDoc.IsValid(out var errors))
+            {
+                return this.BadRequest(errors);
+            }
+
+            var patchDoc = this.mapper.Map<JsonPatchDocument<WatchList>>(requestPatchDoc);
+
+            patchDoc.ApplyTo(watchList);
+
+            await this.watchListRepository.SaveAllAsync();
+
+            var mapped = this.mapper.Map<WatchListDto>(watchList);
+
+            return this.Ok(mapped);
         }
 
         [HttpPost("{id}/items")]
@@ -138,27 +201,6 @@ namespace WoWMarketWatcher.API.Controllers
             return this.Ok(mapped);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteWatchListForUserAsync([FromRoute] int id)
-        {
-            var watchList = await this.watchListRepository.GetByIdAsync(id);
-
-            if (watchList == null)
-            {
-                return this.NotFound($"No resource with Id {id} found.");
-            }
-
-            if (!this.IsUserAuthorizedForResource(watchList))
-            {
-                return this.Forbidden("You are not authorized to delete this resource.");
-            }
-
-            this.watchListRepository.Delete(watchList);
-            var saveResults = await this.watchListRepository.SaveAllAsync();
-
-            return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
-        }
-
         [HttpDelete("{id}/items/{itemId}")]
         public async Task<ActionResult<WatchListDto>> RemoveItemFromWatchListForUserAsync([FromRoute] int id, [FromRoute] int itemId)
         {
@@ -189,42 +231,6 @@ namespace WoWMarketWatcher.API.Controllers
             {
                 return this.BadRequest("Failed to delete the resource.");
             }
-
-            var mapped = this.mapper.Map<WatchListDto>(watchList);
-
-            return this.Ok(mapped);
-        }
-
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<WatchListDto>> UpdateWatchListAsync([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateWatchListRequest> requestPatchDoc)
-        {
-            if (requestPatchDoc == null || requestPatchDoc.Operations.Count == 0)
-            {
-                return this.BadRequest("A JSON patch document with at least 1 operation is required.");
-            }
-
-            var watchList = await this.watchListRepository.GetByIdAsync(id);
-
-            if (watchList == null)
-            {
-                return this.NotFound($"No expense with Id {id} found.");
-            }
-
-            if (!this.IsUserAuthorizedForResource(watchList))
-            {
-                return this.Forbidden("You are not authorized to update this resource.");
-            }
-
-            if (!requestPatchDoc.IsValid(out var errors))
-            {
-                return this.BadRequest(errors);
-            }
-
-            var patchDoc = this.mapper.Map<JsonPatchDocument<WatchList>>(requestPatchDoc);
-
-            patchDoc.ApplyTo(watchList);
-
-            await this.watchListRepository.SaveAllAsync();
 
             var mapped = this.mapper.Map<WatchListDto>(watchList);
 

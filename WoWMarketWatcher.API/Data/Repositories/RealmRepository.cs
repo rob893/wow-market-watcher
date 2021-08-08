@@ -5,7 +5,7 @@ using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories
 {
-    public class RealmRepository : Repository<Realm, RealmQueryParameters>, IRealmRepository
+    public sealed class RealmRepository : Repository<Realm, RealmQueryParameters>, IRealmRepository
     {
         public RealmRepository(DataContext context) : base(context) { }
 
