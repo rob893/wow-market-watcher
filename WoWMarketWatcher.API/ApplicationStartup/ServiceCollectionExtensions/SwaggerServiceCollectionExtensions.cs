@@ -62,7 +62,6 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                 // Replace {version} with actual version in routes in swagger doc
                 options.DocumentFilter<ReplaceVersionWithExactValueInPathFilter>();
                 options.CustomSchemaIds(id => id.FullName);
-                options.EnableAnnotations();
 
                 // Add the security token option to swagger
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

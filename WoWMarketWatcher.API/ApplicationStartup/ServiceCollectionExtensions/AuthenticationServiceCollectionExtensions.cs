@@ -11,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Models.Settings;
+using WoWMarketWatcher.API.Services;
 
 namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
 {
@@ -27,6 +28,8 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
 
             services.Configure<AuthenticationSettings>(config.GetSection(ConfigurationKeys.Authentication));
 

@@ -1,28 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
-using WoWMarketWatcher.API.Models;
 using WoWMarketWatcher.API.Models.DTOs.Users;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.Requests.Auth;
 using WoWMarketWatcher.API.Models.Responses.Auth;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Controllers.V1
 {
@@ -34,6 +28,8 @@ namespace WoWMarketWatcher.API.Controllers.V1
     {
         private readonly IUserRepository userRepository;
 
+        private readonly IJwtTokenService jwtTokenService;
+
         private readonly AuthenticationSettings authSettings;
 
         private readonly IEmailService emailService;
@@ -42,6 +38,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
         public AuthController(
             IUserRepository userRepository,
+            IJwtTokenService jwtTokenService,
             IEmailService emailService,
             IOptions<AuthenticationSettings> authSettings,
             IMapper mapper,
@@ -49,142 +46,88 @@ namespace WoWMarketWatcher.API.Controllers.V1
                 : base(correlationIdService)
         {
             this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.authSettings = authSettings?.Value ?? throw new ArgumentNullException(nameof(authSettings));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<LoginResponse>> RegisterAsync([FromBody] RegisterUserRequest userForRegisterDto)
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="registerUserRequest">The register request object.</param>
+        /// <returns>The user object and tokens.</returns>
+        /// <response code="201">The user object and tokens.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("register", Name = nameof(RegisterAsync))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<LoginResponse>> RegisterAsync([FromBody] RegisterUserRequest registerUserRequest)
         {
-            if (userForRegisterDto == null)
+            if (registerUserRequest == null)
             {
                 return this.BadRequest();
             }
 
-            var user = this.mapper.Map<User>(userForRegisterDto);
+            var user = this.mapper.Map<User>(registerUserRequest);
 
-            var result = await this.userRepository.CreateUserWithPasswordAsync(user, userForRegisterDto.Password);
+            var result = await this.userRepository.CreateUserWithPasswordAsync(user, registerUserRequest.Password);
 
             if (!result.Succeeded)
             {
                 return this.BadRequest(result.Errors.Select(e => e.Description).ToList());
             }
 
-            var token = this.GenerateJwtToken(user);
-            var refreshToken = GenerateRefreshToken();
-
-            user.RefreshTokens.Add(new RefreshToken
-            {
-                Token = refreshToken,
-                Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
-                DeviceId = userForRegisterDto.DeviceId
-            });
-
-            await this.userRepository.SaveAllAsync();
+            var token = this.jwtTokenService.GenerateJwtTokenForUser(user);
+            var refreshToken = await this.jwtTokenService.GenerateAndSaveRefreshTokenForUserAsync(user, registerUserRequest.DeviceId);
 
             await this.SendConfirmEmailLink(user);
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return this.CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
-            {
-                Token = token,
-                RefreshToken = refreshToken,
-                User = userToReturn
-            });
+            return this.CreatedAtRoute(
+                nameof(UsersController.GetUserAsync),
+                new
+                {
+                    controller = GetControllerName<UsersController>(),
+                    id = user.Id
+                },
+                new LoginResponse
+                {
+                    Token = token,
+                    RefreshToken = refreshToken,
+                    User = userToReturn
+                });
         }
 
-        [HttpPost("forgotPassword")]
-        public async Task<ActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
-        {
-            if (request == null)
-            {
-                return this.BadRequest();
-            }
-
-            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
-
-            if (user == null)
-            {
-                return this.BadRequest();
-            }
-
-            var token = await this.userRepository.UserManager.GeneratePasswordResetTokenAsync(user);
-
-            var confLink = $"{this.authSettings.ForgotPasswordCallbackUrl}?token={token}&email={user.Email}";
-            await this.emailService.SendEmailAsync(user.Email, "Reset your password", $"Please click {confLink} to reset your password");
-
-            return this.NoContent();
-        }
-
-        [HttpPost("resetPassword")]
-        public async Task<ActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
-        {
-            if (request == null)
-            {
-                return this.BadRequest();
-            }
-
-            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
-
-            if (user == null)
-            {
-                return this.BadRequest();
-            }
-
-            var result = await this.userRepository.UserManager.ResetPasswordAsync(user, request.Token, request.Password);
-
-            if (!result.Succeeded)
-            {
-                return this.BadRequest(result.Errors.Select(e => e.Description).ToList());
-            }
-
-            return this.NoContent();
-        }
-
-        [HttpPost("confirmEmail")]
-        public async Task<ActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
-        {
-            if (request == null)
-            {
-                return this.BadRequest();
-            }
-
-            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
-
-            if (user == null)
-            {
-                return this.BadRequest("Unable to confirm email.");
-            }
-
-            var decoded = request.Token.ConvertToStringFromBase64Url();
-
-            var confirmResult = await this.userRepository.UserManager.ConfirmEmailAsync(user, decoded);
-
-            if (!confirmResult.Succeeded)
-            {
-                return this.BadRequest(confirmResult.Errors.Select(e => e.Description).ToList());
-            }
-
-            return this.NoContent();
-        }
-
-        [HttpPost("register/google")]
-        public async Task<ActionResult<LoginResponse>> RegisterWithGoogleAccountAsync([FromBody] RegisterUserUsingGoolgleRequest userForRegisterDto)
+        /// <summary>
+        /// Registers a new user using a google login and links their account to their google account.
+        /// </summary>
+        /// <param name="registerUserRequest">The register request object.</param>
+        /// <returns>The user object and tokens.</returns>
+        /// <response code="201">If the user was registered.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("register/google", Name = nameof(RegisterWithGoogleAccountAsync))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<LoginResponse>> RegisterWithGoogleAccountAsync([FromBody] RegisterUserUsingGoolgleRequest registerUserRequest)
         {
             try
             {
-                if (userForRegisterDto == null)
+                if (registerUserRequest == null)
                 {
                     return this.BadRequest();
                 }
 
-                var validatedToken = await GoogleJsonWebSignature.ValidateAsync(userForRegisterDto.IdToken, new GoogleJsonWebSignature.ValidationSettings { Audience = this.authSettings.GoogleOAuthAudiences });
+                var validatedToken = await GoogleJsonWebSignature.ValidateAsync(
+                    registerUserRequest.IdToken,
+                    new GoogleJsonWebSignature.ValidationSettings { Audience = this.authSettings.GoogleOAuthAudiences });
 
                 var user = new User
                 {
-                    UserName = userForRegisterDto.UserName,
+                    UserName = registerUserRequest.UserName,
                     Email = validatedToken.Email,
                     EmailConfirmed = validatedToken.EmailVerified,
                     LinkedAccounts = new List<LinkedAccount>
@@ -209,26 +152,24 @@ namespace WoWMarketWatcher.API.Controllers.V1
                     await this.SendConfirmEmailLink(user);
                 }
 
-                var token = this.GenerateJwtToken(user);
-                var refreshToken = GenerateRefreshToken();
-
-                user.RefreshTokens.Add(new RefreshToken
-                {
-                    Token = refreshToken,
-                    Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
-                    DeviceId = userForRegisterDto.DeviceId
-                });
-
-                await this.userRepository.SaveAllAsync();
+                var token = this.jwtTokenService.GenerateJwtTokenForUser(user);
+                var refreshToken = await this.jwtTokenService.GenerateAndSaveRefreshTokenForUserAsync(user, registerUserRequest.DeviceId);
 
                 var userToReturn = this.mapper.Map<UserDto>(user);
 
-                return this.CreatedAtRoute("GetUserAsync", new { controller = "Users", id = user.Id }, new LoginResponse
-                {
-                    Token = token,
-                    RefreshToken = refreshToken,
-                    User = userToReturn
-                });
+                return this.CreatedAtRoute(
+                    nameof(UsersController.GetUserAsync),
+                    new
+                    {
+                        controller = GetControllerName<UsersController>(),
+                        id = user.Id
+                    },
+                    new LoginResponse
+                    {
+                        Token = token,
+                        RefreshToken = refreshToken,
+                        User = userToReturn
+                    });
             }
             catch (InvalidJwtException)
             {
@@ -241,67 +182,74 @@ namespace WoWMarketWatcher.API.Controllers.V1
         }
 
         /// <summary>
-        /// Logs the user in
+        /// Logs the user in.
         /// </summary>
-        /// <param name="userForLoginDto"></param>
-        /// <returns>200 with user object on success. 401 on failure.</returns>
-        [HttpPost("login")]
-        public async Task<ActionResult<LoginResponse>> LoginAsync([FromBody] LoginRequest userForLoginDto)
+        /// <param name="loginRequest">The login request object.</param>
+        /// <returns>The user object and tokens.</returns>
+        /// <response code="200">The user object and tokens.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided login information is invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("login", Name = nameof(LoginAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<LoginResponse>> LoginAsync([FromBody] LoginRequest loginRequest)
         {
-            if (userForLoginDto == null)
+            if (loginRequest == null)
             {
                 return this.BadRequest();
             }
 
-            var user = await this.userRepository.GetByUsernameAsync(userForLoginDto.Username, user => user.RefreshTokens);
+            var user = await this.userRepository.GetByUsernameAsync(loginRequest.Username, user => user.RefreshTokens);
 
             if (user == null)
             {
                 return this.Unauthorized("Invalid username or password.");
             }
 
-            var result = await this.userRepository.CheckPasswordAsync(user, userForLoginDto.Password);
+            var result = await this.userRepository.CheckPasswordAsync(user, loginRequest.Password);
 
             if (!result)
             {
                 return this.Unauthorized("Invalid username or password.");
             }
 
-            user.RefreshTokens.RemoveAll(token => token.Expiration <= DateTime.UtcNow || token.DeviceId == userForLoginDto.DeviceId);
-
-            var token = this.GenerateJwtToken(user);
-            var refreshToken = GenerateRefreshToken();
-
-            user.RefreshTokens.Add(new RefreshToken
-            {
-                Token = refreshToken,
-                Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
-                DeviceId = userForLoginDto.DeviceId
-            });
-
-            await this.userRepository.SaveAllAsync();
+            var token = this.jwtTokenService.GenerateJwtTokenForUser(user);
+            var refreshToken = await this.jwtTokenService.GenerateAndSaveRefreshTokenForUserAsync(user, loginRequest.DeviceId);
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 
-            return this.Ok(new LoginResponse
-            {
-                Token = token,
-                RefreshToken = refreshToken,
-                User = userToReturn
-            });
+            return this.Ok(
+                new LoginResponse
+                {
+                    Token = token,
+                    RefreshToken = refreshToken,
+                    User = userToReturn
+                });
         }
 
-        [HttpPost("login/google")]
-        public async Task<ActionResult<LoginResponse>> LoginGoogleAsync([FromBody] GoogleLoginRequest userForLoginDto)
+        /// <summary>
+        /// Logs the user in using Google callback credentials.
+        /// </summary>
+        /// <param name="loginRequest">The login request object.</param>
+        /// <returns>The user object and tokens.</returns>
+        /// <response code="200">If the user was logged in.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided login information is invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("login/google", Name = nameof(LoginGoogleAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<LoginResponse>> LoginGoogleAsync([FromBody] GoogleLoginRequest loginRequest)
         {
             try
             {
-                if (userForLoginDto == null)
+                if (loginRequest == null)
                 {
                     return this.BadRequest();
                 }
 
-                var validatedToken = await GoogleJsonWebSignature.ValidateAsync(userForLoginDto.IdToken, new GoogleJsonWebSignature.ValidationSettings { Audience = this.authSettings.GoogleOAuthAudiences });
+                var validatedToken = await GoogleJsonWebSignature.ValidateAsync(loginRequest.IdToken, new GoogleJsonWebSignature.ValidationSettings { Audience = this.authSettings.GoogleOAuthAudiences });
 
                 var user = await this.userRepository.GetByLinkedAccountAsync(validatedToken.Subject, LinkedAccountType.Google, user => user.RefreshTokens);
 
@@ -310,28 +258,18 @@ namespace WoWMarketWatcher.API.Controllers.V1
                     return this.NotFound("No account found for this Google account.");
                 }
 
-                user.RefreshTokens.RemoveAll(token => token.Expiration <= DateTime.UtcNow || token.DeviceId == userForLoginDto.DeviceId);
-
-                var token = this.GenerateJwtToken(user);
-                var refreshToken = GenerateRefreshToken();
-
-                user.RefreshTokens.Add(new RefreshToken
-                {
-                    Token = refreshToken,
-                    Expiration = DateTimeOffset.UtcNow.AddMinutes(authSettings.RefreshTokenExpirationTimeInMinutes),
-                    DeviceId = userForLoginDto.DeviceId
-                });
-
-                await this.userRepository.SaveAllAsync();
+                var token = this.jwtTokenService.GenerateJwtTokenForUser(user);
+                var refreshToken = await this.jwtTokenService.GenerateAndSaveRefreshTokenForUserAsync(user, loginRequest.DeviceId);
 
                 var userToReturn = this.mapper.Map<UserDto>(user);
 
-                return this.Ok(new LoginResponse
-                {
-                    Token = token,
-                    RefreshToken = refreshToken,
-                    User = userToReturn
-                });
+                return this.Ok(
+                    new LoginResponse
+                    {
+                        Token = token,
+                        RefreshToken = refreshToken,
+                        User = userToReturn
+                    });
             }
             catch (InvalidJwtException)
             {
@@ -343,147 +281,149 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
         }
 
-        [HttpPost("refreshToken")]
-        public async Task<ActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest refreshTokenDto)
+        /// <summary>
+        /// Refreshes a user's access token.
+        /// </summary>
+        /// <param name="refreshTokenRequest">The refresh token request.</param>
+        /// <returns>A new set of tokens.</returns>
+        /// <response code="200">If the token was refreshed.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided token pair was invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("refreshToken", Name = nameof(RefreshTokenAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
-            if (refreshTokenDto == null)
+            if (refreshTokenRequest == null)
             {
                 return this.BadRequest();
             }
 
-            // Still validate the passed in token, but ignore its expiration date by setting validate lifetime to false
-            var validationParameters = new TokenValidationParameters
-            {
-                ClockSkew = TimeSpan.Zero,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(this.authSettings.APISecrect)),
-                RequireSignedTokens = true,
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                RequireExpirationTime = true,
-                ValidateLifetime = false,
-                ValidAudience = this.authSettings.TokenAudience,
-                ValidIssuer = this.authSettings.TokenIssuer
-            };
+            var (isTokenEligibleForRefresh, user) = await this.jwtTokenService.IsTokenEligibleForRefreshAsync(
+                refreshTokenRequest.Token,
+                refreshTokenRequest.RefreshToken,
+                refreshTokenRequest.DeviceId);
 
-            ClaimsPrincipal tokenClaims;
-
-            try
-            {
-                tokenClaims = new JwtSecurityTokenHandler().ValidateToken(refreshTokenDto.Token, validationParameters, out var rawValidatedToken);
-            }
-            catch (Exception e)
-            {
-                return this.Unauthorized(e.Message);
-            }
-
-            var userIdClaim = tokenClaims.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+            if (!isTokenEligibleForRefresh || user == null)
             {
                 return this.Unauthorized("Invalid token.");
             }
 
-            var user = await this.userRepository.GetByIdAsync(userId, user => user.RefreshTokens);
+            var token = this.jwtTokenService.GenerateJwtTokenForUser(user);
+            var refreshToken = await this.jwtTokenService.GenerateAndSaveRefreshTokenForUserAsync(user, refreshTokenRequest.DeviceId);
+
+            return this.Ok(
+                new RefreshTokenResponse
+                {
+                    Token = token,
+                    RefreshToken = refreshToken
+                });
+        }
+
+        /// <summary>
+        /// Sends a link to reset password if a user forgot.
+        /// </summary>
+        /// <param name="request">The forgot password request.</param>
+        /// <returns>No content.</returns>
+        /// <response code="204">If the password reset link was sent.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("forgotPassword", Name = nameof(ForgotPasswordAsync))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
+        {
+            if (request == null)
+            {
+                return this.BadRequest();
+            }
+
+            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
 
             if (user == null)
             {
-                return this.Unauthorized("Invalid token.");
+                return this.BadRequest();
             }
 
-            user.RefreshTokens.RemoveAll(token => token.Expiration <= DateTime.UtcNow);
+            var token = await this.userRepository.UserManager.GeneratePasswordResetTokenAsync(user);
 
-            var currentRefreshToken = user.RefreshTokens.FirstOrDefault(token => token.DeviceId == refreshTokenDto.DeviceId && token.Token == refreshTokenDto.RefreshToken);
+            var confLink = $"{this.authSettings.ForgotPasswordCallbackUrl}?token={token}&email={user.Email}";
+            await this.emailService.SendEmailAsync(user.Email, "Reset your password", $"Please click {confLink} to reset your password");
 
-            if (currentRefreshToken == null)
-            {
-                await this.userRepository.SaveAllAsync();
-                return this.Unauthorized("Invalid token.");
-            }
-
-            user.RefreshTokens.Remove(currentRefreshToken);
-
-            var token = this.GenerateJwtToken(user);
-            var refreshToken = GenerateRefreshToken();
-
-            user.RefreshTokens.Add(new RefreshToken
-            {
-                Token = refreshToken,
-                Expiration = DateTimeOffset.UtcNow.AddMinutes(this.authSettings.RefreshTokenExpirationTimeInMinutes),
-                DeviceId = refreshTokenDto.DeviceId
-            });
-
-            await this.userRepository.SaveAllAsync();
-
-            return this.Ok(new
-            {
-                token,
-                refreshToken
-            });
+            return this.NoContent();
         }
 
-        private static string GenerateRefreshToken()
+        /// <summary>
+        /// Resets a user's password.
+        /// </summary>
+        /// <param name="request">The reset password request.</param>
+        /// <returns>No content.</returns>
+        /// <response code="204">If the password was reset.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("resetPassword", Name = nameof(ResetPasswordAsync))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
         {
-            var randomNumber = new byte[32];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
+            if (request == null)
+            {
+                return this.BadRequest();
+            }
 
-            return Convert.ToBase64String(randomNumber);
+            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
+            {
+                return this.BadRequest();
+            }
+
+            var result = await this.userRepository.UserManager.ResetPasswordAsync(user, request.Token, request.Password);
+
+            if (!result.Succeeded)
+            {
+                return this.BadRequest(result.Errors.Select(e => e.Description).ToList());
+            }
+
+            return this.NoContent();
         }
 
-        private string GenerateJwtToken(User user)
+        /// <summary>
+        /// Confirms a user's email.
+        /// </summary>
+        /// <param name="request">The confirm email request.</param>
+        /// <returns>No content.</returns>
+        /// <response code="204">If the email was confirmed.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost("confirmEmail", Name = nameof(ConfirmEmailAsync))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
-            var claims = new List<Claim>
+            if (request == null)
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(AppClaimTypes.EmailVerified, user.EmailConfirmed.ToString(), ClaimValueTypes.Boolean),
-                new Claim(AppClaimTypes.MembershipType, user.MembershipLevel.ToString())
-            };
-
-            if (user.FirstName != null)
-            {
-                claims.Add(new Claim(ClaimTypes.GivenName, user.FirstName));
+                return this.BadRequest();
             }
 
-            if (user.LastName != null)
+            var user = await this.userRepository.UserManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
             {
-                claims.Add(new Claim(ClaimTypes.Surname, user.LastName));
+                return this.BadRequest("Unable to confirm email.");
             }
 
-            if (user.UserRoles != null)
+            var decoded = request.Token.ConvertToStringFromBase64Url();
+
+            var confirmResult = await this.userRepository.UserManager.ConfirmEmailAsync(user, decoded);
+
+            if (!confirmResult.Succeeded)
             {
-                foreach (var role in user.UserRoles.Select(r => r.Role.Name))
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
+                return this.BadRequest(confirmResult.Errors.Select(e => e.Description).ToList());
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.authSettings.APISecrect));
-
-            if (key.KeySize < 128)
-            {
-                throw new InvalidJwtException("API Secret must be longer");
-            }
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(this.authSettings.TokenExpirationTimeInMinutes),
-                NotBefore = DateTime.UtcNow,
-                SigningCredentials = creds,
-                Audience = this.authSettings.TokenAudience,
-                Issuer = this.authSettings.TokenIssuer
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
+            return this.NoContent();
         }
 
         private async Task SendConfirmEmailLink(User user)

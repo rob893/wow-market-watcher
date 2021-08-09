@@ -2,13 +2,14 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Requests.WatchLists;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
@@ -33,8 +34,20 @@ namespace WoWMarketWatcher.API.Controllers.V1
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet]
-        public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsAsync([FromQuery] RealmQueryParameters searchParams)
+        /// <summary>
+        /// Gets a paginated list of watch lists matching the seach critera.
+        /// </summary>
+        /// <param name="searchParams">The search parameters.</param>
+        /// <returns>A paginated list of watch lists matching the seach critera.</returns>
+        /// <response code="200">A paginated list of watch lists.</response>
+        /// <response code="400">If search parameters are invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet(Name = nameof(GetWatchListsAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsAsync([FromQuery] CursorPaginationQueryParameters searchParams)
         {
             var lists = await this.watchListRepository.SearchAsync(searchParams);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<WatchListDto>>(lists.ToCursorPaginatedResponse(searchParams));
@@ -42,7 +55,21 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(paginatedResponse);
         }
 
-        [HttpGet("{id}", Name = "GetWatchListAsync")]
+        /// <summary>
+        /// Gets a single watch list by id.
+        /// </summary>
+        /// <param name="id">The id of the watch list.</param>
+        /// <returns>A single watch list if found.</returns>
+        /// <response code="200">The watch list.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="404">If entry is not found.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet("{id}", Name = nameof(GetWatchListAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<WatchListDto>> GetWatchListAsync([FromRoute] int id)
         {
             var list = await this.watchListRepository.GetByIdAsync(id);
@@ -57,7 +84,19 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(mapped);
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Creates a new watch list.
+        /// </summary>
+        /// <param name="request">The create request.</param>
+        /// <returns>The newly created watch list.</returns>
+        /// <response code="201">The newly created watch list.</response>
+        /// <response code="400">If search parameters are invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPost(Name = nameof(CreateWatchListAsync))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<WatchListDto>> CreateWatchListAsync([FromBody] CreateWatchListRequest request)
         {
             var newWatchList = this.mapper.Map<WatchList>(request);
@@ -72,10 +111,24 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             var mapped = this.mapper.Map<WatchListDto>(newWatchList);
 
-            return this.CreatedAtRoute("GetWatchListAsync", new { id = mapped.Id }, mapped);
+            return this.CreatedAtRoute(nameof(GetWatchListAsync), new { id = mapped.Id }, mapped);
         }
 
-        [HttpDelete("{id}")]
+        /// <summary>
+        /// Deletes a single watch list by id.
+        /// </summary>
+        /// <param name="id">The id of the watch list.</param>
+        /// <returns>No content.</returns>
+        /// <response code="204">If the resource was deleted.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="404">If entry is not found.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpDelete("{id}", Name = nameof(DeleteWatchListAsync))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteWatchListAsync([FromRoute] int id)
         {
             var watchList = await this.watchListRepository.GetByIdAsync(id);
@@ -91,7 +144,22 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return !saveResults ? this.BadRequest("Failed to delete the income.") : this.NoContent();
         }
 
-        [HttpPatch("{id}")]
+        /// <summary>
+        /// Updates a single watch list by id.
+        /// </summary>
+        /// <param name="id">The id of the watch list.</param>
+        /// <param name="requestPatchDoc">The update request.</param>
+        /// <returns>The updated watch list.</returns>
+        /// <response code="200">If the watch list was updated.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="404">If entry is not found.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpPatch("{id}", Name = nameof(UpdateWatchListAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<WatchListDto>> UpdateWatchListAsync([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateWatchListRequest> requestPatchDoc)
         {
             if (requestPatchDoc == null || requestPatchDoc.Operations.Count == 0)
@@ -103,7 +171,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             if (watchList == null)
             {
-                return this.NotFound($"No expense with Id {id} found.");
+                return this.NotFound($"No watch list with Id {id} found.");
             }
 
             if (!requestPatchDoc.IsValid(out var errors))

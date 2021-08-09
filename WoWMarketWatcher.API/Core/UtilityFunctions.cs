@@ -24,6 +24,19 @@ namespace WoWMarketWatcher.API.Utilities
             return $"{sourceName}.{memberName}";
         }
 
+        public static string GetControllerName<T>()
+        {
+            var typeName = typeof(T).Name;
+            var splitOn = "Controller";
+
+            if (typeName == null || !typeName.EndsWith(splitOn, StringComparison.Ordinal))
+            {
+                throw new ArgumentException($"Controllers must end with 'Controller'. {typeName} does not.", nameof(T));
+            }
+
+            return typeName.Split(splitOn).First();
+        }
+
         public static LogLevel LogLevelFromString(string logLevel)
         {
             if (logLevel == null)

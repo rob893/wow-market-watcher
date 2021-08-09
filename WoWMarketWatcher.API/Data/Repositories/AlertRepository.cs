@@ -2,8 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WoWMarketWatcher.API.Core;
-using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.QueryParameters;
 
 namespace WoWMarketWatcher.API.Data.Repositories

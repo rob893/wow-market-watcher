@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using WoWMarketWatcher.API.Constants;
@@ -33,7 +34,19 @@ namespace WoWMarketWatcher.API.Controllers.V1
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Gets a paginated list of items matching the seach critera.
+        /// </summary>
+        /// <param name="searchParams">The search parameters.</param>
+        /// <returns>A paginated list of items matching the seach critera.</returns>
+        /// <response code="200">A paginated list of items.</response>
+        /// <response code="400">If search parameters are invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet(Name = nameof(GetWoWItemsAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CursorPaginatedResponse<WoWItemDto>>> GetWoWItemsAsync([FromQuery] WoWItemQueryParameters searchParams)
         {
             var items = await this.itemRepository.SearchAsync(searchParams);
@@ -42,7 +55,21 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(paginatedResponse);
         }
 
-        [HttpGet("{id}", Name = "GetWoWItemAsync")]
+        /// <summary>
+        /// Gets a single item by id.
+        /// </summary>
+        /// <param name="id">The id of the item.</param>
+        /// <returns>A single item if found.</returns>
+        /// <response code="200">The item.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="404">If entry is not found.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet("{id}", Name = nameof(GetWoWItemAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<WoWItemDto>> GetWoWItemAsync([FromRoute] int id)
         {
             var item = await this.itemRepository.GetByIdAsync(id);
@@ -57,7 +84,18 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(mapped);
         }
 
-        [HttpGet("classes")]
+        /// <summary>
+        /// Gets a list of item classes.
+        /// </summary>
+        /// <returns>The list of item classes.</returns>
+        /// <response code="200">A list of item classes.</response>
+        /// <response code="400">If request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet("classes", Name = nameof(GetWoWItemClassesAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<string>>> GetWoWItemClassesAsync()
         {
             if (this.cache.TryGetValue<IEnumerable<string>>(CacheKeys.WoWItemClassesKey, out var cachedResults))
@@ -72,7 +110,18 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(results);
         }
 
-        [HttpGet("subclasses")]
+        /// <summary>
+        /// Gets a list of item subclasses.
+        /// </summary>
+        /// <returns>The list of item subclasses.</returns>
+        /// <response code="200">A list of item subclasses.</response>
+        /// <response code="400">If request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet("subclasses", Name = nameof(GetWoWItemSubclassesAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<string>>> GetWoWItemSubclassesAsync()
         {
             if (this.cache.TryGetValue<IEnumerable<string>>(CacheKeys.WoWItemSubclassesKey, out var cachedResults))
@@ -87,7 +136,18 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(results);
         }
 
-        [HttpGet("qualities")]
+        /// <summary>
+        /// Gets a list of item qualities.
+        /// </summary>
+        /// <returns>The list of item qualities.</returns>
+        /// <response code="200">A list of item qualities.</response>
+        /// <response code="400">If request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet("qualities", Name = nameof(GetWoWItemQualitiesAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<string>>> GetWoWItemQualitiesAsync()
         {
             if (this.cache.TryGetValue<IEnumerable<string>>(CacheKeys.WoWItemQualitiesKey, out var cachedResults))
@@ -102,7 +162,18 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(results);
         }
 
-        [HttpGet("inventoryTypes")]
+        /// <summary>
+        /// Gets a list of item inventory types.
+        /// </summary>
+        /// <returns>The list of item inventory types.</returns>
+        /// <response code="200">A list of item inventory types.</response>
+        /// <response code="400">If request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet("inventoryTypes", Name = nameof(GetWoWItemInventoryTypesAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<string>>> GetWoWItemInventoryTypesAsync()
         {
             if (this.cache.TryGetValue<IEnumerable<string>>(CacheKeys.WoWItemInventoryTypesKey, out var cachedResults))

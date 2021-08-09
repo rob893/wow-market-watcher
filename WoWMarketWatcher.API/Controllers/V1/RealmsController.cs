@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Extensions;
@@ -27,7 +28,19 @@ namespace WoWMarketWatcher.API.Controllers.V1
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Gets a paginated list of realms matching the seach critera.
+        /// </summary>
+        /// <param name="searchParams">The search parameters.</param>
+        /// <returns>A paginated list of realms matching the seach critera.</returns>
+        /// <response code="200">A paginated list of realms.</response>
+        /// <response code="400">If search parameters are invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet(Name = nameof(GetRealmsAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CursorPaginatedResponse<RealmDto>>> GetRealmsAsync([FromQuery] RealmQueryParameters searchParams)
         {
             var realms = await this.realmRepository.SearchAsync(searchParams);
@@ -36,7 +49,21 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(paginatedResponse);
         }
 
-        [HttpGet("{id}", Name = "GetRealmAsync")]
+        /// <summary>
+        /// Gets a single realm by id.
+        /// </summary>
+        /// <param name="id">The id of the realm.</param>
+        /// <returns>A single realm if found.</returns>
+        /// <response code="200">The realm.</response>
+        /// <response code="400">If the request is invalid.</response>
+        /// <response code="401">If provided JWT is invalid (expired, bad signature, etc).</response>
+        /// <response code="403">If provided JWT is valid but missing required authorization.</response>
+        /// <response code="404">If entry is not found.</response>
+        /// <response code="500">If an unexpected server error occured.</response>
+        /// <response code="504">If the server took too long to respond.</response>
+        [HttpGet("{id}", Name = nameof(GetRealmAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<RealmDto>> GetRealmAsync([FromRoute] int id)
         {
             var realm = await this.realmRepository.GetByIdAsync(id);

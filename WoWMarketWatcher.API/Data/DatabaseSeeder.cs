@@ -5,8 +5,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.Data
 {

@@ -10,10 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data;
-using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Services;
-
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs

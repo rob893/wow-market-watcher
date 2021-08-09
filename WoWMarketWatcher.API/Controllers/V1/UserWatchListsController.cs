@@ -5,9 +5,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Requests.WatchLists;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
@@ -42,7 +42,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetWatchListsForUserAsync))]
         public async Task<ActionResult<CursorPaginatedResponse<WatchListDto>>> GetWatchListsForUserAsync([FromRoute] int userId, [FromQuery] CursorPaginationQueryParameters searchParams)
         {
             if (!this.IsUserAuthorizedForResource(userId))
@@ -56,7 +56,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(paginatedResponse);
         }
 
-        [HttpGet("{id}", Name = "GetWatchListForUserAsync")]
+        [HttpGet("{id}", Name = nameof(GetWatchListForUserAsync))]
         public async Task<ActionResult<WatchListDto>> GetWatchListForUserAsync([FromRoute] int id)
         {
             var list = await this.watchListRepository.GetByIdAsync(id);
@@ -76,7 +76,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(mapped);
         }
 
-        [HttpPost]
+        [HttpPost(Name = nameof(CreateWatchListForUserAsync))]
         public async Task<ActionResult<WatchListDto>> CreateWatchListForUserAsync([FromRoute] int userId, [FromBody] CreateWatchListForUserRequest request)
         {
             if (!this.IsUserAuthorizedForResource(userId))
@@ -108,7 +108,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.CreatedAtRoute("GetWatchListForUserAsync", new { id = mapped.Id, userId }, mapped);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = nameof(DeleteWatchListForUserAsync))]
         public async Task<ActionResult> DeleteWatchListForUserAsync([FromRoute] int id)
         {
             var watchList = await this.watchListRepository.GetByIdAsync(id);
@@ -129,8 +129,8 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
         }
 
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<WatchListDto>> UpdateWatchListAsync([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateWatchListRequest> requestPatchDoc)
+        [HttpPatch("{id}", Name = nameof(UpdateWatchListForUserAsync))]
+        public async Task<ActionResult<WatchListDto>> UpdateWatchListForUserAsync([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateWatchListRequest> requestPatchDoc)
         {
             if (requestPatchDoc == null || requestPatchDoc.Operations.Count == 0)
             {
@@ -165,7 +165,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(mapped);
         }
 
-        [HttpPost("{id}/items")]
+        [HttpPost("{id}/items", Name = nameof(AddItemToWatchListForUserAsync))]
         public async Task<ActionResult<WatchListDto>> AddItemToWatchListForUserAsync([FromRoute] int id, [FromBody] AddItemToWatchListRequest request)
         {
             if (request == null || request.Id == null)
@@ -211,7 +211,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(mapped);
         }
 
-        [HttpDelete("{id}/items/{itemId}")]
+        [HttpDelete("{id}/items/{itemId}", Name = nameof(RemoveItemFromWatchListForUserAsync))]
         public async Task<ActionResult<WatchListDto>> RemoveItemFromWatchListForUserAsync([FromRoute] int id, [FromRoute] int itemId)
         {
             var watchList = await this.watchListRepository.GetByIdAsync(id);

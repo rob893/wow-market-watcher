@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
-using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.DTOs.Users;
+using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.QueryParameters;
 using WoWMarketWatcher.API.Models.Requests.Users;
 using WoWMarketWatcher.API.Models.Responses.Pagination;
@@ -42,7 +42,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             return this.Ok(paginatedResponse);
         }
 
-        [HttpGet("{id}", Name = "GetUserAsync")]
+        [HttpGet("{id}", Name = nameof(GetUserAsync))]
         public async Task<ActionResult<UserDto>> GetUserAsync(int id)
         {
             var user = await this.userRepository.GetByIdAsync(id);
