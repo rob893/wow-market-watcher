@@ -6,6 +6,8 @@ namespace WoWMarketWatcher.API.Constants
 
         public const string BackgroundJobs = "BackgroundJobs";
 
+        public const string EventGrid = "EventGrid";
+
         public const string HangfireDatabaseName = "Hangfire:DatabaseName";
 
         public const string HangfireJobsLoggerLevel = "Logging:LogLevel:HangfireJobsLogger";

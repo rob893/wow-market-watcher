@@ -9,9 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions;
 using WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Core;
 using WoWMarketWatcher.API.Middleware;
+using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
+using WoWMarketWatcher.API.Services.Events;
 
 namespace WoWMarketWatcher.API.ApplicationStartup
 {
@@ -39,6 +42,10 @@ namespace WoWMarketWatcher.API.ApplicationStartup
                 .AddSingleton<ITelemetryInitializer, ApplicationInsightsTelemetryInitializer>()
                 .AddScoped<ICorrelationIdService, CorrelationIdService>()
                 .AddScoped<IAlertService, AlertService>()
+                // TODO: Move to AddEventGridServices() extension.
+                .Configure<EventGridSettings>(this.configuration.GetSection(ConfigurationKeys.EventGrid))
+                .AddScoped<IEventGridEventSender, EventGridEventSender>()
+                .AddSingleton<IEventGridPublisherClientFactory, EventGridPublisherClientFactory>()
                 .AddHangfireServices(this.configuration)
                 .AddSwaggerServices(this.configuration)
                 .AddEmailServices(this.configuration)

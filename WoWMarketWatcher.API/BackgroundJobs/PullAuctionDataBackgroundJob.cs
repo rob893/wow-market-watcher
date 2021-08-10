@@ -17,6 +17,7 @@ using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.Responses.Blizzard;
 using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
+using WoWMarketWatcher.API.Services.Events;
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.BackgroundJobs
@@ -26,6 +27,8 @@ namespace WoWMarketWatcher.API.BackgroundJobs
         private readonly DataContext dbContext;
 
         private readonly IBlizzardService blizzardService;
+
+        private readonly IEventGridEventSender eventGridEventSender;
 
         private readonly PullAuctionDataBackgroundJobSettings jobSettings;
 
@@ -48,12 +51,14 @@ namespace WoWMarketWatcher.API.BackgroundJobs
         public PullAuctionDataBackgroundJob(
             DataContext dbContext,
             IBlizzardService blizzardService,
+            IEventGridEventSender eventGridEventSender,
             IOptions<BackgroundJobSettings> jobSettings,
             ICorrelationIdService correlationIdService,
             ILogger<PullAuctionDataBackgroundJob> logger)
         {
             this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             this.blizzardService = blizzardService ?? throw new ArgumentNullException(nameof(blizzardService));
+            this.eventGridEventSender = eventGridEventSender ?? throw new ArgumentNullException(nameof(eventGridEventSender));
             this.jobSettings = jobSettings?.Value.PullAuctionDataBackgroundJob ?? throw new ArgumentNullException(nameof(jobSettings));
             this.correlationIdService = correlationIdService ?? throw new ArgumentNullException(nameof(correlationIdService));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -294,6 +299,8 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             this.dbContext.AuctionTimeSeries.AddRange(newAuctionsToAdd);
             var numberAuctionEntriesAdded = await this.dbContext.SaveChangesAsync();
+
+            await this.eventGridEventSender.SendEventAsync(EventType.ConnectedRealmAuctionDataUpdateComplete, new { connectedRealmId });
 
             stopwatch.Stop();
 
