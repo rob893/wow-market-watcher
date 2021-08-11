@@ -2,6 +2,7 @@ using System;
 using Azure.Messaging.EventGrid;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WoWMarketWatcher.API.Extensions;
 
 namespace WoWMarketWatcher.API.Core
 {
@@ -14,25 +15,11 @@ namespace WoWMarketWatcher.API.Core
 
         public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
-            var jo = (string?)reader.Value; //JObject.Load(reader);
-            //JObject.
-            var result = (string?)jo;
+            var jo = JObject.Load(reader);
+            var asString = jo.ToJson();
 
-            // var result = new EventGridEvent(
-            //     (string?)jo["subject"],
-            //     (string?)jo["eventType"],
-            //     (string?)jo["dataVersion"],
-            //     jo["data"]?.ToObject<object>())
-            // {
-            //     Id = (string?)jo["id"],
-            //     Topic = (string?)jo["topic"],
-            //     EventTime = (DateTimeOffset)jo["eventTime"]
-            // };
-
-            var thing = new Azure.Core.Serialization.JsonObjectSerializer();
-            //thing.
-
-            //System.Text.Json.JsonSerializer.Deserialize<EventGridEvent>(reader.ReadAsString());
+            // Newtonsoft is unable to deserialize the event grid event however system.text.json can.
+            var result = System.Text.Json.JsonSerializer.Deserialize<EventGridEvent>(asString);
 
             return result;
         }

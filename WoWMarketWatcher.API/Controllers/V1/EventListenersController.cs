@@ -6,6 +6,7 @@ using Azure.Messaging.EventGrid.SystemEvents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Services;
 using WoWMarketWatcher.API.Services.Events;
 
@@ -19,13 +20,11 @@ namespace WoWMarketWatcher.API.Controllers.V1
     {
         public EventListenersController(ICorrelationIdService correlationIdService) : base(correlationIdService) { }
 
-        [HttpPost("auctionDataProcessed", Name = nameof(AuctionDataProcessedAsync))]
+        [HttpPost("eventGrid", Name = nameof(ProcessEventGridEventsAsync))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> AuctionDataProcessedAsync()//([FromBody] EventGridEvent[] events)
+        public async Task<ActionResult> ProcessEventGridEventsAsync([FromBody] EventGridEvent[] events)
         {
-            var stuff = await BinaryData.FromStreamAsync(this.Request.Body);
-            var events = EventGridEvent.ParseMany(stuff);
             if (events == null)
             {
                 return this.BadRequest("No events were found in the request body.");
@@ -45,8 +44,15 @@ namespace WoWMarketWatcher.API.Controllers.V1
                         return this.Ok(responseData);
                     }
                 }
-                else if (eventGridEvent.EventType == $"{EventType.ConnectedRealmAuctionDataUpdateComplete}")
+                else
                 {
+                    switch (eventGridEvent.EventType)
+                    {
+                        case EventTypes.ConnectedRealmAuctionDataUpdateComplete:
+                            break;
+                        default:
+                            break;
+                    }
                     var auctionDataProcessedData = eventGridEvent.Data.ToObjectFromJson<Dictionary<string, string>>();
                     return this.Ok(auctionDataProcessedData);
                 }

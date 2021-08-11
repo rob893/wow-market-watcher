@@ -300,7 +300,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             this.dbContext.AuctionTimeSeries.AddRange(newAuctionsToAdd);
             var numberAuctionEntriesAdded = await this.dbContext.SaveChangesAsync();
 
-            await this.eventGridEventSender.SendEventAsync(EventType.ConnectedRealmAuctionDataUpdateComplete, new { connectedRealmId });
+            await this.eventGridEventSender.SendConnectedRealmAuctionDataUpdateCompleteEventAsync(connectedRealmId);
 
             stopwatch.Stop();
 

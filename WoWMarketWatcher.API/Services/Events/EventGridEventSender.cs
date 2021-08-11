@@ -2,7 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.EventGrid;
 using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Extensions;
+using WoWMarketWatcher.API.Models.Events;
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Services.Events
@@ -24,15 +26,32 @@ namespace WoWMarketWatcher.API.Services.Events
 
         private string CorrelationId => this.correlationIdService.CorrelationId;
 
-        public Task SendEventAsync(EventType eventType, object data, string? eventId = null)
+        public Task SendConnectedRealmAuctionDataUpdateCompleteEventAsync(int connectedRealmId)
         {
             var eventGridEvent = new EventGridEvent(
                 "Some subject",
-                $"WMW.{eventType}",
+                EventTypes.ConnectedRealmAuctionDataUpdateComplete,
+                "1",
+                new ConnectedRealmAuctionDataUpdateCompleteEvent
+                {
+                    ConnectedRealmId = connectedRealmId
+                })
+            {
+                Id = this.CorrelationId
+            };
+
+            return this.SendAsync(eventGridEvent);
+        }
+
+        public Task SendEventAsync(string eventType, object data)
+        {
+            var eventGridEvent = new EventGridEvent(
+                "Some subject",
+                eventType,
                 "1",
                 data)
             {
-                Id = eventId ?? Guid.NewGuid().ToString()
+                Id = this.CorrelationId
             };
 
             return this.SendAsync(eventGridEvent);
