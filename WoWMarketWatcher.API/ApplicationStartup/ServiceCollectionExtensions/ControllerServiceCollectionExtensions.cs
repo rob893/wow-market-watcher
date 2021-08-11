@@ -60,6 +60,7 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                options.SerializerSettings.Converters.Add(new EventGridEventJsonConverter());
                 options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             });
 
