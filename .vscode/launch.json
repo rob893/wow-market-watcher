@@ -26,6 +26,27 @@
       }
     },
     {
+      "name": ".NET Core Launch (web exposed)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/WoWMarketWatcher.API/bin/Debug/net5.0/WoWMarketWatcher.API.dll",
+      "args": ["--urls", "http://0.0.0.0:5003"],
+      "cwd": "${workspaceFolder}/WoWMarketWatcher.API",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+https?://\\S+",
+        "uriFormat": "http://0.0.0.0:5003/swagger"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    {
       "name": ".NET Core Launch Prod (web)",
       "type": "coreclr",
       "request": "launch",
