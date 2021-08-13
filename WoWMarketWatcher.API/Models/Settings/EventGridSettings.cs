@@ -7,5 +7,7 @@ namespace WoWMarketWatcher.API.Models.Settings
         public Uri TopicUrl { get; init; } = default!;
 
         public string AccessKey { get; init; } = default!;
+
+        public string HandlerAccessKey { get; init; } = default!;
     }
 }

@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Events;
+using WoWMarketWatcher.API.Models.Settings;
 using WoWMarketWatcher.API.Services;
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
@@ -27,17 +29,21 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
         private readonly IAlertService alertService;
 
+        private readonly EventGridSettings settings;
+
         private readonly ILogger<EventListenersController> logger;
 
         public EventListenersController(
             IAlertRepository alertRepository,
             IAlertService alertService,
             ILogger<EventListenersController> logger,
+            IOptions<EventGridSettings> settings,
             ICorrelationIdService correlationIdService)
                 : base(correlationIdService)
         {
             this.alertRepository = alertRepository ?? throw new ArgumentNullException(nameof(alertRepository));
             this.alertService = alertService ?? throw new ArgumentNullException(nameof(alertService));
+            this.settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -65,6 +71,14 @@ namespace WoWMarketWatcher.API.Controllers.V1
             {
                 this.logger.LogWarning(sourceName, this.CorrelationId, "No events were found in the request body.");
                 return this.BadRequest("No events were found in the request body.");
+            }
+
+            // TODO: Replace with AAD.
+            var key = this.Request.Headers[AppHeaderNames.EventHandlerKey].FirstOrDefault();
+
+            if (key != this.settings.HandlerAccessKey)
+            {
+                return this.Unauthorized();
             }
 
             this.logger.LogDebug(sourceName, this.CorrelationId, $"Processing {events.Length} events from event grid.");

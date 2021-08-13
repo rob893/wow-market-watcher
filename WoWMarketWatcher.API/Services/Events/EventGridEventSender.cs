@@ -37,7 +37,7 @@ namespace WoWMarketWatcher.API.Services.Events
                     ConnectedRealmId = connectedRealmId
                 })
             {
-                Id = this.CorrelationId
+                Id = $"{this.CorrelationId}-{connectedRealmId}"
             };
 
             return this.SendAsync(eventGridEvent);
