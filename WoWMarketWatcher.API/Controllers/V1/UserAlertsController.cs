@@ -50,7 +50,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
                 return this.Forbidden("You are not authorized to access this resource.");
             }
 
-            var alerts = await this.alertRepository.GetAlertsForUserAsync(userId, searchParams);
+            var alerts = await this.alertRepository.GetAlertsForUserAsync(userId, searchParams, false);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<AlertDto>>(alerts.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
@@ -59,7 +59,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [HttpGet("{id}", Name = nameof(GetAlertUserAsync))]
         public async Task<ActionResult<AlertDto>> GetAlertUserAsync([FromRoute] int id)
         {
-            var alert = await this.alertRepository.GetByIdAsync(id);
+            var alert = await this.alertRepository.GetByIdAsync(id, false);
 
             if (alert == null)
             {

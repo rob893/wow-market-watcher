@@ -43,7 +43,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CursorPaginatedResponse<ConnectedRealmDto>>> GetConnectedRealmsAsync([FromQuery] CursorPaginationQueryParameters searchParams)
         {
-            var realms = await this.connectedRealmRepository.SearchAsync(searchParams);
+            var realms = await this.connectedRealmRepository.SearchAsync(searchParams, false);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<ConnectedRealmDto>>(realms.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
@@ -66,7 +66,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ConnectedRealmDto>> GetConnectedRealmAsync([FromRoute] int id)
         {
-            var connectedRealm = await this.connectedRealmRepository.GetByIdAsync(id);
+            var connectedRealm = await this.connectedRealmRepository.GetByIdAsync(id, false);
 
             if (connectedRealm == null)
             {
@@ -94,14 +94,14 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CursorPaginatedResponse<RealmDto>>> GetRealmsForConnectedRealmAsync([FromRoute] int id, [FromQuery] RealmQueryParameters searchParams)
         {
-            var connectedRealm = await this.connectedRealmRepository.GetByIdAsync(id);
+            var connectedRealm = await this.connectedRealmRepository.GetByIdAsync(id, false);
 
             if (connectedRealm == null)
             {
                 return this.NotFound($"Connected realm with id {id} does not exist.");
             }
 
-            var realms = await this.connectedRealmRepository.GetRealmsForConnectedRealmAsync(connectedRealm.Id, searchParams);
+            var realms = await this.connectedRealmRepository.GetRealmsForConnectedRealmAsync(connectedRealm.Id, searchParams, false);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<RealmDto>>(realms.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);

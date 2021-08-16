@@ -12,10 +12,15 @@ namespace WoWMarketWatcher.API.Data.Repositories
     {
         public ConnectedRealmRepository(DataContext context) : base(context) { }
 
-        public Task<CursorPaginatedList<Realm, int>> GetRealmsForConnectedRealmAsync(int connectedRealmId, RealmQueryParameters searchParams)
+        public Task<CursorPaginatedList<Realm, int>> GetRealmsForConnectedRealmAsync(int connectedRealmId, RealmQueryParameters searchParams, bool track = true)
         {
             var query = this.Context.Realms
                 .Where(realm => realm.ConnectedRealmId == connectedRealmId);
+
+            if (!track)
+            {
+                query = query.AsNoTracking();
+            }
 
             return query.ToCursorPaginatedListAsync(searchParams);
         }

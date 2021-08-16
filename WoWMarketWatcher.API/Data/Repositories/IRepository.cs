@@ -25,17 +25,15 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         Task<int> SaveChangesAsync();
 
-        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition);
+        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true);
 
-        Task<TEntity> GetByIdAsync(TEntityKey id);
+        Task<TEntity> GetByIdAsync(TEntityKey id, bool track = true);
 
         Task<TEntity> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes);
 
-        Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition);
+        Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition, bool track = true);
 
-        Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams);
-
-        Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, params Expression<Func<TEntity, object>>[] includes);
+        Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, bool track = true);
     }
 
     public interface IRepository<TEntity, TSearchParams> : IRepository<TEntity, int, TSearchParams>

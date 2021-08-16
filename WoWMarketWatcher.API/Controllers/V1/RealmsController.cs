@@ -43,7 +43,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CursorPaginatedResponse<RealmDto>>> GetRealmsAsync([FromQuery] RealmQueryParameters searchParams)
         {
-            var realms = await this.realmRepository.SearchAsync(searchParams);
+            var realms = await this.realmRepository.SearchAsync(searchParams, false);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<RealmDto>>(realms.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
@@ -66,7 +66,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<RealmDto>> GetRealmAsync([FromRoute] int id)
         {
-            var realm = await this.realmRepository.GetByIdAsync(id);
+            var realm = await this.realmRepository.GetByIdAsync(id, false);
 
             if (realm == null)
             {

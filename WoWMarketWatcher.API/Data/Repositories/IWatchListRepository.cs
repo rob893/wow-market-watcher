@@ -7,6 +7,6 @@ namespace WoWMarketWatcher.API.Data.Repositories
 {
     public interface IWatchListRepository : IRepository<WatchList, CursorPaginationQueryParameters>
     {
-        Task<CursorPaginatedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationQueryParameters searchParams);
+        Task<CursorPaginatedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationQueryParameters searchParams, bool track = true);
     }
 }

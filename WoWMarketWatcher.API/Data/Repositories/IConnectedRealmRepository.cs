@@ -7,6 +7,6 @@ namespace WoWMarketWatcher.API.Data.Repositories
 {
     public interface IConnectedRealmRepository : IRepository<ConnectedRealm, CursorPaginationQueryParameters>
     {
-        Task<CursorPaginatedList<Realm, int>> GetRealmsForConnectedRealmAsync(int connectedRealmId, RealmQueryParameters searchParams);
+        Task<CursorPaginatedList<Realm, int>> GetRealmsForConnectedRealmAsync(int connectedRealmId, RealmQueryParameters searchParams, bool track = true);
     }
 }

@@ -70,18 +70,28 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return this.Context.SaveChangesAsync();
         }
 
-        public Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition)
+        public Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
+
+            if (!track)
+            {
+                query = query.AsNoTracking();
+            }
 
             query = this.AddIncludes(query);
 
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(condition);
         }
 
-        public Task<TEntity> GetByIdAsync(TEntityKey id)
+        public Task<TEntity> GetByIdAsync(TEntityKey id, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
+
+            if (!track)
+            {
+                query = query.AsNoTracking();
+            }
 
             query = this.AddIncludes(query);
 
@@ -98,35 +108,30 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
-        public Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition)
+        public Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
+
+            if (!track)
+            {
+                query = query.AsNoTracking();
+            }
 
             query = this.AddIncludes(query);
 
             return query.Where(condition).ToListAsync();
         }
 
-        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams)
+        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
-            query = this.AddIncludes(query);
-            query = this.AddWhereClauses(query, searchParams);
-
-            return query.ToCursorPaginatedListAsync(
-                item => item.Id,
-                this.ConvertIdToBase64,
-                this.ConvertBase64ToIdType,
-                searchParams);
-        }
-
-        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, params Expression<Func<TEntity, object>>[] includes)
-        {
-            IQueryable<TEntity> query = this.Context.Set<TEntity>();
+            if (!track)
+            {
+                query = query.AsNoTracking();
+            }
 
             query = this.AddIncludes(query);
-            query = includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
             query = this.AddWhereClauses(query, searchParams);
 
             return query.ToCursorPaginatedListAsync(

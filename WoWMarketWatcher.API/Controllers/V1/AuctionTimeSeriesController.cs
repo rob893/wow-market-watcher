@@ -43,7 +43,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CursorPaginatedResponse<AuctionTimeSeriesEntryDto, long>>> GetAuctionTimeSeriesAsync([FromQuery] AuctionTimeSeriesQueryParameters searchParams)
         {
-            var timeSeriesEntries = await this.timeSeriesRepository.SearchAsync(searchParams);
+            var timeSeriesEntries = await this.timeSeriesRepository.SearchAsync(searchParams, false);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<AuctionTimeSeriesEntryDto, long>>(timeSeriesEntries.ToCursorPaginatedResponse(entry => entry.Id, searchParams));
 
             return this.Ok(paginatedResponse);
@@ -66,7 +66,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AuctionTimeSeriesEntryDto>> GetAuctionTimeSeriesEntryAsync([FromRoute] int id)
         {
-            var entry = await this.timeSeriesRepository.GetByIdAsync(id);
+            var entry = await this.timeSeriesRepository.GetByIdAsync(id, false);
 
             if (entry == null)
             {

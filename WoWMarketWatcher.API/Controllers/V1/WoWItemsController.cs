@@ -49,7 +49,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CursorPaginatedResponse<WoWItemDto>>> GetWoWItemsAsync([FromQuery] WoWItemQueryParameters searchParams)
         {
-            var items = await this.itemRepository.SearchAsync(searchParams);
+            var items = await this.itemRepository.SearchAsync(searchParams, false);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<WoWItemDto>>(items.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
@@ -72,7 +72,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<WoWItemDto>> GetWoWItemAsync([FromRoute] int id)
         {
-            var item = await this.itemRepository.GetByIdAsync(id);
+            var item = await this.itemRepository.GetByIdAsync(id, false);
 
             if (item == null)
             {

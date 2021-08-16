@@ -7,6 +7,6 @@ namespace WoWMarketWatcher.API.Data.Repositories
 {
     public interface IAlertRepository : IRepository<Alert, CursorPaginationQueryParameters>
     {
-        Task<CursorPaginatedList<Alert, int>> GetAlertsForUserAsync(int userId, CursorPaginationQueryParameters searchParams);
+        Task<CursorPaginatedList<Alert, int>> GetAlertsForUserAsync(int userId, CursorPaginationQueryParameters searchParams, bool track = true);
     }
 }

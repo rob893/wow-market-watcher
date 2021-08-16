@@ -36,7 +36,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [HttpGet]
         public async Task<ActionResult<CursorPaginatedResponse<UserDto>>> GetUsersAsync([FromQuery] CursorPaginationQueryParameters searchParams)
         {
-            var users = await this.userRepository.SearchAsync(searchParams);
+            var users = await this.userRepository.SearchAsync(searchParams, false);
             var paginatedResponse = this.mapper.Map<CursorPaginatedResponse<UserDto>>(users.ToCursorPaginatedResponse(searchParams));
 
             return this.Ok(paginatedResponse);
@@ -45,7 +45,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [HttpGet("{id}", Name = nameof(GetUserAsync))]
         public async Task<ActionResult<UserDto>> GetUserAsync(int id)
         {
-            var user = await this.userRepository.GetByIdAsync(id);
+            var user = await this.userRepository.GetByIdAsync(id, false);
 
             if (user == null)
             {

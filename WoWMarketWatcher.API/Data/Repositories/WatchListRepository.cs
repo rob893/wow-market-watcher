@@ -12,10 +12,15 @@ namespace WoWMarketWatcher.API.Data.Repositories
     {
         public WatchListRepository(DataContext context) : base(context) { }
 
-        public Task<CursorPaginatedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationQueryParameters searchParams)
+        public Task<CursorPaginatedList<WatchList, int>> GetWatchListsForUserAsync(int userId, CursorPaginationQueryParameters searchParams, bool track = true)
         {
             var query = this.Context.WatchLists
                 .Where(list => list.UserId == userId);
+
+            if (!track)
+            {
+                query = query.AsNoTracking();
+            }
 
             query = this.AddIncludes(query);
 
