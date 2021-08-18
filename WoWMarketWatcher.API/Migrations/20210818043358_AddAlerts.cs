@@ -21,6 +21,8 @@ namespace WoWMarketWatcher.API.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "varchar(4000)", maxLength: 4000, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    State = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     LastEvaluated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     LastFired = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
@@ -55,6 +57,8 @@ namespace WoWMarketWatcher.API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     AlertId = table.Column<int>(type: "int", nullable: false),
+                    ActionOn = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Type = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Target = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)

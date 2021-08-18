@@ -81,6 +81,11 @@ namespace WoWMarketWatcher.API.Data
             builder.Entity<AuctionTimeSeriesEntry>()
                 .HasIndex(entry => entry.Timestamp);
 
+            builder.Entity<Alert>(alert =>
+            {
+                alert.Property(a => a.State).HasConversion<string>();
+            });
+
             builder.Entity<AlertCondition>(condition =>
             {
                 condition.Property(c => c.AggregationType).HasConversion<string>();
@@ -88,9 +93,10 @@ namespace WoWMarketWatcher.API.Data
                 condition.Property(c => c.Operator).HasConversion<string>();
             });
 
-            builder.Entity<AlertAction>(condition =>
+            builder.Entity<AlertAction>(action =>
             {
-                condition.Property(c => c.Type).HasConversion<string>();
+                action.Property(a => a.Type).HasConversion<string>();
+                action.Property(a => a.ActionOn).HasConversion<string>();
             });
         }
     }

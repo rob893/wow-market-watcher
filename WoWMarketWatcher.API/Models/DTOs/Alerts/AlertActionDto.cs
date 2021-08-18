@@ -8,8 +8,10 @@ namespace WoWMarketWatcher.API.Models.DTOs.Alerts
 
         public int AlertId { get; init; }
 
-        public AlertActionType Type { get; set; }
+        public AlertActionOnType ActionOn { get; init; }
 
-        public string Target { get; set; } = default!;
+        public AlertActionType Type { get; init; }
+
+        public string Target { get; init; } = default!;
     }
 }

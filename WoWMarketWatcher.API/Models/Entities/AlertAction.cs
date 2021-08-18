@@ -11,6 +11,9 @@ namespace WoWMarketWatcher.API.Models.Entities
         public Alert Alert { get; init; } = default!;
 
         [MaxLength(30)]
+        public AlertActionOnType ActionOn { get; set; }
+
+        [MaxLength(30)]
         public AlertActionType Type { get; set; }
 
         [MaxLength(50)]

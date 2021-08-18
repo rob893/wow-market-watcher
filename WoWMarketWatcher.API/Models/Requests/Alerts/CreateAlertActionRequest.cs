@@ -6,7 +6,10 @@ namespace WoWMarketWatcher.API.Models.Requests.Alerts
     public record CreateAlertActionRequest
     {
         [Required]
-        public AlertActionType Type { get; init; }
+        public AlertActionOnType? ActionOn { get; init; }
+
+        [Required]
+        public AlertActionType? Type { get; init; }
 
         [Required]
         [MaxLength(50)]

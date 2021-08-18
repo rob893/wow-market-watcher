@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.Models.DTOs.Alerts
 {
@@ -9,20 +10,22 @@ namespace WoWMarketWatcher.API.Models.DTOs.Alerts
 
         public int UserId { get; init; }
 
-        public int WoWItemId { get; set; }
+        public int WoWItemId { get; init; }
 
-        public int ConnectedRealmId { get; set; }
+        public int ConnectedRealmId { get; init; }
 
-        public string Name { get; set; } = default!;
+        public string Name { get; init; } = default!;
 
-        public string? Description { get; set; }
+        public string? Description { get; init; }
 
         public List<AlertConditionDto> Conditions { get; init; } = new();
 
         public List<AlertActionDto> Actions { get; init; } = new();
 
-        public DateTime LastEvaluated { get; set; }
+        public AlertState State { get; init; }
 
-        public DateTime? LastFired { get; set; }
+        public DateTime LastEvaluated { get; init; }
+
+        public DateTime? LastFired { get; init; }
     }
 }

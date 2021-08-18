@@ -26,6 +26,9 @@ namespace WoWMarketWatcher.API.Models.Entities
         [MaxLength(4000)]
         public string? Description { get; set; }
 
+        [MaxLength(30)]
+        public AlertState State { get; set; }
+
         public List<AlertCondition> Conditions { get; init; } = new();
 
         public List<AlertAction> Actions { get; init; } = new();

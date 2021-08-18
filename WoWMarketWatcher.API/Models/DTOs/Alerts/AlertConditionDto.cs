@@ -8,14 +8,14 @@ namespace WoWMarketWatcher.API.Models.DTOs.Alerts
 
         public int AlertId { get; init; }
 
-        public AlertConditionMetric Metric { get; set; }
+        public AlertConditionMetric Metric { get; init; }
 
-        public AlertConditionOperator Operator { get; set; }
+        public AlertConditionOperator Operator { get; init; }
 
-        public AlertConditionAggregationType AggregationType { get; set; }
+        public AlertConditionAggregationType AggregationType { get; init; }
 
-        public int AggregationTimeGranularityInHours { get; set; }
+        public int AggregationTimeGranularityInHours { get; init; }
 
-        public int Threshold { get; set; }
+        public int Threshold { get; init; }
     }
 }

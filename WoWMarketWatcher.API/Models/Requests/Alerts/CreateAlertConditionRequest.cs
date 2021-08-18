@@ -6,13 +6,13 @@ namespace WoWMarketWatcher.API.Models.Requests.Alerts
     public record CreateAlertConditionRequest
     {
         [Required]
-        public AlertConditionMetric Metric { get; init; }
+        public AlertConditionMetric? Metric { get; init; }
 
         [Required]
-        public AlertConditionOperator Operator { get; init; }
+        public AlertConditionOperator? Operator { get; init; }
 
         [Required]
-        public AlertConditionAggregationType AggregationType { get; init; }
+        public AlertConditionAggregationType? AggregationType { get; init; }
 
         [Required]
         public int? AggregationTimeGranularityInHours { get; init; }

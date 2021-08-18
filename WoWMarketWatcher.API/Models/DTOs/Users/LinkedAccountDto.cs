@@ -6,9 +6,9 @@ namespace WoWMarketWatcher.API.Models.DTOs.Users
     {
         public string Id { get; init; } = default!;
 
-        public LinkedAccountType LinkedAccountType { get; set; }
+        public LinkedAccountType LinkedAccountType { get; init; }
 
-        public int UserId { get; set; }
+        public int UserId { get; init; }
     }
 
 }
