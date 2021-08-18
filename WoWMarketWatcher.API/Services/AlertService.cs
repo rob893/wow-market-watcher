@@ -43,23 +43,28 @@ namespace WoWMarketWatcher.API.Services
                 .SearchAsync(entry => entry.WoWItemId == alert.WoWItemId && entry.ConnectedRealmId == alert.ConnectedRealmId && entry.Timestamp >= earliestDate);
             var orderedEntriesToEvaludate = entriesToEvaluate.OrderBy(entry => entry.Timestamp);
 
-            var shouldFireAlert = ShouldFireAlert(alert, orderedEntriesToEvaludate);
+            var conditionsMet = ConditionsMet(alert, orderedEntriesToEvaludate);
             var now = DateTime.UtcNow;
 
-            if (shouldFireAlert)
+            if (conditionsMet && alert.State != AlertState.Alarm)
             {
-                await this.ProcessAlertActionsAsync(alert);
+                await this.ProcessAlertActionsAsync(alert, AlertActionOnType.AlertActivated);
                 alert.LastFired = now;
+                alert.State = AlertState.Alarm;
+            }
+            else if (alert.State != AlertState.Ok)
+            {
+                alert.State = AlertState.Ok;
             }
 
             alert.LastEvaluated = now;
 
             await this.alertRepository.SaveChangesAsync();
 
-            return shouldFireAlert;
+            return conditionsMet;
         }
 
-        private static bool ShouldFireAlert(Alert alert, IEnumerable<AuctionTimeSeriesEntry> auctionTimeSeries)
+        private static bool ConditionsMet(Alert alert, IEnumerable<AuctionTimeSeriesEntry> auctionTimeSeries)
         {
             return alert.Conditions.All(condition => EvaluateCondition(condition, auctionTimeSeries));
         }
@@ -114,20 +119,24 @@ namespace WoWMarketWatcher.API.Services
             };
         }
 
-        private async Task ProcessAlertActionsAsync(Alert alert)
+        private async Task ProcessAlertActionsAsync(Alert alert, AlertActionOnType alertActionOnType)
         {
             if (alert.Actions == null || alert.Actions.Count == 0)
             {
                 return;
             }
 
-            foreach (var action in alert.Actions)
+            var tasks = new List<Task>();
+
+            foreach (var action in alert.Actions.Where(a => a.ActionOn == alertActionOnType))
             {
                 if (action.Type == AlertActionType.Email)
                 {
-                    await this.emailService.SendEmailAsync(action.Target, "Your Alert Fired!", $"Your alert {alert.Name} has fired.");
+                    tasks.Add(this.emailService.SendEmailAsync(action.Target, "Your Alert Fired!", $"Your alert {alert.Name} has fired."));
                 }
             }
+
+            await Task.WhenAll(tasks);
         }
     }
 }
