@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using WoWMarketWatcher.API.Data.Repositories;
+using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Entities;
+
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Services
 {
@@ -15,15 +19,25 @@ namespace WoWMarketWatcher.API.Services
 
         private readonly IEmailService emailService;
 
+        private readonly ICorrelationIdService correlationIdService;
+
+        private readonly ILogger<AlertService> logger;
+
         public AlertService(
             IAuctionTimeSeriesRepository auctionTimeSeriesRepository,
             IAlertRepository alertRepository,
-            IEmailService emailService)
+            IEmailService emailService,
+            ICorrelationIdService correlationIdService,
+            ILogger<AlertService> logger)
         {
             this.auctionTimeSeriesRepository = auctionTimeSeriesRepository ?? throw new ArgumentNullException(nameof(auctionTimeSeriesRepository));
             this.alertRepository = alertRepository ?? throw new ArgumentNullException(nameof(alertRepository));
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            this.correlationIdService = correlationIdService ?? throw new ArgumentNullException(nameof(correlationIdService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
+        private string CorrelationId => this.correlationIdService.CorrelationId;
 
         public async Task<bool> EvaluateAlertAsync(Alert alert)
         {
@@ -31,6 +45,8 @@ namespace WoWMarketWatcher.API.Services
             {
                 throw new ArgumentNullException(nameof(alert));
             }
+
+            var sourceName = GetSourceName();
 
             if (alert.Conditions == null || alert.Conditions.Count == 0)
             {
@@ -43,23 +59,34 @@ namespace WoWMarketWatcher.API.Services
                 .SearchAsync(entry => entry.WoWItemId == alert.WoWItemId && entry.ConnectedRealmId == alert.ConnectedRealmId && entry.Timestamp >= earliestDate);
             var orderedEntriesToEvaludate = entriesToEvaluate.OrderBy(entry => entry.Timestamp);
 
+            if (!orderedEntriesToEvaludate.Any())
+            {
+                this.logger.LogInformation(sourceName, this.CorrelationId, $"No entries to evaluate for alert {alert.Id}.");
+                return false;
+            }
+
             var conditionsMet = ConditionsMet(alert, orderedEntriesToEvaludate);
             var now = DateTime.UtcNow;
+            var oldState = alert.State;
 
             if (conditionsMet && alert.State != AlertState.Alarm)
             {
                 await this.ProcessAlertActionsAsync(alert, AlertActionOnType.AlertActivated);
                 alert.LastFired = now;
                 alert.State = AlertState.Alarm;
+                this.logger.LogInformation(sourceName, this.CorrelationId, $"Alert {alert.Id} state changed from {oldState} to {alert.State}.");
             }
             else if (alert.State != AlertState.Ok)
             {
                 alert.State = AlertState.Ok;
+                this.logger.LogInformation(sourceName, this.CorrelationId, $"Alert {alert.Id} state changed from {oldState} to {alert.State}.");
             }
 
             alert.LastEvaluated = now;
 
             await this.alertRepository.SaveChangesAsync();
+
+            this.logger.LogInformation(sourceName, this.CorrelationId, $"Alert {alert.Id} evaluated.");
 
             return conditionsMet;
         }
@@ -132,7 +159,13 @@ namespace WoWMarketWatcher.API.Services
             {
                 if (action.Type == AlertActionType.Email)
                 {
-                    tasks.Add(this.emailService.SendEmailAsync(action.Target, "Your Alert Fired!", $"Your alert {alert.Name} has fired."));
+                    var title = alertActionOnType == AlertActionOnType.AlertActivated
+                        ? "Your Alert Fired!"
+                        : "Your Alert has deactivated";
+                    var message = alertActionOnType == AlertActionOnType.AlertActivated
+                        ? $"Your alert {alert.Name} has fired."
+                        : $"Your alert {alert.Name} has resolved.";
+                    tasks.Add(this.emailService.SendEmailAsync(action.Target, title, message));
                 }
             }
 
