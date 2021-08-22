@@ -12,6 +12,6 @@ namespace WoWMarketWatcher.API.Models.Requests.Alerts
 
         public int? AggregationTimeGranularityInHours { get; init; }
 
-        public int? Threshold { get; init; }
+        public long? Threshold { get; init; }
     }
 }
