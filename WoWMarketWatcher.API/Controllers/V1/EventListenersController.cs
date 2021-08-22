@@ -76,7 +76,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
             // TODO: Replace with AAD.
             var key = this.Request.Headers[AppHeaderNames.EventHandlerKey].FirstOrDefault();
 
-            if (key != this.settings.HandlerAccessKey)
+            if (key == null || key != this.settings.HandlerAccessKey)
             {
                 return this.Unauthorized();
             }
