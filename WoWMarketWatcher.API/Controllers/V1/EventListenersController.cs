@@ -135,7 +135,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             var eventData = eventGridEvent.Data.ToObjectFromJson<ConnectedRealmAuctionDataUpdateCompleteEvent>();
 
-            var alertsToProcess = await this.alertRepository.SearchAsync(alert => alert.ConnectedRealmId == eventData.ConnectedRealmId);
+            var alertsToProcess = await this.alertRepository.SearchAsync(alert => alert.Conditions.Any(condition => condition.ConnectedRealmId == eventData.ConnectedRealmId));
 
             this.logger.LogDebug(sourceName, this.CorrelationId, $"{alertsToProcess.Count} alerts will be processed for connected realm {eventData.ConnectedRealmId}.");
 

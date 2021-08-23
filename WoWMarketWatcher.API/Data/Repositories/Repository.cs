@@ -60,17 +60,17 @@ namespace WoWMarketWatcher.API.Data.Repositories
             this.Context.Set<TEntity>().RemoveRange(entities);
         }
 
-        public async Task<bool> SaveAllAsync()
+        public virtual async Task<bool> SaveAllAsync()
         {
             return await this.Context.SaveChangesAsync() > 0;
         }
 
-        public Task<int> SaveChangesAsync()
+        public virtual Task<int> SaveChangesAsync()
         {
             return this.Context.SaveChangesAsync();
         }
 
-        public Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
+        public virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -84,7 +84,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(condition);
         }
 
-        public Task<TEntity> GetByIdAsync(TEntityKey id, bool track = true)
+        public virtual Task<TEntity> GetByIdAsync(TEntityKey id, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -98,7 +98,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
-        public Task<TEntity> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes)
+        public virtual Task<TEntity> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -108,7 +108,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
-        public Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
+        public virtual Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -122,7 +122,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return query.Where(condition).ToListAsync();
         }
 
-        public Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, bool track = true)
+        public virtual Task<CursorPaginatedList<TEntity, TEntityKey>> SearchAsync(TSearchParams searchParams, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 

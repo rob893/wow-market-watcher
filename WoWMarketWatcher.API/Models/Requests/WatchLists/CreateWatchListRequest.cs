@@ -8,9 +8,6 @@ namespace WoWMarketWatcher.API.Models.Requests.WatchLists
         public int? UserId { get; init; }
 
         [Required]
-        public int? ConnectedRealmId { get; init; }
-
-        [Required]
         [MaxLength(255)]
         public string Name { get; init; } = default!;
 

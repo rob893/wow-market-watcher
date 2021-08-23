@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -79,26 +80,44 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [HttpPost]
         public async Task<ActionResult<AlertDto>> CreateAlertForUserAsync([FromRoute] int userId, [FromBody] CreateAlertForUserRequest request)
         {
+            if (request == null)
+            {
+                return this.BadRequest("Bad request body.");
+            }
+
             if (!this.IsUserAuthorizedForResource(userId))
             {
                 return this.Forbidden("You are not authorized to access this resource.");
             }
 
+            if (!this.User.TryGetEmailVerified(out var emailVerified) || !emailVerified.Value)
+            {
+                return this.BadRequest("Your email must be verified before you can create alerts.");
+            }
+
             var newAlert = this.mapper.Map<Alert>(request);
             newAlert.UserId = userId;
 
-            var realm = await this.realmRepository.GetByIdAsync(newAlert.ConnectedRealmId);
+            var requestedRealmIds = request.Conditions
+                .Select(condition => condition.ConnectedRealmId ?? default)
+                .ToHashSet();
+            var realms = (await this.realmRepository.SearchAsync(realm => requestedRealmIds.Contains(realm.Id), false)).Select(realm => realm.Id).ToHashSet();
+            var invalidRealms = requestedRealmIds.Except(realms);
 
-            if (realm == null)
+            if (invalidRealms.Any())
             {
-                return this.BadRequest($"No connected realm with id ${newAlert.ConnectedRealmId} exists.");
+                return this.BadRequest(invalidRealms.Select(id => $"No connected realm with id {id} exists."));
             }
 
-            var item = await this.itemRepository.GetByIdAsync(newAlert.WoWItemId);
+            var requestedItemIds = request.Conditions
+                .Select(condition => condition.WoWItemId ?? default)
+                .ToHashSet();
+            var items = (await this.itemRepository.SearchAsync(item => requestedItemIds.Contains(item.Id), false)).Select(item => item.Id).ToHashSet();
+            var invalidItems = requestedItemIds.Except(items);
 
-            if (item == null)
+            if (invalidItems.Any())
             {
-                return this.BadRequest($"No item with id ${newAlert.WoWItemId} exists.");
+                return this.BadRequest(invalidItems.Select(id => $"No item with id {id} exists."));
             }
 
             this.alertRepository.Add(newAlert);

@@ -105,13 +105,6 @@ namespace WoWMarketWatcher.API.Data
 
             foreach (var user in users)
             {
-                foreach (var watchList in user.WatchLists)
-                {
-                    var itemIds = watchList.WatchedItems.Select(i => i.Id).ToHashSet();
-                    watchList.WatchedItems.Clear();
-                    watchList.WatchedItems.AddRange(context.WoWItems.Where(i => itemIds.Contains(i.Id)));
-                }
-
                 this.userManager.CreateAsync(user, "password").Wait();
 
                 if (user.UserName.ToUpperInvariant() == "ADMIN")

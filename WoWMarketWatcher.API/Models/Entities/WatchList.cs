@@ -11,16 +11,12 @@ namespace WoWMarketWatcher.API.Models.Entities
 
         public User User { get; set; } = default!;
 
-        public int ConnectedRealmId { get; set; }
-
-        public ConnectedRealm ConnectedRealm { get; set; } = default!;
-
         [MaxLength(255)]
         public string Name { get; set; } = default!;
 
         [MaxLength(4000)]
         public string? Description { get; set; }
 
-        public List<WoWItem> WatchedItems { get; set; } = new();
+        public List<WatchedItem> WatchedItems { get; set; } = new();
     }
 }

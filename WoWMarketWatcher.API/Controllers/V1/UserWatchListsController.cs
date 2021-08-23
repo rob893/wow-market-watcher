@@ -87,13 +87,6 @@ namespace WoWMarketWatcher.API.Controllers.V1
             var newWatchList = this.mapper.Map<WatchList>(request);
             newWatchList.UserId = userId;
 
-            var realm = await this.realmRepository.GetByIdAsync(newWatchList.ConnectedRealmId);
-
-            if (realm == null)
-            {
-                return this.BadRequest($"No connected realm with id ${newWatchList.ConnectedRealmId} exists.");
-            }
-
             this.watchListRepository.Add(newWatchList);
 
             var saveResult = await this.watchListRepository.SaveAllAsync();
@@ -105,7 +98,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             var mapped = this.mapper.Map<WatchListDto>(newWatchList);
 
-            return this.CreatedAtRoute("GetWatchListForUserAsync", new { id = mapped.Id, userId }, mapped);
+            return this.CreatedAtRoute(nameof(GetWatchListForUserAsync), new { id = mapped.Id, userId }, mapped);
         }
 
         [HttpDelete("{id}", Name = nameof(DeleteWatchListForUserAsync))]
@@ -168,7 +161,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         [HttpPost("{id}/items", Name = nameof(AddItemToWatchListForUserAsync))]
         public async Task<ActionResult<WatchListDto>> AddItemToWatchListForUserAsync([FromRoute] int id, [FromBody] AddItemToWatchListRequest request)
         {
-            if (request == null || request.Id == null)
+            if (request == null || request.WoWItemId == null || request.ConnectedRealmId == null)
             {
                 return this.BadRequest($"Id is required.");
             }
@@ -185,19 +178,31 @@ namespace WoWMarketWatcher.API.Controllers.V1
                 return this.Forbidden("You are not authorized to change this resource.");
             }
 
-            if (watchList.WatchedItems.FirstOrDefault(watchedItem => watchedItem.Id == request.Id) != null)
+            if (watchList.WatchedItems.FirstOrDefault(watchedItem => watchedItem.WoWItemId == request.WoWItemId && watchedItem.ConnectedRealmId == request.ConnectedRealmId) != null)
             {
-                return this.BadRequest($"Watch list {watchList.Id} is already watching item {request.Id}.");
+                return this.BadRequest($"Watch list {watchList.Id} is already watching item {request.WoWItemId} for connected realm {request.ConnectedRealmId}.");
             }
 
-            var itemToAdd = await this.itemRepository.GetByIdAsync(request.Id.Value);
+            var itemToAdd = await this.itemRepository.GetByIdAsync(request.WoWItemId.Value, false);
 
             if (itemToAdd == null)
             {
-                return this.NotFound($"No item with Id {request.Id.Value} found.");
+                return this.NotFound($"No item with Id {request.WoWItemId.Value} found.");
             }
 
-            watchList.WatchedItems.Add(itemToAdd);
+            var connectedRealm = await this.realmRepository.GetByIdAsync(request.ConnectedRealmId.Value, false);
+
+            if (connectedRealm == null)
+            {
+                return this.NotFound($"No connected realm with Id {request.ConnectedRealmId.Value} found.");
+            }
+
+            watchList.WatchedItems.Add(
+                new WatchedItem
+                {
+                    WoWItem = itemToAdd,
+                    ConnectedRealm = connectedRealm
+                });
 
             var saveResults = await this.watchListRepository.SaveAllAsync();
 

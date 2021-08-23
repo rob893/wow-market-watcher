@@ -6,12 +6,6 @@ namespace WoWMarketWatcher.API.Models.Requests.Alerts
     public record CreateAlertForUserRequest
     {
         [Required]
-        public int? ConnectedRealmId { get; init; }
-
-        [Required]
-        public int? WoWItemId { get; init; }
-
-        [Required]
         [MaxLength(255)]
         public string Name { get; init; } = default!;
 

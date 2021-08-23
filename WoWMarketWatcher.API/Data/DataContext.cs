@@ -28,7 +28,11 @@ namespace WoWMarketWatcher.API.Data
 
         public DbSet<WatchList> WatchLists => this.Set<WatchList>();
 
+        public DbSet<WatchedItem> WatchedItems => this.Set<WatchedItem>();
+
         public DbSet<Alert> Alerts => this.Set<Alert>();
+
+        public DbSet<AlertCondition> AlertConditions => this.Set<AlertCondition>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

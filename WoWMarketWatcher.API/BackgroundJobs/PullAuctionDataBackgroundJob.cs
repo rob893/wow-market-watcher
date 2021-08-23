@@ -111,10 +111,10 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 }
                 else
                 {
-                    var realmsWithWatchLists = await this.dbContext.WatchLists.AsNoTracking().Select(list => list.ConnectedRealmId).Distinct().ToListAsync();
+                    var realmsWithWatchLists = await this.dbContext.WatchedItems.AsNoTracking().Select(item => item.ConnectedRealmId).Distinct().ToListAsync();
                     realmIdsToUpdate.UnionWith(realmsWithWatchLists);
 
-                    var realmsWithAlerts = await this.dbContext.Alerts.AsNoTracking().Select(alert => alert.ConnectedRealmId).Distinct().ToListAsync();
+                    var realmsWithAlerts = await this.dbContext.AlertConditions.AsNoTracking().Select(condition => condition.ConnectedRealmId).Distinct().ToListAsync();
                     realmIdsToUpdate.UnionWith(realmsWithAlerts);
                 }
 
@@ -258,17 +258,16 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             var itemsToUpdate = new HashSet<int>(this.itemIdsToAlwaysProcess);
 
-            var itemsInWatchLists = await this.dbContext.WatchLists
-                .Where(list => list.ConnectedRealmId == connectedRealmId)
-                .SelectMany(list => list.WatchedItems
-                .Select(item => item.Id))
+            var itemsInWatchLists = await this.dbContext.WatchedItems
+                .Where(item => item.ConnectedRealmId == connectedRealmId)
+                .Select(item => item.WoWItemId)
                 .Distinct()
                 .ToListAsync();
             itemsToUpdate.UnionWith(itemsInWatchLists);
 
-            var itemsInAlerts = await this.dbContext.Alerts
-                .Where(alert => alert.ConnectedRealmId == connectedRealmId)
-                .Select(alert => alert.WoWItemId)
+            var itemsInAlerts = await this.dbContext.AlertConditions
+                .Where(condition => condition.ConnectedRealmId == connectedRealmId)
+                .Select(condition => condition.WoWItemId)
                 .Distinct()
                 .ToListAsync();
             itemsToUpdate.UnionWith(itemsInAlerts);

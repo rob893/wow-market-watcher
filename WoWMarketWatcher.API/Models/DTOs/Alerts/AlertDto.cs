@@ -10,10 +10,6 @@ namespace WoWMarketWatcher.API.Models.DTOs.Alerts
 
         public int UserId { get; init; }
 
-        public int WoWItemId { get; init; }
-
-        public int ConnectedRealmId { get; init; }
-
         public string Name { get; init; } = default!;
 
         public string? Description { get; init; }

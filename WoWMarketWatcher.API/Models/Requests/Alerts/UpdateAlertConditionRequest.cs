@@ -4,6 +4,10 @@ namespace WoWMarketWatcher.API.Models.Requests.Alerts
 {
     public record UpdateAlertConditionRequest
     {
+        public int? ConnectedRealmId { get; init; }
+
+        public int? WoWItemId { get; init; }
+
         public AlertConditionMetric? Metric { get; init; }
 
         public AlertConditionOperator? Operator { get; init; }

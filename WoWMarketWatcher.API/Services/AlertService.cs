@@ -53,19 +53,7 @@ namespace WoWMarketWatcher.API.Services
                 return false;
             }
 
-            var earliestDate = DateTime.UtcNow.AddHours(-alert.Conditions.Select(condition => condition.AggregationTimeGranularityInHours).Max());
-
-            var entriesToEvaluate = await this.auctionTimeSeriesRepository
-                .SearchAsync(entry => entry.WoWItemId == alert.WoWItemId && entry.ConnectedRealmId == alert.ConnectedRealmId && entry.Timestamp >= earliestDate);
-            var orderedEntriesToEvaludate = entriesToEvaluate.OrderBy(entry => entry.Timestamp);
-
-            if (!orderedEntriesToEvaludate.Any())
-            {
-                this.logger.LogInformation(sourceName, this.CorrelationId, $"No entries to evaluate for alert {alert.Id}.");
-                return false;
-            }
-
-            var conditionsMet = ConditionsMet(alert, orderedEntriesToEvaludate);
+            var conditionsMet = await this.ConditionsMetAsync(alert);
             var now = DateTime.UtcNow;
             var oldState = alert.State;
 
@@ -91,14 +79,33 @@ namespace WoWMarketWatcher.API.Services
             return conditionsMet;
         }
 
-        private static bool ConditionsMet(Alert alert, IEnumerable<AuctionTimeSeriesEntry> auctionTimeSeries)
+        private async Task<bool> ConditionsMetAsync(Alert alert)
         {
-            return alert.Conditions.All(condition => EvaluateCondition(condition, auctionTimeSeries));
+            foreach (var condition in alert.Conditions)
+            {
+                if (!await this.EvaluateConditionAsync(condition))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        private static bool EvaluateCondition(AlertCondition condition, IEnumerable<AuctionTimeSeriesEntry> auctionTimeSeries)
+        private async Task<bool> EvaluateConditionAsync(AlertCondition condition)
         {
-            var entriesToEvaluate = auctionTimeSeries.Where(entry => entry.Timestamp >= DateTime.UtcNow.AddHours(-condition.AggregationTimeGranularityInHours));
+            var entriesToEvaluate = await this.auctionTimeSeriesRepository
+                .SearchAsync(entry =>
+                    entry.WoWItemId == condition.WoWItemId &&
+                    entry.ConnectedRealmId == condition.ConnectedRealmId &&
+                    entry.Timestamp >= DateTime.UtcNow.AddHours(-condition.AggregationTimeGranularityInHours));
+            var orderedEntriesToEvaludate = entriesToEvaluate.OrderBy(entry => entry.Timestamp);
+
+            if (!orderedEntriesToEvaludate.Any())
+            {
+                return false;
+            }
+
             var aggregation = AggregateMetricValues(condition.AggregationType, entriesToEvaluate.Select(entry => GetMetricValue(condition.Metric, entry)));
 
             return CompareMetric(condition.Operator, aggregation, condition.Threshold);

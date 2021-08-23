@@ -8,12 +8,10 @@ namespace WoWMarketWatcher.API.Models.DTOs
 
         public int UserId { get; init; }
 
-        public int ConnectedRealmId { get; init; }
-
         public string Name { get; init; } = default!;
 
         public string? Description { get; init; }
 
-        public List<WoWItemDto> WatchedItems { get; init; } = new();
+        public List<WatchedItemDto> WatchedItems { get; init; } = new();
     }
 }

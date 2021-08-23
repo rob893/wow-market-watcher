@@ -27,7 +27,7 @@ namespace WoWMarketWatcher.API
                     {
                         var scope = host.Services.CreateScope();
                         var serviceProvider = scope.ServiceProvider;
-                        var logger = serviceProvider.GetRequiredService<ILogger>();
+                        var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
 
                         if (o.Password != null && o.Password == GetSeederPasswordFromConfiguration())
                         {

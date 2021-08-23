@@ -5,9 +5,6 @@ namespace WoWMarketWatcher.API.Models.Requests.WatchLists
     public record CreateWatchListForUserRequest
     {
         [Required]
-        public int? ConnectedRealmId { get; init; }
-
-        [Required]
         [MaxLength(255)]
         public string Name { get; init; } = default!;
 

@@ -8,6 +8,9 @@ using System.Web;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
 using WoWMarketWatcher.API.Constants;
+using WoWMarketWatcher.API.Models.Entities;
+
+using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Extensions
 {
@@ -59,6 +62,58 @@ namespace WoWMarketWatcher.API.Extensions
             }
 
             return false;
+        }
+
+        public static bool TryGetEmailVerified(this ClaimsPrincipal principal, [NotNullWhen(true)] out bool? emailVerified)
+        {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+
+            emailVerified = null;
+
+            var emailVerifiedClaim = principal.FindFirst(AppClaimTypes.EmailVerified);
+
+            if (emailVerifiedClaim == null)
+            {
+                return false;
+            }
+
+            if (bool.TryParse(emailVerifiedClaim.Value, out var value))
+            {
+                emailVerified = value;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryGetMembershipLevel(this ClaimsPrincipal principal, [NotNullWhen(true)] out MembershipLevel? membershipLevel)
+        {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+
+            membershipLevel = null;
+
+            var membershipLevelClaim = principal.FindFirst(AppClaimTypes.MembershipType);
+
+            if (membershipLevelClaim == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                membershipLevel = MembershipLevelFromString(membershipLevelClaim.Value);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public static bool IsAdmin(this ClaimsPrincipal principal)

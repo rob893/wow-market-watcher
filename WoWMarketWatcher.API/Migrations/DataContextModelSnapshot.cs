@@ -101,28 +101,10 @@ namespace WoWMarketWatcher.API.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("WatchListWoWItem", b =>
-                {
-                    b.Property<int>("WatchedInId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WatchedItemsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("WatchedInId", "WatchedItemsId");
-
-                    b.HasIndex("WatchedItemsId");
-
-                    b.ToTable("WatchListWoWItem");
-                });
-
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.Alert", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("ConnectedRealmId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -148,16 +130,9 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WoWItemId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ConnectedRealmId");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("WoWItemId");
 
                     b.ToTable("Alerts");
                 });
@@ -210,6 +185,9 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Property<int>("AlertId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ConnectedRealmId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Metric")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -223,11 +201,18 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Property<long>("Threshold")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("WoWItemId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AlertId");
 
-                    b.ToTable("AlertCondition");
+                    b.HasIndex("ConnectedRealmId");
+
+                    b.HasIndex("WoWItemId");
+
+                    b.ToTable("AlertConditions");
                 });
 
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.AuctionTimeSeriesEntry", b =>
@@ -544,9 +529,6 @@ namespace WoWMarketWatcher.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("ConnectedRealmId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasMaxLength(4000)
                         .HasColumnType("varchar(4000)");
@@ -559,13 +541,42 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("WoWItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WoWItemId");
+
+                    b.ToTable("WatchLists");
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.WatchedItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConnectedRealmId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WatchListId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WoWItemId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ConnectedRealmId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("WatchListId");
 
-                    b.ToTable("WatchLists");
+                    b.HasIndex("WoWItemId");
+
+                    b.ToTable("WatchedItems");
                 });
 
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.WoWItem", b =>
@@ -664,46 +675,15 @@ namespace WoWMarketWatcher.API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WatchListWoWItem", b =>
-                {
-                    b.HasOne("WoWMarketWatcher.API.Models.Entities.WatchList", null)
-                        .WithMany()
-                        .HasForeignKey("WatchedInId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WoWMarketWatcher.API.Models.Entities.WoWItem", null)
-                        .WithMany()
-                        .HasForeignKey("WatchedItemsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.Alert", b =>
                 {
-                    b.HasOne("WoWMarketWatcher.API.Models.Entities.ConnectedRealm", "ConnectedRealm")
-                        .WithMany()
-                        .HasForeignKey("ConnectedRealmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WoWMarketWatcher.API.Models.Entities.User", "User")
                         .WithMany("Alerts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WoWMarketWatcher.API.Models.Entities.WoWItem", "WoWItem")
-                        .WithMany()
-                        .HasForeignKey("WoWItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ConnectedRealm");
-
                     b.Navigation("User");
-
-                    b.Navigation("WoWItem");
                 });
 
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.AlertAction", b =>
@@ -725,7 +705,23 @@ namespace WoWMarketWatcher.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WoWMarketWatcher.API.Models.Entities.ConnectedRealm", "ConnectedRealm")
+                        .WithMany()
+                        .HasForeignKey("ConnectedRealmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WoWMarketWatcher.API.Models.Entities.WoWItem", "WoWItem")
+                        .WithMany()
+                        .HasForeignKey("WoWItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Alert");
+
+                    b.Navigation("ConnectedRealm");
+
+                    b.Navigation("WoWItem");
                 });
 
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.LinkedAccount", b =>
@@ -793,21 +789,44 @@ namespace WoWMarketWatcher.API.Migrations
 
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.WatchList", b =>
                 {
-                    b.HasOne("WoWMarketWatcher.API.Models.Entities.ConnectedRealm", "ConnectedRealm")
-                        .WithMany()
-                        .HasForeignKey("ConnectedRealmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WoWMarketWatcher.API.Models.Entities.User", "User")
                         .WithMany("WatchLists")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ConnectedRealm");
+                    b.HasOne("WoWMarketWatcher.API.Models.Entities.WoWItem", null)
+                        .WithMany("WatchedIn")
+                        .HasForeignKey("WoWItemId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.WatchedItem", b =>
+                {
+                    b.HasOne("WoWMarketWatcher.API.Models.Entities.ConnectedRealm", "ConnectedRealm")
+                        .WithMany()
+                        .HasForeignKey("ConnectedRealmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WoWMarketWatcher.API.Models.Entities.WatchList", "WatchList")
+                        .WithMany("WatchedItems")
+                        .HasForeignKey("WatchListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WoWMarketWatcher.API.Models.Entities.WoWItem", "WoWItem")
+                        .WithMany()
+                        .HasForeignKey("WoWItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ConnectedRealm");
+
+                    b.Navigation("WatchList");
+
+                    b.Navigation("WoWItem");
                 });
 
             modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.Alert", b =>
@@ -841,6 +860,16 @@ namespace WoWMarketWatcher.API.Migrations
                     b.Navigation("UserRoles");
 
                     b.Navigation("WatchLists");
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.WatchList", b =>
+                {
+                    b.Navigation("WatchedItems");
+                });
+
+            modelBuilder.Entity("WoWMarketWatcher.API.Models.Entities.WoWItem", b =>
+                {
+                    b.Navigation("WatchedIn");
                 });
 #pragma warning restore 612, 618
         }

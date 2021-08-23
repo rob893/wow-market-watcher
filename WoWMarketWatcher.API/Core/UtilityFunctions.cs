@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.Utilities
 {
@@ -35,6 +36,22 @@ namespace WoWMarketWatcher.API.Utilities
             }
 
             return typeName.Split(splitOn).First();
+        }
+
+        public static MembershipLevel MembershipLevelFromString(string membershipLevel)
+        {
+            if (string.IsNullOrWhiteSpace(membershipLevel))
+            {
+                throw new ArgumentNullException(nameof(membershipLevel));
+            }
+
+            return membershipLevel.ToUpperInvariant() switch
+            {
+                "BASIC" => MembershipLevel.Basic,
+                "FREE" => MembershipLevel.Free,
+                "PREMIUM" => MembershipLevel.Premium,
+                _ => throw new ArgumentException($"{membershipLevel} is not a valid membership level.", nameof(membershipLevel))
+            };
         }
 
         public static LogLevel LogLevelFromString(string logLevel)

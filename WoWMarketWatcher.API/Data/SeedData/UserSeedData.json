@@ -38,75 +38,90 @@
       {
         "Name": "Herb Mats - Lightbringer",
         "Description": "My list of herbs to watch",
-        "ConnectedRealmId": 3694,
         "WatchedItems": [
           {
-            "Id": 168589
+            "ConnectedRealmId": 3694,
+            "WoWItemId": 168589
           },
           {
-            "Id": 168586
+            "ConnectedRealmId": 3694,
+            "WoWItemId": 168586
           },
           {
-            "Id": 170554
+            "ConnectedRealmId": 3694,
+            "WoWItemId": 170554
           },
           {
-            "Id": 168583
+            "ConnectedRealmId": 3694,
+            "WoWItemId": 168583
           },
           {
-            "Id": 169701
+            "ConnectedRealmId": 3694,
+            "WoWItemId": 169701
           },
           {
-            "Id": 171315
+            "ConnectedRealmId": 3694,
+            "WoWItemId": 171315
           }
         ]
       },
       {
         "Name": "Herb Mats - Sargeras",
         "Description": "My list of herbs to watch",
-        "ConnectedRealmId": 76,
         "WatchedItems": [
           {
-            "Id": 168589
+            "ConnectedRealmId": 76,
+            "WoWItemId": 168589
           },
           {
-            "Id": 168586
+            "ConnectedRealmId": 76,
+            "WoWItemId": 168586
           },
           {
-            "Id": 170554
+            "ConnectedRealmId": 76,
+            "WoWItemId": 170554
           },
           {
-            "Id": 168583
+            "ConnectedRealmId": 76,
+            "WoWItemId": 168583
           },
           {
-            "Id": 169701
+            "ConnectedRealmId": 76,
+            "WoWItemId": 169701
           },
           {
-            "Id": 171315
+            "ConnectedRealmId": 76,
+            "WoWItemId": 171315
           }
         ]
       },
       {
         "Name": "Herb Mats - Turalyon",
         "Description": "My list of herbs to watch",
-        "ConnectedRealmId": 3685,
         "WatchedItems": [
           {
-            "Id": 168589
+            "ConnectedRealmId": 3685,
+            "WoWItemId": 168589
           },
           {
-            "Id": 168586
+            "ConnectedRealmId": 3685,
+            "WoWItemId": 168586
           },
           {
-            "Id": 170554
+            "ConnectedRealmId": 3685,
+            "WoWItemId": 170554
           },
           {
-            "Id": 168583
+            "ConnectedRealmId": 3685,
+            "WoWItemId": 168583
           },
           {
-            "Id": 169701
+            "ConnectedRealmId": 3685,
+            "WoWItemId": 169701
           },
           {
-            "Id": 171315
+            "ConnectedRealmId": 3685,
+            "WoWItemId": 171315
           }
         ]
       }

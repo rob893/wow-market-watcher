@@ -8,6 +8,10 @@ namespace WoWMarketWatcher.API.Models.DTOs.Alerts
 
         public int AlertId { get; init; }
 
+        public int WoWItemId { get; init; }
+
+        public int ConnectedRealmId { get; init; }
+
         public AlertConditionMetric Metric { get; init; }
 
         public AlertConditionOperator Operator { get; init; }

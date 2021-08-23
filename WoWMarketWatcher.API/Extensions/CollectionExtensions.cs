@@ -18,6 +18,29 @@ namespace WoWMarketWatcher.API.Extensions
                 .Select(x => x.Select(v => v.Value).ToList());
         }
 
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+
+            var seenKeys = new HashSet<TKey>();
+
+            foreach (var element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                {
+                    yield return element;
+                }
+            }
+        }
+
         public static long Percentile(this IEnumerable<long> source, double percentile, bool isSourceSorted = false)
         {
             if (percentile < 0 || percentile > 1)
@@ -65,8 +88,8 @@ namespace WoWMarketWatcher.API.Extensions
             Func<TEntityKey, string> keyConverter,
             Func<string, TEntityKey> cursorConverter,
             CursorPaginationQueryParameters queryParameters)
-            where TEntity : class
-            where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
+                where TEntity : class
+                where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
         {
             if (src == null)
             {
@@ -196,7 +219,7 @@ namespace WoWMarketWatcher.API.Extensions
             this IEnumerable<TEntity> src,
             Func<TEntity, int> keySelector,
             CursorPaginationQueryParameters queryParameters)
-            where TEntity : class
+                where TEntity : class
         {
             return src.ToCursorPaginatedResponse(
                 keySelector,
@@ -217,7 +240,7 @@ namespace WoWMarketWatcher.API.Extensions
             this IEnumerable<TEntity> src,
             Func<TEntity, string> keySelector,
             CursorPaginationQueryParameters queryParameters)
-            where TEntity : class
+                where TEntity : class
         {
             return src.ToCursorPaginatedResponse(
                 keySelector,
@@ -238,7 +261,7 @@ namespace WoWMarketWatcher.API.Extensions
             this IEnumerable<TEntity> src,
             Func<TEntity, long> keySelector,
             CursorPaginationQueryParameters queryParameters)
-            where TEntity : class
+                where TEntity : class
         {
             return src.ToCursorPaginatedResponse(
                 keySelector,
@@ -257,13 +280,164 @@ namespace WoWMarketWatcher.API.Extensions
         public static CursorPaginatedResponse<TEntity, int> ToCursorPaginatedResponse<TEntity>(
             this IEnumerable<TEntity> src,
             CursorPaginationQueryParameters queryParameters)
-            where TEntity : class, IIdentifiable<int>
+                where TEntity : class, IIdentifiable<int>
         {
             return src.ToCursorPaginatedResponse(
                 item => item.Id,
                 key => key.ConvertToBase64Url(),
                 cursor => cursor.ConvertToInt32FromBase64Url(),
                 queryParameters);
+        }
+
+        public static CursorPaginatedList<TEntity, TEntityKey> ToCursorPaginatedList<TEntity, TEntityKey>(
+            this IEnumerable<TEntity> src,
+            Func<TEntity, TEntityKey> keySelector,
+            Func<TEntityKey, string> keyConverter,
+            Func<string, TEntityKey> cursorConverter,
+            int? first,
+            int? last,
+            string? afterCursor,
+            string? beforeCursor,
+            bool includeTotal)
+                where TEntity : class
+                where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException(nameof(src));
+            }
+
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+
+            if (keyConverter == null)
+            {
+                throw new ArgumentNullException(nameof(keyConverter));
+            }
+
+            if (cursorConverter == null)
+            {
+                throw new ArgumentNullException(nameof(cursorConverter));
+            }
+
+            if (first != null && last != null)
+            {
+                throw new NotSupportedException($"Passing both `{nameof(first)}` and `{nameof(last)}` to paginate is not supported.");
+            }
+
+            if (afterCursor != null)
+            {
+                var after = cursorConverter(afterCursor);
+                src = src.Where(item => keySelector(item).CompareTo(after) > 0);
+            }
+
+            if (beforeCursor != null)
+            {
+                var before = cursorConverter(beforeCursor);
+                src = src.Where(item => keySelector(item).CompareTo(before) < 0);
+            }
+
+            var pageList = new List<TEntity>();
+            var hasNextPage = beforeCursor != null;
+            var hasPreviousPage = afterCursor != null;
+
+            if (first != null)
+            {
+                if (first.Value < 0)
+                {
+                    throw new ArgumentException($"{nameof(first)} cannot be less than 0.", nameof(first));
+                }
+
+                pageList = src.OrderBy(keySelector).Take(first.Value + 1).ToList();
+
+                hasNextPage = pageList.Count > first.Value;
+
+                if (hasNextPage)
+                {
+                    pageList.RemoveAt(pageList.Count - 1);
+                }
+            }
+            else if (last != null)
+            {
+                if (last.Value < 0)
+                {
+                    throw new ArgumentException($"{nameof(last)} cannot be less than 0.", nameof(last));
+                }
+
+                pageList = src.OrderByDescending(keySelector).Take(last.Value + 1).ToList();
+
+                hasPreviousPage = pageList.Count > last.Value;
+
+                if (hasPreviousPage)
+                {
+                    pageList.RemoveAt(pageList.Count - 1);
+                }
+
+                pageList.Reverse();
+            }
+            else
+            {
+                pageList = src.OrderBy(keySelector).ToList();
+            }
+
+            var firstPageItem = pageList.FirstOrDefault();
+            var lastPageItem = pageList.LastOrDefault();
+
+            return new CursorPaginatedList<TEntity, TEntityKey>(
+                pageList,
+                hasNextPage,
+                hasPreviousPage,
+                firstPageItem != null ? keyConverter(keySelector(firstPageItem)) : null,
+                lastPageItem != null ? keyConverter(keySelector(lastPageItem)) : null,
+                includeTotal ? src.Count() : null);
+        }
+
+        public static CursorPaginatedList<TEntity, TEntityKey> ToCursorPaginatedList<TEntity, TEntityKey>(
+            this IEnumerable<TEntity> src,
+            Func<TEntity, TEntityKey> keySelector,
+            Func<TEntityKey, string> keyConverter,
+            Func<string, TEntityKey> cursorConverter,
+            CursorPaginationQueryParameters queryParameters)
+                where TEntity : class
+                where TEntityKey : IEquatable<TEntityKey>, IComparable<TEntityKey>
+        {
+            if (queryParameters == null)
+            {
+                throw new ArgumentNullException(nameof(queryParameters));
+            }
+
+            return src.ToCursorPaginatedList(
+                keySelector,
+                keyConverter,
+                cursorConverter,
+                queryParameters.First,
+                queryParameters.Last,
+                queryParameters.After,
+                queryParameters.Before,
+                queryParameters.IncludeTotal);
+        }
+
+        public static CursorPaginatedList<TEntity, int> ToCursorPaginatedList<TEntity>(
+            this IEnumerable<TEntity> src,
+            CursorPaginationQueryParameters queryParameters)
+                where TEntity : class, IIdentifiable<int>
+        {
+            if (queryParameters == null)
+            {
+                throw new ArgumentNullException(nameof(queryParameters));
+            }
+
+            return src.ToCursorPaginatedList(
+                item => item.Id,
+                key => key.ConvertToBase64Url(),
+                cursor => cursor.ConvertToInt32FromBase64Url(),
+                queryParameters.First,
+                queryParameters.Last,
+                queryParameters.After,
+                queryParameters.Before,
+                queryParameters.IncludeTotal);
         }
     }
 }

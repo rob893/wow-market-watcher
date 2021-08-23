@@ -78,6 +78,7 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap<WatchList, WatchListDto>();
             this.CreateMap<CreateWatchListRequest, WatchList>();
             this.CreateMap<CreateWatchListForUserRequest, WatchList>();
+            this.CreateMap<WatchedItem, WatchedItemDto>();
         }
 
         private void CreateAlertMaps()
