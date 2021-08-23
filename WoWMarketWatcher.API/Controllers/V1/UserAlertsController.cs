@@ -122,9 +122,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             this.alertRepository.Add(newAlert);
 
-            var saveResult = await this.alertRepository.SaveAllAsync();
+            var saveResult = await this.alertRepository.SaveChangesAsync();
 
-            if (!saveResult)
+            if (saveResult == 0)
             {
                 return this.BadRequest("Unable to create alert.");
             }
@@ -150,9 +150,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             this.alertRepository.Remove(alert);
-            var saveResults = await this.alertRepository.SaveAllAsync();
+            var saveResults = await this.alertRepository.SaveChangesAsync();
 
-            return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
+            return saveResults > 0 ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
         }
 
         [HttpPatch("{id}")]
@@ -184,7 +184,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             patchDoc.ApplyTo(alert);
 
-            await this.alertRepository.SaveAllAsync();
+            await this.alertRepository.SaveChangesAsync();
 
             var mapped = this.mapper.Map<AlertDto>(alert);
 
@@ -210,9 +210,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             alert.Actions.Add(newAction);
 
-            var saveResults = await this.alertRepository.SaveAllAsync();
+            var saveResults = await this.alertRepository.SaveChangesAsync();
 
-            if (!saveResults)
+            if (saveResults == 0)
             {
                 return this.BadRequest("Failed to add the alert action.");
             }
@@ -246,9 +246,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             alert.Actions.Remove(actionToRemove);
 
-            var saveResults = await this.alertRepository.SaveAllAsync();
+            var saveResults = await this.alertRepository.SaveChangesAsync();
 
-            if (!saveResults)
+            if (saveResults == 0)
             {
                 return this.BadRequest("Failed to delete the resource.");
             }
@@ -294,7 +294,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             patchDoc.ApplyTo(action);
 
-            await this.alertRepository.SaveAllAsync();
+            await this.alertRepository.SaveChangesAsync();
 
             var mapped = this.mapper.Map<AlertDto>(alert);
 
@@ -325,7 +325,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             this.mapper.Map(request, action);
 
-            await this.alertRepository.SaveAllAsync();
+            await this.alertRepository.SaveChangesAsync();
 
             var mapped = this.mapper.Map<AlertDto>(alert);
 
@@ -351,9 +351,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             alert.Conditions.Add(newCondition);
 
-            var saveResults = await this.alertRepository.SaveAllAsync();
+            var saveResults = await this.alertRepository.SaveChangesAsync();
 
-            if (!saveResults)
+            if (saveResults == 0)
             {
                 return this.BadRequest("Failed to add the alert condition.");
             }
@@ -387,9 +387,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             alert.Conditions.Remove(conditionToRemove);
 
-            var saveResults = await this.alertRepository.SaveAllAsync();
+            var saveResults = await this.alertRepository.SaveChangesAsync();
 
-            if (!saveResults)
+            if (saveResults == 0)
             {
                 return this.BadRequest("Failed to delete the resource.");
             }
@@ -435,7 +435,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             patchDoc.ApplyTo(condition);
 
-            await this.alertRepository.SaveAllAsync();
+            await this.alertRepository.SaveChangesAsync();
 
             var mapped = this.mapper.Map<AlertDto>(alert);
 

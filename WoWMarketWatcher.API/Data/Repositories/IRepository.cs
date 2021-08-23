@@ -21,15 +21,13 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         void RemoveRange(IEnumerable<TEntity> entities);
 
-        Task<bool> SaveAllAsync();
-
         Task<int> SaveChangesAsync();
 
-        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true);
+        Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true);
 
-        Task<TEntity> GetByIdAsync(TEntityKey id, bool track = true);
+        Task<TEntity?> GetByIdAsync(TEntityKey id, bool track = true);
 
-        Task<TEntity> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes);
+        Task<TEntity?> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes);
 
         Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition, bool track = true);
 

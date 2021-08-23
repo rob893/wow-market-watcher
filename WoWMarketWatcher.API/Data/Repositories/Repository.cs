@@ -60,17 +60,12 @@ namespace WoWMarketWatcher.API.Data.Repositories
             this.Context.Set<TEntity>().RemoveRange(entities);
         }
 
-        public virtual async Task<bool> SaveAllAsync()
-        {
-            return await this.Context.SaveChangesAsync() > 0;
-        }
-
         public virtual Task<int> SaveChangesAsync()
         {
             return this.Context.SaveChangesAsync();
         }
 
-        public virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
+        public virtual async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -81,10 +76,12 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
             query = this.AddIncludes(query);
 
-            return query.OrderBy(e => e.Id).FirstOrDefaultAsync(condition);
+            var item = await query.OrderBy(e => e.Id).FirstOrDefaultAsync(condition);
+
+            return item;
         }
 
-        public virtual Task<TEntity> GetByIdAsync(TEntityKey id, bool track = true)
+        public virtual async Task<TEntity?> GetByIdAsync(TEntityKey id, bool track = true)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -95,17 +92,21 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
             query = this.AddIncludes(query);
 
-            return query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
+            var item = await query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+            return item;
         }
 
-        public virtual Task<TEntity> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes)
+        public virtual async Task<TEntity?> GetByIdAsync(TEntityKey id, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
             query = this.AddIncludes(query);
             query = includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
-            return query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
+            var item = await query.OrderBy(e => e.Id).FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+            return item;
         }
 
         public virtual Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> condition, bool track = true)

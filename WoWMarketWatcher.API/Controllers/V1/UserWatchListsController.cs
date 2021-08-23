@@ -89,9 +89,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             this.watchListRepository.Add(newWatchList);
 
-            var saveResult = await this.watchListRepository.SaveAllAsync();
+            var saveResult = await this.watchListRepository.SaveChangesAsync();
 
-            if (!saveResult)
+            if (saveResult == 0)
             {
                 return this.BadRequest("Unable to create watch list.");
             }
@@ -117,9 +117,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             this.watchListRepository.Remove(watchList);
-            var saveResults = await this.watchListRepository.SaveAllAsync();
+            var saveResults = await this.watchListRepository.SaveChangesAsync();
 
-            return saveResults ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
+            return saveResults > 0 ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
         }
 
         [HttpPatch("{id}", Name = nameof(UpdateWatchListForUserAsync))]
@@ -151,7 +151,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             patchDoc.ApplyTo(watchList);
 
-            await this.watchListRepository.SaveAllAsync();
+            await this.watchListRepository.SaveChangesAsync();
 
             var mapped = this.mapper.Map<WatchListDto>(watchList);
 
@@ -204,9 +204,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
                     ConnectedRealm = connectedRealm
                 });
 
-            var saveResults = await this.watchListRepository.SaveAllAsync();
+            var saveResults = await this.watchListRepository.SaveChangesAsync();
 
-            if (!saveResults)
+            if (saveResults == 0)
             {
                 return this.BadRequest("Failed to add the item to watch list.");
             }
@@ -240,9 +240,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             watchList.WatchedItems.Remove(itemToRemove);
 
-            var saveResults = await this.watchListRepository.SaveAllAsync();
+            var saveResults = await this.watchListRepository.SaveChangesAsync();
 
-            if (!saveResults)
+            if (saveResults == 0)
             {
                 return this.BadRequest("Failed to delete the resource.");
             }

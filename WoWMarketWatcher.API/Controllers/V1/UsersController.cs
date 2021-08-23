@@ -73,9 +73,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             this.userRepository.Remove(user);
-            var saveResults = await this.userRepository.SaveAllAsync();
+            var saveResults = await this.userRepository.SaveChangesAsync();
 
-            if (!saveResults)
+            if (saveResults == 0)
             {
                 return this.BadRequest("Failed to delete the user.");
             }
@@ -117,7 +117,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             patchDoc.ApplyTo(user);
 
-            await this.userRepository.SaveAllAsync();
+            await this.userRepository.SaveChangesAsync();
 
             var userToReturn = this.mapper.Map<UserDto>(user);
 
@@ -148,6 +148,12 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             var user = await this.userRepository.GetByIdAsync(id);
+
+            if (user == null)
+            {
+                return this.NotFound($"No user with id {id} exists.");
+            }
+
             var roles = await this.userRepository.GetRolesAsync();
             var userRoles = user.UserRoles.Select(ur => ur.Role.Name.ToUpperInvariant()).ToHashSet();
             var selectedRoles = roleEditDto.RoleNames.Select(role => role.ToUpperInvariant()).ToHashSet();
@@ -168,9 +174,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
                 Role = role
             }));
 
-            var success = await this.userRepository.SaveAllAsync();
+            var saveResult = await this.userRepository.SaveChangesAsync();
 
-            if (!success)
+            if (saveResult == 0)
             {
                 return this.BadRequest("Failed to add roles.");
             }
@@ -195,6 +201,12 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             var user = await this.userRepository.GetByIdAsync(id);
+
+            if (user == null)
+            {
+                return this.NotFound($"No user with id {id} exists.");
+            }
+
             var roles = await this.userRepository.GetRolesAsync();
             var userRoles = user.UserRoles.Select(ur => ur.Role.Name.ToUpperInvariant()).ToHashSet();
             var selectedRoles = roleEditDto.RoleNames.Select(role => role.ToUpperInvariant()).ToHashSet();
@@ -211,9 +223,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             user.UserRoles.RemoveAll(ur => roleIdsToRemove.Contains(ur.RoleId));
-            var success = await this.userRepository.SaveAllAsync();
+            var saveResult = await this.userRepository.SaveChangesAsync();
 
-            if (!success)
+            if (saveResult == 0)
             {
                 return this.BadRequest("Failed to remove roles.");
             }

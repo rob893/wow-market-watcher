@@ -77,7 +77,7 @@ namespace WoWMarketWatcher.API.Services
 
             if (currentRefreshToken == null)
             {
-                await this.userRepository.SaveAllAsync();
+                await this.userRepository.SaveChangesAsync();
                 return (false, null);
             }
 

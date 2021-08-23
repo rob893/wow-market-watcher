@@ -102,9 +102,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
             var newWatchList = this.mapper.Map<WatchList>(request);
             this.watchListRepository.Add(newWatchList);
 
-            var saveResult = await this.watchListRepository.SaveAllAsync();
+            var saveResult = await this.watchListRepository.SaveChangesAsync();
 
-            if (!saveResult)
+            if (saveResult == 0)
             {
                 return this.BadRequest("Unable to create watch list.");
             }
@@ -139,9 +139,9 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             this.watchListRepository.Remove(watchList);
-            var saveResults = await this.watchListRepository.SaveAllAsync();
+            var saveResults = await this.watchListRepository.SaveChangesAsync();
 
-            return !saveResults ? this.BadRequest("Failed to delete the income.") : this.NoContent();
+            return saveResults > 0 ? this.NoContent() : this.BadRequest("Failed to delete the watch list.");
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
 
             patchDoc.ApplyTo(watchList);
 
-            await this.watchListRepository.SaveAllAsync();
+            await this.watchListRepository.SaveChangesAsync();
 
             var mapped = this.mapper.Map<WatchListDto>(watchList);
 
