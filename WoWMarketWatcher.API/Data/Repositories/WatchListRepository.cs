@@ -29,7 +29,9 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         protected override IQueryable<WatchList> AddIncludes(IQueryable<WatchList> query)
         {
-            return query.Include(watchList => watchList.WatchedItems);
+            return query
+                .Include(watchList => watchList.WatchedItems)
+                .ThenInclude(watchedItem => watchedItem.WoWItem);
         }
     }
 }

@@ -2,9 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.EventGrid;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Events;
+using WoWMarketWatcher.API.Models.Settings;
 using static WoWMarketWatcher.API.Utilities.UtilityFunctions;
 
 namespace WoWMarketWatcher.API.Services.Events
@@ -15,12 +17,19 @@ namespace WoWMarketWatcher.API.Services.Events
 
         private readonly ICorrelationIdService correlationIdService;
 
+        private readonly EventGridSettings settings;
+
         private readonly ILogger<EventGridEventSender> logger;
 
-        public EventGridEventSender(IEventGridPublisherClientFactory clientFactory, ICorrelationIdService correlationIdService, ILogger<EventGridEventSender> logger)
+        public EventGridEventSender(
+            IEventGridPublisherClientFactory clientFactory,
+            ICorrelationIdService correlationIdService,
+            IOptions<EventGridSettings> eventGridSettings,
+            ILogger<EventGridEventSender> logger)
         {
             this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
             this.correlationIdService = correlationIdService ?? throw new ArgumentNullException(nameof(correlationIdService));
+            this.settings = eventGridSettings?.Value ?? throw new ArgumentNullException(nameof(eventGridSettings));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -29,7 +38,7 @@ namespace WoWMarketWatcher.API.Services.Events
         public Task SendConnectedRealmAuctionDataUpdateCompleteEventAsync(int connectedRealmId)
         {
             var eventGridEvent = new EventGridEvent(
-                "Some subject",
+                "WMW",
                 EventTypes.ConnectedRealmAuctionDataUpdateComplete,
                 "1",
                 new ConnectedRealmAuctionDataUpdateCompleteEvent
@@ -46,7 +55,7 @@ namespace WoWMarketWatcher.API.Services.Events
         public Task SendEventAsync(string eventType, object data)
         {
             var eventGridEvent = new EventGridEvent(
-                "Some subject",
+                "WMW",
                 eventType,
                 "1",
                 data)
@@ -60,6 +69,12 @@ namespace WoWMarketWatcher.API.Services.Events
         private async Task SendAsync(EventGridEvent evt)
         {
             var sourceName = GetSourceName();
+
+            if (!this.settings.SendingEnabled)
+            {
+                this.logger.LogDebug(sourceName, this.CorrelationId, "Event grid publishing disabled.");
+                return;
+            }
 
             try
             {

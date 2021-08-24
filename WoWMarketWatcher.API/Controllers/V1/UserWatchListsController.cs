@@ -183,7 +183,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
                 return this.BadRequest($"Watch list {watchList.Id} is already watching item {request.WoWItemId} for connected realm {request.ConnectedRealmId}.");
             }
 
-            var itemToAdd = await this.itemRepository.GetByIdAsync(request.WoWItemId.Value, false);
+            var itemToAdd = await this.itemRepository.GetByIdAsync(request.WoWItemId.Value);
 
             if (itemToAdd == null)
             {

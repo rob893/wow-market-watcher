@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace WoWMarketWatcher.API.Models.DTOs
 {
     public record WatchedItemDto : IIdentifiable<int>
@@ -8,6 +10,10 @@ namespace WoWMarketWatcher.API.Models.DTOs
 
         public int ConnectedRealmId { get; init; }
 
+        [JsonProperty("wowItemId")]
         public int WoWItemId { get; init; }
+
+        [JsonProperty("wowItem")]
+        public WoWItemDto WoWItem { get; init; } = default!;
     }
 }
