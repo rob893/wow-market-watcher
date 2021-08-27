@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using WoWMarketWatcher.API.Models.Entities;
 
 namespace WoWMarketWatcher.API.Models.DTOs.Alerts
@@ -8,6 +9,7 @@ namespace WoWMarketWatcher.API.Models.DTOs.Alerts
 
         public int AlertId { get; init; }
 
+        [JsonProperty("wowItemId")]
         public int WoWItemId { get; init; }
 
         public int ConnectedRealmId { get; init; }
