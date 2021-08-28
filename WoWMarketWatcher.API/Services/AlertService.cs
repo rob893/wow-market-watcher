@@ -53,18 +53,23 @@ namespace WoWMarketWatcher.API.Services
                 return false;
             }
 
-            var conditionsMet = await this.ConditionsMetAsync(alert);
+            var (isEvaluable, conditionsMet) = await this.ConditionsMetAsync(alert);
             var now = DateTime.UtcNow;
             var oldState = alert.State;
 
-            if (conditionsMet && alert.State != AlertState.Alarm)
+            if (!isEvaluable)
+            {
+                this.logger.LogInformation(sourceName, this.CorrelationId, $"One or more conditions for alert {alert.Id} lacks recent enough data to evaluate. No state change.");
+            }
+
+            if (isEvaluable && conditionsMet && alert.State != AlertState.Alarm)
             {
                 await this.ProcessAlertActionsAsync(alert, AlertActionOnType.AlertActivated);
                 alert.LastFired = now;
                 alert.State = AlertState.Alarm;
                 this.logger.LogInformation(sourceName, this.CorrelationId, $"Alert {alert.Id} state changed from {oldState} to {alert.State}.");
             }
-            else if (alert.State != AlertState.Ok)
+            else if (isEvaluable && alert.State != AlertState.Ok)
             {
                 alert.State = AlertState.Ok;
                 this.logger.LogInformation(sourceName, this.CorrelationId, $"Alert {alert.Id} state changed from {oldState} to {alert.State}.");
@@ -79,20 +84,22 @@ namespace WoWMarketWatcher.API.Services
             return conditionsMet;
         }
 
-        private async Task<bool> ConditionsMetAsync(Alert alert)
+        private async Task<(bool IsEvaluable, bool ConditionsMet)> ConditionsMetAsync(Alert alert)
         {
             foreach (var condition in alert.Conditions)
             {
-                if (!await this.EvaluateConditionAsync(condition))
+                var (isEvaluable, conditionMet) = await this.EvaluateConditionAsync(condition);
+
+                if (!isEvaluable || !conditionMet)
                 {
-                    return false;
+                    return (isEvaluable, conditionMet);
                 }
             }
 
-            return true;
+            return (true, true);
         }
 
-        private async Task<bool> EvaluateConditionAsync(AlertCondition condition)
+        private async Task<(bool IsEvaluable, bool ConditionMet)> EvaluateConditionAsync(AlertCondition condition)
         {
             var entriesToEvaluate = await this.auctionTimeSeriesRepository
                 .SearchAsync(entry =>
@@ -103,12 +110,12 @@ namespace WoWMarketWatcher.API.Services
 
             if (!orderedEntriesToEvaludate.Any())
             {
-                return false;
+                return (false, false);
             }
 
             var aggregation = AggregateMetricValues(condition.AggregationType, entriesToEvaluate.Select(entry => GetMetricValue(condition.Metric, entry)));
 
-            return CompareMetric(condition.Operator, aggregation, condition.Threshold);
+            return (true, CompareMetric(condition.Operator, aggregation, condition.Threshold));
         }
 
         private static long AggregateMetricValues(AlertConditionAggregationType type, IEnumerable<long> metricValues)
