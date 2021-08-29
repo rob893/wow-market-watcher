@@ -86,7 +86,7 @@ namespace WoWMarketWatcher.API.Core
             this.CreateMap<Alert, AlertDto>();
             this.CreateMap<AlertCondition, AlertConditionDto>();
             this.CreateMap<AlertAction, AlertActionDto>();
-            this.CreateMap<CreateAlertForUserRequest, Alert>();
+            this.CreateMap<CreateOrReplaceAlertForUserRequest, Alert>();
             this.CreateMap<CreateAlertActionRequest, AlertAction>();
             this.CreateMap<CreateAlertConditionRequest, AlertCondition>();
             this.CreateMap<PutAlertActionRequest, AlertAction>();

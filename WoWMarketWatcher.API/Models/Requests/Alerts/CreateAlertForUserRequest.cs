@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WoWMarketWatcher.API.Models.Requests.Alerts
 {
-    public record CreateAlertForUserRequest
+    public record CreateOrReplaceAlertForUserRequest
     {
         [Required]
         [MaxLength(255)]

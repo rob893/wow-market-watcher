@@ -78,7 +78,7 @@ namespace WoWMarketWatcher.API.Controllers.V1
         }
 
         [HttpPost]
-        public async Task<ActionResult<AlertDto>> CreateAlertForUserAsync([FromRoute] int userId, [FromBody] CreateAlertForUserRequest request)
+        public async Task<ActionResult<AlertDto>> CreateAlertForUserAsync([FromRoute] int userId, [FromBody] CreateOrReplaceAlertForUserRequest request)
         {
             if (request == null)
             {
@@ -153,6 +153,62 @@ namespace WoWMarketWatcher.API.Controllers.V1
             var saveResults = await this.alertRepository.SaveChangesAsync();
 
             return saveResults > 0 ? this.NoContent() : this.BadRequest("Failed to delete the resource.");
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<AlertDto>> ReplaceAlertForUserAsync([FromRoute] int id, [FromBody] CreateOrReplaceAlertForUserRequest request)
+        {
+            if (request == null)
+            {
+                return this.BadRequest("Request body cannot be empty.");
+            }
+
+            var alert = await this.alertRepository.GetByIdAsync(id);
+
+            if (alert == null)
+            {
+                return this.NotFound($"No resource with Id {id} found.");
+            }
+
+            if (!this.IsUserAuthorizedForResource(alert))
+            {
+                return this.Forbidden("You are not authorized to update this resource.");
+            }
+
+            if (!this.User.TryGetEmailVerified(out var emailVerified) || !emailVerified.Value)
+            {
+                return this.BadRequest("Your email must be verified before you can create alerts.");
+            }
+
+            var requestedRealmIds = request.Conditions
+                .Select(condition => condition.ConnectedRealmId ?? default)
+                .ToHashSet();
+            var realms = (await this.realmRepository.SearchAsync(realm => requestedRealmIds.Contains(realm.Id), false)).Select(realm => realm.Id).ToHashSet();
+            var invalidRealms = requestedRealmIds.Except(realms);
+
+            if (invalidRealms.Any())
+            {
+                return this.BadRequest(invalidRealms.Select(id => $"No connected realm with id {id} exists."));
+            }
+
+            var requestedItemIds = request.Conditions
+                .Select(condition => condition.WoWItemId ?? default)
+                .ToHashSet();
+            var items = (await this.itemRepository.SearchAsync(item => requestedItemIds.Contains(item.Id), false)).Select(item => item.Id).ToHashSet();
+            var invalidItems = requestedItemIds.Except(items);
+
+            if (invalidItems.Any())
+            {
+                return this.BadRequest(invalidItems.Select(id => $"No item with id {id} exists."));
+            }
+
+            this.mapper.Map(request, alert);
+
+            await this.alertRepository.SaveChangesAsync();
+
+            var mapped = this.mapper.Map<AlertDto>(alert);
+
+            return this.Ok(mapped);
         }
 
         [HttpPatch("{id}")]

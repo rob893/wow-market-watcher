@@ -69,7 +69,7 @@ namespace WoWMarketWatcher.API.Services
                 alert.State = AlertState.Alarm;
                 this.logger.LogInformation(sourceName, this.CorrelationId, $"Alert {alert.Id} state changed from {oldState} to {alert.State}.");
             }
-            else if (isEvaluable && alert.State != AlertState.Ok)
+            else if (isEvaluable && !conditionsMet && alert.State != AlertState.Ok)
             {
                 alert.State = AlertState.Ok;
                 this.logger.LogInformation(sourceName, this.CorrelationId, $"Alert {alert.Id} state changed from {oldState} to {alert.State}.");

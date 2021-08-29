@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9</LangVersion>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <RootNamespace>WoWMarketWatcher.API</RootNamespace>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -23,6 +23,7 @@
         1.0.2 - Fix issue with ATS health check. 
         1.0.3 - Update data types to take up less room. 
         1.1.0 - Add alerting feature. 
+        1.2.0 - Add put alert for user endpoint. 
     </PackageReleaseNotes>
   </PropertyGroup>
 
