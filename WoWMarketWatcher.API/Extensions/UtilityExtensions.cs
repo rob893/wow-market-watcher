@@ -64,6 +64,26 @@ namespace WoWMarketWatcher.API.Extensions
             return false;
         }
 
+        public static bool TryGetUserEmail(this ClaimsPrincipal principal, [NotNullWhen(true)] out string? email)
+        {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+
+            email = null;
+
+            var emailClaim = principal.FindFirst(ClaimTypes.Email);
+
+            if (emailClaim == null)
+            {
+                return false;
+            }
+
+            email = emailClaim.Value;
+            return true;
+        }
+
         public static bool TryGetEmailVerified(this ClaimsPrincipal principal, [NotNullWhen(true)] out bool? emailVerified)
         {
             if (principal == null)
@@ -182,7 +202,7 @@ namespace WoWMarketWatcher.API.Extensions
                     continue;
                 }
 
-                if (!(entry.Value is string) && entry.Value is IEnumerable<object> enumberable)
+                if (entry.Value is not string && entry.Value is IEnumerable<object> enumberable)
                 {
                     results.AddRange(enumberable.Select(e => $"{HttpUtility.UrlEncode(entry.Key)}={HttpUtility.UrlEncode(e.ToString())}"));
                 }

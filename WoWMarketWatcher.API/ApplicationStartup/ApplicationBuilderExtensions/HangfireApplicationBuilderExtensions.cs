@@ -36,7 +36,10 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ApplicationBuilderExtensions
 
             var backgroundJobSettings = config.GetSection(ConfigurationKeys.BackgroundJobs).Get<BackgroundJobSettings>();
 
+#pragma warning disable CS0618
+            // This is deprecated. Disabling warning as hangfire heartbeat has not been updated yet.
             app.UseHangfireServer(additionalProcesses: new[] { new ProcessMonitor(TimeSpan.FromSeconds(1.5)) });
+#pragma warning restore CS0618
             app.UseHangfireDashboard(
                 "/hangfire",
                 new DashboardOptions

@@ -71,6 +71,10 @@ namespace WoWMarketWatcher.API.Controllers.V1
             }
 
             var user = this.mapper.Map<User>(registerUserRequest);
+            user.Preferences = new UserPreference
+            {
+                UITheme = UITheme.Dark
+            };
 
             var result = await this.userRepository.CreateUserWithPasswordAsync(user, registerUserRequest.Password);
 
@@ -137,6 +141,10 @@ namespace WoWMarketWatcher.API.Controllers.V1
                             Id = validatedToken.Subject,
                             LinkedAccountType = LinkedAccountType.Google
                         }
+                    },
+                    Preferences = new UserPreference
+                    {
+                        UITheme = UITheme.Dark
                     }
                 };
 

@@ -95,6 +95,14 @@ namespace WoWMarketWatcher.API.Controllers.V1
                 return this.BadRequest("Your email must be verified before you can create alerts.");
             }
 
+            foreach (var action in request.Actions)
+            {
+                if (action.Type == AlertActionType.Email && (!this.User.TryGetUserEmail(out var email) || !email.Equals(action.Target, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return this.BadRequest("You can only create alerts using your verified email.");
+                }
+            }
+
             var newAlert = this.mapper.Map<Alert>(request);
             newAlert.UserId = userId;
 
@@ -178,6 +186,14 @@ namespace WoWMarketWatcher.API.Controllers.V1
             if (!this.User.TryGetEmailVerified(out var emailVerified) || !emailVerified.Value)
             {
                 return this.BadRequest("Your email must be verified before you can create alerts.");
+            }
+
+            foreach (var action in request.Actions)
+            {
+                if (action.Type == AlertActionType.Email && (!this.User.TryGetUserEmail(out var email) || !email.Equals(action.Target, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return this.BadRequest("You can only create alerts using your verified email.");
+                }
             }
 
             var requestedRealmIds = request.Conditions
