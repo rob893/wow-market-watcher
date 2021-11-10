@@ -54,7 +54,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return created;
         }
 
-        public Task<User> GetByUsernameAsync(string username)
+        public Task<User?> GetByUsernameAsync(string username)
         {
             IQueryable<User> query = this.Context.Users;
             query = this.AddIncludes(query);
@@ -78,7 +78,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
             return await query.OrderBy(e => e.Id).FirstOrDefaultAsync(user => user.Id == linkedAccount.UserId);
         }
 
-        public Task<User> GetByUsernameAsync(string username, params Expression<Func<User, object>>[] includes)
+        public Task<User?> GetByUsernameAsync(string username, params Expression<Func<User, object>>[] includes)
         {
             IQueryable<User> query = this.Context.Users;
 

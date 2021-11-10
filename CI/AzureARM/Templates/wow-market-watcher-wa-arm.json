@@ -97,7 +97,7 @@
         "enabled": true,
         "httpsOnly": true,
         "siteConfig": {
-          "netFrameworkVersion": "v5.0",
+          "netFrameworkVersion": "6.0",
           "appSettings": [
             {
               "name": "ASPNETCORE_ENVIRONMENT",

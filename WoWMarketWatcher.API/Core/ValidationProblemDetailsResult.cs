@@ -18,8 +18,8 @@ namespace WoWMarketWatcher.API.Core
             }
 
             var errors = context.ModelState
-                .Where(e => e.Value.Errors.Count > 0)
-                .SelectMany(entry => entry.Value.Errors.Select(e => $"{entry.Key}: {e.ErrorMessage}"))
+                .Where(e => e.Value != null && e.Value.Errors.Count > 0)
+                .SelectMany(entry => entry.Value!.Errors.Select(e => $"{entry.Key}: {e.ErrorMessage}"))
                 .ToList();
 
             var problemDetails = new ProblemDetailsWithErrors(errors, StatusCodes.Status400BadRequest, context.HttpContext.Request)

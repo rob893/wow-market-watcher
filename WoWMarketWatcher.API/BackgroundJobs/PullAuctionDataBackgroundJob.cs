@@ -353,9 +353,9 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             this.logger.LogDebug(this.hangfireJobId, sourceName, this.CorrelationId, $"Starting to obtain and save data for {this.newItemIds.Count} newly discovered items.", this.logMetadata);
 
-            var newItemChunks = this.newItemIds.ChunkBy(100);
+            var newItemChunks = this.newItemIds.Chunk(100);
 
-            var newItemChunkedChunks = newItemChunks.ChunkBy(5);
+            var newItemChunkedChunks = newItemChunks.Chunk(5);
 
             var tasks = new List<Task<IEnumerable<WoWItem>>>();
 

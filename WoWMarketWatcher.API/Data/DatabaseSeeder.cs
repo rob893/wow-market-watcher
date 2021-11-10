@@ -129,6 +129,11 @@ namespace WoWMarketWatcher.API.Data
             var data = File.ReadAllText("Data/SeedData/WoWItemsSeedData.json");
             var items = JsonConvert.DeserializeObject<List<WoWItem>>(data);
 
+            if (items == null)
+            {
+                throw new JsonSerializationException("Unable to deserialize json string.");
+            }
+
             this.context.WoWItems.AddRange(items);
         }
 
@@ -142,6 +147,11 @@ namespace WoWMarketWatcher.API.Data
             var data = File.ReadAllText("Data/SeedData/ConnectedRealmsSeedData.json");
             var items = JsonConvert.DeserializeObject<List<ConnectedRealm>>(data);
 
+            if (items == null)
+            {
+                throw new JsonSerializationException("Unable to deserialize json string.");
+            }
+
             this.context.ConnectedRealms.AddRange(items);
         }
 
@@ -154,6 +164,11 @@ namespace WoWMarketWatcher.API.Data
 
             var data = File.ReadAllText("Data/SeedData/AuctionTimeSeriesSeedData.json");
             var items = JsonConvert.DeserializeObject<List<AuctionTimeSeriesEntry>>(data);
+
+            if (items == null)
+            {
+                throw new JsonSerializationException("Unable to deserialize json string.");
+            }
 
             this.context.AuctionTimeSeries.AddRange(items);
         }

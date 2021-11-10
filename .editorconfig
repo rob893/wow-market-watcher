@@ -237,6 +237,15 @@ dotnet_diagnostic.CA5394.severity = none
 # Avoid uninstantiated internal classes.
 # Disabled as many internal classes are created through reflection.
 dotnet_diagnostic.CA1812.severity = none
+# High-performance logging with LoggerMessage in ASP.NET Core.
+# Disabled because I don't want to refactor logging right now.
+dotnet_diagnostic.CA1848.severity = none
+# Do not disable token validation checks.
+# Disabled because we still validate JWT for refresh tokens but without lifetime validation.
+dotnet_diagnostic.CA5404.severity = none
+# Something about logging templates?
+# Disabled because I don't know what it is talking about.
+dotnet_diagnostic.CA2254.severity = none
 
 
 [/WoWMarketWatcher.API.Test/**]

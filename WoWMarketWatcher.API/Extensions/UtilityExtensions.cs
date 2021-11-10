@@ -240,7 +240,7 @@ namespace WoWMarketWatcher.API.Extensions
         private static void AddPropertyToDictionary<T>(PropertyDescriptor property, object source, Dictionary<string, T> dictionary)
         {
             var value = property.GetValue(source);
-            if (IsOfType<T>(value))
+            if (value != null && IsOfType<T>(value))
             {
                 dictionary.Add(property.Name, (T)value);
             }

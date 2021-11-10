@@ -10,37 +10,6 @@ namespace WoWMarketWatcher.API.Extensions
 {
     public static class CollectionExtensions
     {
-        public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> source, int chunkSize)
-        {
-            return source
-                .Select((x, i) => (Index: i, Value: x))
-                .GroupBy(x => x.Index / chunkSize)
-                .Select(x => x.Select(v => v.Value).ToList());
-        }
-
-        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (keySelector == null)
-            {
-                throw new ArgumentNullException(nameof(keySelector));
-            }
-
-            var seenKeys = new HashSet<TKey>();
-
-            foreach (var element in source)
-            {
-                if (seenKeys.Add(keySelector(element)))
-                {
-                    yield return element;
-                }
-            }
-        }
-
         public static long Percentile(this IEnumerable<long> source, double percentile, bool isSourceSorted = false)
         {
             if (percentile < 0 || percentile > 1)

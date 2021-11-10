@@ -18,11 +18,11 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
         Task<IdentityResult> CreateUserWithPasswordAsync(User user, string password);
 
-        Task<User> GetByUsernameAsync(string username);
+        Task<User?> GetByUsernameAsync(string username);
 
         Task<User?> GetByLinkedAccountAsync(string id, LinkedAccountType accountType, params Expression<Func<User, object>>[] includes);
 
-        Task<User> GetByUsernameAsync(string username, params Expression<Func<User, object>>[] includes);
+        Task<User?> GetByUsernameAsync(string username, params Expression<Func<User, object>>[] includes);
 
         Task<bool> CheckPasswordAsync(User user, string password);
 
