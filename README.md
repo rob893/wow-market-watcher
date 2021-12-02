@@ -15,7 +15,7 @@ The services exposes a REST API that:
 
 ### Prerequisites
 
-- .NET 5 SDK installed
+- .NET 6 SDK installed
 
 ### Basic Commands
 
