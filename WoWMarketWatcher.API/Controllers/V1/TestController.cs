@@ -173,6 +173,14 @@ namespace WoWMarketWatcher.API.Controllers.V1
                 : this.GetReturn(status);
         }
 
+        [HttpPost("resetCounter")]
+        [AllowAnonymous]
+        public ActionResult ResetCounter()
+        {
+            this.counter.Count = 0;
+            return this.Ok();
+        }
+
         private ActionResult GetReturn(HttpStatusCode status)
         {
             return status switch
