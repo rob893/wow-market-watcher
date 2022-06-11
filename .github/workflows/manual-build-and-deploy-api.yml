@@ -136,7 +136,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
       - name: Deploy ARM template
-        uses: azure/arm-deploy@main
+        uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_DEV }}
           resourceGroupName: ${{ secrets.AZURE_RG_DEV }}

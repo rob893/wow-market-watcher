@@ -134,17 +134,6 @@
     {
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2016-09-01",
-      "name": "appInsightsLock",
-      "scope": "[concat('Microsoft.Insights/components/', parameters('appInsightsName'))]",
-      "dependsOn": ["[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"],
-      "properties": {
-        "level": "CanNotDelete",
-        "notes": "App Insights should not be deleted."
-      }
-    },
-    {
-      "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2016-09-01",
       "name": "appServicePlanLock",
       "scope": "[concat('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
       "dependsOn": ["[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"],
