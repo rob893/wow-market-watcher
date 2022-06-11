@@ -36,8 +36,8 @@
     <PackageReference Include="Azure.Messaging.EventGrid" Version="4.10.0" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Google.Apis.Auth" Version="1.57.0" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.29" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.29" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.30" />
     <PackageReference Include="Hangfire.Heartbeat" Version="0.5.1" />
     <PackageReference Include="Hangfire.JobsLogger" Version="0.2.1" />
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
