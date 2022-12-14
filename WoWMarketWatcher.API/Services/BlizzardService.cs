@@ -105,6 +105,13 @@ namespace WoWMarketWatcher.API.Services
                 $"data/wow/connected-realm/{realmId}/auctions?namespace=dynamic-us&locale=en_US");
         }
 
+        public Task<BlizzardAuctionsResponse> GetCommodityAuctionsAsync()
+        {
+            return this.SendRequestAsync<BlizzardAuctionsResponse>(
+                HttpMethod.Get,
+                $"data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US");
+        }
+
         public Task<BlizzardWoWItem> GetWoWItemAsync(int itemId)
         {
             return this.SendRequestAsync<BlizzardWoWItem>(

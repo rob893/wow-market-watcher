@@ -10,6 +10,8 @@ namespace WoWMarketWatcher.API.Services
 
         Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId);
 
+        Task<BlizzardAuctionsResponse> GetCommodityAuctionsAsync();
+
         Task<BlizzardWoWItem> GetWoWItemAsync(int itemId);
 
         Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds);
