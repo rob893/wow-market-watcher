@@ -79,6 +79,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             var sourceName = GetSourceName();
             this.hangfireJobId = context.BackgroundJob.Id;
             this.correlationIdService.CorrelationId = $"{this.hangfireJobId}-{Guid.NewGuid()}";
+            var numberAuctionEntriesAdded = 0;
 
             // Can't use tags yet. Issue with Pomelo ef core MySQL connector
             // context.AddTags(nameof(PullAuctionData));
@@ -120,6 +121,16 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
                 this.currentItemIds.UnionWith(await this.dbContext.WoWItems.AsNoTracking().Select(i => i.Id).ToListAsync());
 
+                try
+                {
+                    var newCommodityEntries = await this.ProcessCommoditiesAuctionDataAsync();
+                    numberAuctionEntriesAdded += newCommodityEntries;
+                }
+                catch (Exception e)
+                {
+                    this.logger.LogError(this.hangfireJobId, sourceName, this.CorrelationId, $"Unable to process commodities. {e.Message}");
+                }
+
                 if (this.jobSettings.AlwaysProcessCertainItemsEnabled)
                 {
                     var predicate = PredicateBuilder.New<WoWItem>();
@@ -148,7 +159,6 @@ namespace WoWMarketWatcher.API.BackgroundJobs
                 var attempts = new Dictionary<int, int>();
                 var realmsQueue = new Queue<int>(realmIdsToUpdate);
                 var maxAttempts = 5;
-                var numberAuctionEntriesAdded = 0;
 
                 while (realmsQueue.Any())
                 {
@@ -313,6 +323,48 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             return numberAuctionEntriesAdded;
         }
 
+        private async Task<int> ProcessCommoditiesAuctionDataAsync()
+        {
+            var sourceName = GetSourceName();
+
+            this.logger.LogDebug(this.hangfireJobId, sourceName, this.CorrelationId, "Processing commodities auction data.", this.logMetadata);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var auctionData = await this.blizzardService.GetCommodityAuctionsAsync();
+
+            var newCommodityItemIds = auctionData.Auctions
+                .Select(auc => auc.Item.Id)
+                .Where(id => !this.currentItemIds.Contains(id))
+                .ToHashSet();
+
+            this.logger.LogDebug(
+                this.hangfireJobId,
+                sourceName,
+                this.CorrelationId,
+                $"Found {newCommodityItemIds.Count} untracked items from auction data from commodities data.",
+                this.logMetadata);
+
+            this.newItemIds.UnionWith(newCommodityItemIds);
+
+            var newAuctionsToAdd = this.MapAuctionData(auctionData.Auctions, -1, new HashSet<int>(), true);
+
+            this.dbContext.AuctionTimeSeries.AddRange(newAuctionsToAdd);
+            var numberAuctionEntriesAdded = await this.dbContext.SaveChangesAsync();
+
+            stopwatch.Stop();
+
+            this.logger.LogInformation(
+                this.hangfireJobId,
+                sourceName,
+                this.CorrelationId,
+                $"Processing commodity auction data complete in {stopwatch.ElapsedMilliseconds}ms. {numberAuctionEntriesAdded} auction entries added and {newCommodityItemIds.Count} new items found.",
+                this.logMetadata);
+
+            return numberAuctionEntriesAdded;
+        }
+
         private async Task EnsureWoWTokenItemExists()
         {
             var wowToken = await this.dbContext.WoWItems.FindAsync(ApplicationSettings.WoWTokenId);
@@ -380,7 +432,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
             return itemsSaved;
         }
 
-        private List<AuctionTimeSeriesEntry> MapAuctionData(List<BlizzardAuction> auctions, int connectedRealmId, HashSet<int> itemIdsToProcess)
+        private List<AuctionTimeSeriesEntry> MapAuctionData(List<BlizzardAuction> auctions, int connectedRealmId, HashSet<int> itemIdsToProcess, bool processAllAuctions = false)
         {
             var sourceName = GetSourceName();
 
@@ -391,7 +443,7 @@ namespace WoWMarketWatcher.API.BackgroundJobs
 
             foreach (var auction in auctions)
             {
-                if (!itemIdsToProcess.Contains(auction.Item.Id) || !this.currentItemIds.Contains(auction.Item.Id))
+                if (!processAllAuctions && (!itemIdsToProcess.Contains(auction.Item.Id) || !this.currentItemIds.Contains(auction.Item.Id)))
                 {
                     continue;
                 }

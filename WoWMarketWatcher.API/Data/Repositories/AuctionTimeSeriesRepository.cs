@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Entities;
 using WoWMarketWatcher.API.Models.QueryParameters;
@@ -39,7 +40,7 @@ namespace WoWMarketWatcher.API.Data.Repositories
 
             if (searchParams.ConnectedRealmId != null)
             {
-                query = query.Where(entry => entry.ConnectedRealmId == searchParams.ConnectedRealmId.Value);
+                query = query.Where(entry => entry.ConnectedRealmId == searchParams.ConnectedRealmId.Value || entry.ConnectedRealmId == General.CommoditiesConnectedRealmId);
             }
 
             if (searchParams.StartDate != null)
