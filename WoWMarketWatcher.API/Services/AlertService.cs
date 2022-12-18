@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Data.Repositories;
 using WoWMarketWatcher.API.Extensions;
 using WoWMarketWatcher.API.Models.Entities;
@@ -104,7 +105,7 @@ namespace WoWMarketWatcher.API.Services
             var entriesToEvaluate = await this.auctionTimeSeriesRepository
                 .SearchAsync(entry =>
                     entry.WoWItemId == condition.WoWItemId &&
-                    entry.ConnectedRealmId == condition.ConnectedRealmId &&
+                    (entry.ConnectedRealmId == condition.ConnectedRealmId || entry.ConnectedRealmId == General.CommoditiesConnectedRealmId) &&
                     entry.Timestamp >= DateTime.UtcNow.AddHours(-condition.AggregationTimeGranularityInHours));
             var orderedEntriesToEvaludate = entriesToEvaluate.OrderBy(entry => entry.Timestamp);
 
