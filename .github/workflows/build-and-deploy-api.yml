@@ -105,6 +105,7 @@ jobs:
           resourceGroupName: ${{ secrets.AZURE_RG_DEV }}
           template: ./CI/AzureARM/Templates/wow-market-watcher-wa-arm.json
           parameters: ./CI/AzureARM/Parameters/wow-market-watcher-wa-arm.parameters.dev.json
+          scope: resourcegroup
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
