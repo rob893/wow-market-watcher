@@ -247,9 +247,26 @@ dotnet_diagnostic.CA5404.severity = none
 # Disabled because I don't know what it is talking about.
 dotnet_diagnostic.CA2254.severity = none
 
+# TODO: Disable and fix these eventually
+dotnet_diagnostic.CA1852.severity = none
+dotnet_diagnostic.CA1859.severity = none
+dotnet_diagnostic.CA1510.severity = none
+dotnet_diagnostic.CA1860.severity = none
+dotnet_diagnostic.CA1851.severity = none
+dotnet_diagnostic.CA1854.severity = none
+dotnet_diagnostic.CS8603.severity = none
+dotnet_diagnostic.CA1862.severity = none
+dotnet_diagnostic.ASP0019.severity = none
+dotnet_diagnostic.CS8602.severity = none
+dotnet_diagnostic.CA1849.severity = none
+dotnet_diagnostic.CS8600.severity = none
+dotnet_diagnostic.CS8604.severity = none
+dotnet_diagnostic.CS8762.severity = none
+dotnet_diagnostic.CA1861.severity = none
 
 [/WoWMarketWatcher.API.Test/**]
 dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.xUnit1012.severity = none
 
 [*/Migrations/**]
 generated_code = true

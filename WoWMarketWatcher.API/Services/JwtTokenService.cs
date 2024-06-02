@@ -152,7 +152,7 @@ namespace WoWMarketWatcher.API.Services
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.authSettings.APISecrect));
 
-            if (key.KeySize < 128)
+            if (key.KeySize < 512)
             {
                 throw new ArgumentException("API Secret must be longer");
             }

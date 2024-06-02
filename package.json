@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "start-api": "cd WoWMarketWatcher.API && dotnet watch run",
-    "start-ui": "cd WoWMarketWatcher.UI && dotnet watch run",
+    "start": "cd WoWMarketWatcher.API && dotnet watch run",
     "test": "dotnet test",
     "format": "dotnet format",
     "update-dependencies": "dotnet outdated -u",

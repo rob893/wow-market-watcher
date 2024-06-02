@@ -29,7 +29,7 @@ jobs:
       - name: Use Dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: '8.0.x'
       - name: Use cache
         uses: actions/cache@v2
         with:
@@ -108,7 +108,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "rherber-wow-market-watcher-uw-wa-d"
-          slot-name: "production"
+          app-name: 'rherber-wow-market-watcher-uw-wa-d'
+          slot-name: 'production'
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE_DEV }}
           package: wow-market-watcher-b${{ github.run_number }}

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 5003
 
@@ -12,7 +12,7 @@ ENV DOTNET_PRINT_TELEMETRY_MESSAGE=false
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["WoWMarketWatcher.API/WoWMarketWatcher.API.csproj", "WoWMarketWatcher.API/"]
 RUN dotnet restore "WoWMarketWatcher.API/WoWMarketWatcher.API.csproj"
@@ -28,9 +28,9 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WoWMarketWatcher.API.dll"]
 
-# FROM mcr.microsoft.com/dotnet/aspnet:6.0
+# FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
-# COPY bin/Release/net6.0/publish/ App/
+# COPY bin/Release/net8.0/publish/ App/
 # WORKDIR /App
 
 # ENV ASPNETCORE_ENVIRONMENT=Production
