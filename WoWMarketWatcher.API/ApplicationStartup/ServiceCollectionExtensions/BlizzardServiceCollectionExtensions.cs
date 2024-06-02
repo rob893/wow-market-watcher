@@ -37,13 +37,12 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             {
                 c.BaseAddress = settings.BaseUrl;
             })
-                .AddPolicyHandler(HttpPolicyExtensions
+                .AddPolicyHandler((IServiceProvider serviceProvider, HttpRequestMessage _) => HttpPolicyExtensions
                     .HandleTransientHttpError()
                     .Or<TimeoutRejectedException>()
                     .WaitAndRetryAsync(5, (retryAttempt) => TimeSpan.FromMilliseconds(retryAttempt * 300), onRetry: (outcome, timespan, retryAttempt, context) =>
                     {
                         var sourceName = GetSourceName();
-                        var serviceProvider = services.BuildServiceProvider();
                         var logger = serviceProvider.GetRequiredService<ILogger<BlizzardService>>();
                         var correlationId = serviceProvider.GetRequiredService<ICorrelationIdService>().CorrelationId;
 
