@@ -8,6 +8,6 @@
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="3.15.0" />
+    <PackageReference Include="Discord.Net" Version="3.17.1" />
   </ItemGroup>
 </Project>

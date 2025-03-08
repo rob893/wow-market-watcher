@@ -41,7 +41,7 @@ namespace WoWMarketWatcher.API.Core
             }
             catch (Exception e)
             {
-                return HealthCheckResult.Unhealthy(e.Message);
+                return HealthCheckResult.Unhealthy(e.Message, e);
             }
         }
     }

@@ -17,6 +17,11 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
             }
 
             services.AddHealthChecks()
+                .AddCheck<VersionHealthCheck>(name: nameof(VersionHealthCheck), failureStatus: HealthStatus.Unhealthy)
+                .AddCheck<BlizzardHealthCheck>(
+                    name: nameof(BlizzardHealthCheck),
+                    failureStatus: HealthStatus.Unhealthy,
+                    tags: [HealthCheckTags.Dependency])
                 .AddHangfire(
                     options =>
                     {
@@ -24,11 +29,11 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                     },
                     name: "Hangfire",
                     failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { HealthCheckTags.Hangfire, HealthCheckTags.Dependency })
+                    tags: [HealthCheckTags.Hangfire, HealthCheckTags.Dependency])
                 .AddCheck<AuctionTimeSeriesJobHealthCheck>(
-                    name: "AuctionTimeSeriesJob",
+                    name: nameof(AuctionTimeSeriesJobHealthCheck),
                     failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { HealthCheckTags.Database, HealthCheckTags.Dependency, HealthCheckTags.Hangfire });
+                    tags: [HealthCheckTags.Database, HealthCheckTags.Dependency, HealthCheckTags.Hangfire]);
 
             return services;
         }

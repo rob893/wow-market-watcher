@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Memory;
@@ -48,7 +49,7 @@ namespace WoWMarketWatcher.API.Services
 
         private string CorrelationId => this.correlationIdService.CorrelationId;
 
-        public async Task<string> GetAccessTokenAsync(bool forceRefresh = false)
+        public async Task<string> GetAccessTokenAsync(bool forceRefresh = false, CancellationToken cancellationToken = default)
         {
             var sourceName = GetSourceName();
 
@@ -74,9 +75,9 @@ namespace WoWMarketWatcher.API.Services
             request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{this.settings.ClientId}:{this.settings.ClientSecret}")));
             request.Headers.Add(AppHeaderNames.CorrelationId, this.CorrelationId);
 
-            using var response = await httpClient.SendAsync(request);
+            using var response = await httpClient.SendAsync(request, cancellationToken);
 
-            var contentString = await response.Content.ReadAsStringAsync();
+            var contentString = await response.Content.ReadAsStringAsync(cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -98,28 +99,31 @@ namespace WoWMarketWatcher.API.Services
             return content.AccessToken;
         }
 
-        public Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId)
+        public Task<BlizzardAuctionsResponse> GetAuctionsAsync(int realmId, CancellationToken cancellationToken = default)
         {
             return this.SendRequestAsync<BlizzardAuctionsResponse>(
                 HttpMethod.Get,
-                $"data/wow/connected-realm/{realmId}/auctions?namespace=dynamic-us&locale=en_US");
+                $"data/wow/connected-realm/{realmId}/auctions?namespace=dynamic-us&locale=en_US",
+                cancellationToken: cancellationToken);
         }
 
-        public Task<BlizzardAuctionsResponse> GetCommodityAuctionsAsync()
+        public Task<BlizzardAuctionsResponse> GetCommodityAuctionsAsync(CancellationToken cancellationToken = default)
         {
             return this.SendRequestAsync<BlizzardAuctionsResponse>(
                 HttpMethod.Get,
-                $"data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US");
+                $"data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US",
+                cancellationToken: cancellationToken);
         }
 
-        public Task<BlizzardWoWItem> GetWoWItemAsync(int itemId)
+        public Task<BlizzardWoWItem> GetWoWItemAsync(int itemId, CancellationToken cancellationToken = default)
         {
             return this.SendRequestAsync<BlizzardWoWItem>(
                 HttpMethod.Get,
-                $"data/wow/item/{itemId}?namespace=static-us&locale=en_US");
+                $"data/wow/item/{itemId}?namespace=static-us&locale=en_US",
+                cancellationToken: cancellationToken);
         }
 
-        public Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds)
+        public Task<BlizzardSearchResponse<BlizzardLocaleWoWItem>> GetWoWItemsAsync(IEnumerable<int> itemIds, CancellationToken cancellationToken = default)
         {
             if (itemIds.Count() > 100)
             {
@@ -130,19 +134,21 @@ namespace WoWMarketWatcher.API.Services
 
             return this.SendRequestAsync<BlizzardSearchResponse<BlizzardLocaleWoWItem>>(
                 HttpMethod.Get,
-                $"data/wow/search/item?namespace=static-us&locale=en_US&{itemIdsQuery}");
+                $"data/wow/search/item?namespace=static-us&locale=en_US&{itemIdsQuery}",
+                cancellationToken: cancellationToken);
         }
 
-        public Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync(int pageNumber = 1, int pageSize = 100)
+        public Task<BlizzardSearchResponse<BlizzardConnectedRealm>> GetConnectedRealmsAsync(int pageNumber = 1, int pageSize = 100, CancellationToken cancellationToken = default)
         {
             return this.SendRequestAsync<BlizzardSearchResponse<BlizzardConnectedRealm>>(
                 HttpMethod.Get,
-                $"data/wow/search/connected-realm?namespace=dynamic-us&locale=en_US&_page={pageNumber}&_pageSize={pageSize}");
+                $"data/wow/search/connected-realm?namespace=dynamic-us&locale=en_US&_page={pageNumber}&_pageSize={pageSize}",
+                cancellationToken: cancellationToken);
         }
 
-        public async Task<IEnumerable<BlizzardConnectedRealm>> GetAllConnectedRealmsAsync()
+        public async Task<IEnumerable<BlizzardConnectedRealm>> GetAllConnectedRealmsAsync(CancellationToken cancellationToken = default)
         {
-            var firstPage = await this.GetConnectedRealmsAsync(1, 100);
+            var firstPage = await this.GetConnectedRealmsAsync(1, 100, cancellationToken);
 
             if (firstPage.PageCount <= 1)
             {
@@ -153,7 +159,7 @@ namespace WoWMarketWatcher.API.Services
 
             for (var i = firstPage.Page + 1; i <= firstPage.PageCount; i++)
             {
-                tasks.Add(this.GetConnectedRealmsAsync(i, 100));
+                tasks.Add(this.GetConnectedRealmsAsync(i, 100, cancellationToken));
             }
 
             var total = (await Task.WhenAll(tasks)).Aggregate(firstPage.Results.Select(r => r.Data), (prev, curr) => prev.Concat(curr.Results.Select(r => r.Data)));
@@ -161,18 +167,19 @@ namespace WoWMarketWatcher.API.Services
             return total;
         }
 
-        public Task<BlizzardWoWTokenResponse> GetWoWTokenPriceAsync()
+        public Task<BlizzardWoWTokenResponse> GetWoWTokenPriceAsync(CancellationToken cancellationToken = default)
         {
             return this.SendRequestAsync<BlizzardWoWTokenResponse>(
                 HttpMethod.Get,
-                "data/wow/token/index?locale=en_US&namespace=dynamic-us");
+                "data/wow/token/index?locale=en_US&namespace=dynamic-us",
+                cancellationToken: cancellationToken);
         }
 
-        private async Task<T> SendRequestAsync<T>(HttpMethod method, string url, bool isRetry = false)
+        private async Task<T> SendRequestAsync<T>(HttpMethod method, string url, bool isRetry = false, CancellationToken cancellationToken = default)
         {
             var sourceName = GetSourceName();
 
-            var accessToken = await this.GetAccessTokenAsync(isRetry);
+            var accessToken = await this.GetAccessTokenAsync(isRetry, cancellationToken);
 
             var httpClient = this.httpClientFactory.CreateClient(nameof(BlizzardService));
 
@@ -181,14 +188,14 @@ namespace WoWMarketWatcher.API.Services
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
             request.Headers.Add(AppHeaderNames.CorrelationId, this.CorrelationId);
 
-            using var response = await httpClient.SendAsync(request);
+            using var response = await httpClient.SendAsync(request, cancellationToken);
 
-            var contentString = await response.Content.ReadAsStringAsync();
+            var contentString = await response.Content.ReadAsStringAsync(cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized && !isRetry)
             {
                 this.logger.LogWarning(sourceName, this.CorrelationId, $"Request to {url} failed due to being unauthorizied. Refreshing token and retrying.");
-                return await this.SendRequestAsync<T>(method, url, true);
+                return await this.SendRequestAsync<T>(method, url, true, cancellationToken);
             }
 
             if (!response.IsSuccessStatusCode)

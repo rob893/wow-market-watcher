@@ -19,29 +19,23 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
     {
         public static IServiceCollection AddSwaggerServices(this IServiceCollection services, IConfiguration config)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentNullException.ThrowIfNull(services, nameof(services));
+            ArgumentNullException.ThrowIfNull(config, nameof(config));
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            var settingsSection = config.GetSection(ConfigurationKeys.Swagger);
+            var settings = settingsSection.Get<SwaggerSettings>();
 
-            services.Configure<SwaggerSettings>(config.GetSection(ConfigurationKeys.Swagger));
+            services.Configure<SwaggerSettings>(settingsSection);
 
             services.AddSwaggerGen(options =>
             {
-                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-
-                foreach (var description in provider.ApiVersionDescriptions)
+                foreach (var version in settings.SupportedApiVersions)
                 {
                     options.SwaggerDoc(
-                        description.GroupName,
+                        version,
                         new OpenApiInfo
                         {
-                            Version = description.GroupName,
+                            Version = version,
                             Title = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName,
                             Description = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName} - {config.GetEnvironment()} ({Assembly.GetExecutingAssembly().GetName().Version})",
                             License = new OpenApiLicense
