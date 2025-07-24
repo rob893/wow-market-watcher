@@ -74,6 +74,7 @@ namespace WoWMarketWatcher.API.Services
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{this.settings.ClientId}:{this.settings.ClientSecret}")));
             request.Headers.Add(AppHeaderNames.CorrelationId, this.CorrelationId);
+            request.Headers.Add("User-Agent", "WoWMarketWatcher");
 
             using var response = await httpClient.SendAsync(request, cancellationToken);
 
