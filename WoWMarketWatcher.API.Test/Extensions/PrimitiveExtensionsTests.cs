@@ -140,7 +140,7 @@ namespace WoWMarketWatcher.API.Test.Extensions
         public void IsValidBase64EncodedString_False_ExpectedResponse()
         {
             // Arrange
-            var base64Int = "this is not a valid base64 encoded string";
+            var base64Int = "!!!invalid@base64#string$$$";
 
             // Act
             var result = base64Int.IsValidBase64UrlEncodedString();

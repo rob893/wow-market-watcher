@@ -4,10 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WoWMarketWatcher.API.Constants;
 using WoWMarketWatcher.API.Extensions;
@@ -65,17 +64,10 @@ namespace WoWMarketWatcher.API.ApplicationStartup.ServiceCollectionExtensions
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        }, new List<string>()
+                        new OpenApiSecuritySchemeReference("Bearer"), new List<string>()
                     }
                 });
 

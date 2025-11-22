@@ -264,6 +264,12 @@ dotnet_diagnostic.CS8604.severity = none
 dotnet_diagnostic.CS8762.severity = none
 dotnet_diagnostic.CA1861.severity = none
 
+# Disable CA1515 (public types in API project are intentional)
+dotnet_diagnostic.CA1515.severity = none
+
+# Disable CA1873 (logger performance warnings)
+dotnet_diagnostic.CA1873.severity = none
+
 [/WoWMarketWatcher.API.Test/**]
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.xUnit1012.severity = none
