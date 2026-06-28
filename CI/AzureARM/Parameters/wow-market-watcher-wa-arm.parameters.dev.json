@@ -8,6 +8,12 @@
     "appServicePlanName": {
       "value": "rherber-development"
     },
+    "sharedResourceGroupName": {
+      "value": "rherber-shared-rg-ue-d"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "rherber-logworkspace-uw-lws-d"
+    },
     "webAppName": {
       "value": "rherber-wow-market-watcher-uw-wa-d"
     },

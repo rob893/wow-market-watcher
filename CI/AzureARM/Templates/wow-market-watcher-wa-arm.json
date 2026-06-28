@@ -9,9 +9,23 @@
     "appServicePlanName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the app service plan."
+        "description": "Name of the shared app service plan (lives in the shared resource group)."
       },
       "defaultValue": "rherber-development"
+    },
+    "sharedResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource group that holds the shared App Service plan and Log Analytics workspace."
+      },
+      "defaultValue": "rherber-shared-rg-ue-d"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Shared Log Analytics workspace to link the workspace-based App Insights to."
+      },
+      "defaultValue": "rherber-logworkspace-uw-lws-d"
     },
     "webAppName": {
       "type": "string",
@@ -36,42 +50,16 @@
   },
   "resources": [
     {
-      "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2018-02-01",
-      "name": "[parameters('appServicePlanName')]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "F1",
-        "tier": "Free",
-        "size": "F1",
-        "family": "F",
-        "capacity": 0
-      },
-      "kind": "app",
-      "properties": {
-        "perSiteScaling": false,
-        "maximumElasticWorkerCount": 1,
-        "isSpot": false,
-        "reserved": false,
-        "isXenon": false,
-        "hyperV": false,
-        "targetWorkerCount": 0,
-        "targetWorkerSizeId": 0
-      },
-      "tags": {
-        "environment": "[parameters('aspnetCoreEnvironment')]",
-        "creator": "Robert Herber"
-      }
-    },
-    {
       "type": "Microsoft.Insights/components",
-      "apiVersion": "2018-05-01-preview",
+      "apiVersion": "2020-02-02",
       "name": "[parameters('appInsightsName')]",
       "location": "[parameters('location')]",
       "kind": "web",
       "properties": {
         "Application_Type": "web",
-        "RetentionInDays": 60
+        "RetentionInDays": 60,
+        "IngestionMode": "LogAnalytics",
+        "WorkspaceResourceId": "[resourceId(parameters('sharedResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
       },
       "tags": {
         "environment": "[parameters('aspnetCoreEnvironment')]",
@@ -84,7 +72,6 @@
       "name": "[parameters('webAppName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
         "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"
       ],
       "kind": "app",
@@ -93,7 +80,7 @@
         "creator": "Robert Herber"
       },
       "properties": {
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "serverFarmId": "[resourceId(parameters('sharedResourceGroupName'), 'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
         "enabled": true,
         "httpsOnly": true,
         "siteConfig": {
@@ -140,17 +127,6 @@
       "properties": {
         "level": "CanNotDelete",
         "notes": "App Insights should not be deleted."
-      }
-    },
-    {
-      "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2016-09-01",
-      "name": "appServicePlanLock",
-      "scope": "[concat('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
-      "dependsOn": ["[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"],
-      "properties": {
-        "level": "CanNotDelete",
-        "notes": "App service plan should not be deleted."
       }
     }
   ]
